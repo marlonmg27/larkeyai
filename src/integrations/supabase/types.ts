@@ -160,6 +160,7 @@ export type Database = {
         Args: { p_count: number; p_user_id: string }
         Returns: undefined
       }
+      reset_expired_usage_balances: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
