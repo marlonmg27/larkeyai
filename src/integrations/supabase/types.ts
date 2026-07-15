@@ -145,7 +145,21 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      add_purchased_messages: {
+        Args: {
+          p_amount: number
+          p_messages: number
+          p_package: string
+          p_stripe_payment_id: string
+          p_user_id: string
+        }
+        Returns: undefined
+      }
+      can_send_message: { Args: { p_user_id: string }; Returns: boolean }
+      decrement_messages: {
+        Args: { p_count: number; p_user_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
