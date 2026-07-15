@@ -87,6 +87,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@larkey" },
+      { name: "twitter:title", content: "Larkey — Agentes de IA para WhatsApp" },
+      { name: "twitter:description", content: "Larkey conecta Chatwoot con agentes de IA que atienden WhatsApp, agendan citas y escalan tu atención." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ca5ccabc-d63f-4c78-9e8d-6c8a432f0e5c/id-preview-50495209--c2d08889-ea0a-462f-bee4-3d95a3ea2d73.lovable.app-1784156369589.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ca5ccabc-d63f-4c78-9e8d-6c8a432f0e5c/id-preview-50495209--c2d08889-ea0a-462f-bee4-3d95a3ea2d73.lovable.app-1784156369589.png" },
     ],
     links: [
       {
