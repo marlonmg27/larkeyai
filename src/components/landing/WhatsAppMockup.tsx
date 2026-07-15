@@ -20,7 +20,7 @@ export function WhatsAppMockup() {
         </div>
       </div>
 
-      <div className="space-y-3 bg-muted/30 p-4 pb-8">
+      <div className="min-h-[360px] space-y-3 bg-muted/30 p-4 pb-8">
         <div className="flex justify-center">
           <span className="rounded-full bg-background/80 px-3 py-1 text-[10px] text-muted-foreground">
             Hoy
