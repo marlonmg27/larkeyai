@@ -116,9 +116,12 @@ export function Pricing() {
                 </CardContent>
                 <div className="p-6 pt-0">
                   <Button
-                    className="w-full"
+                    className={
+                      plan.popular
+                        ? "w-full bg-brand text-brand-foreground hover:bg-brand/90"
+                        : "w-full"
+                    }
                     variant={plan.popular ? "default" : "outline"}
-                    {...(plan.popular ? { className: "w-full bg-brand text-brand-foreground hover:bg-brand/90" } : { className: "w-full" })}
                   >
                     {plan.cta}
                   </Button>
