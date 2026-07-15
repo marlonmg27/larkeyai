@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      plans: {
+        Row: {
+          created_at: string
+          id: string
+          messages_included: number
+          name: string
+          price: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          messages_included: number
+          name: string
+          price: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          messages_included?: number
+          name?: string
+          price?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
