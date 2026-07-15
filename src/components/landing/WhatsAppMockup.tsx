@@ -7,7 +7,7 @@ const messages = [
 
 export function WhatsAppMockup() {
   return (
-    <div className="relative mx-auto w-full max-w-[360px] overflow-hidden rounded-[2.5rem] border-8 border-foreground/10 bg-card shadow-2xl">
+    <div className="relative mx-auto w-full max-w-[320px] overflow-hidden rounded-[2.5rem] border-8 border-foreground/10 bg-card shadow-2xl sm:max-w-[360px]">
       <div className="bg-brand px-5 pb-4 pt-10">
         <div className="flex items-center gap-3">
           <div className="grid h-10 w-10 place-items-center rounded-full bg-white/20 text-brand-foreground">
