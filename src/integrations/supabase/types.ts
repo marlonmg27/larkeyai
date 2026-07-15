@@ -44,23 +44,31 @@ export type Database = {
           email: string | null
           id: string
           phone: string | null
-          plan: string
+          plan_id: string
         }
         Insert: {
           created_at?: string
           email?: string | null
           id: string
           phone?: string | null
-          plan?: string
+          plan_id?: string
         }
         Update: {
           created_at?: string
           email?: string | null
           id?: string
           phone?: string | null
-          plan?: string
+          plan_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       purchases: {
         Row: {
