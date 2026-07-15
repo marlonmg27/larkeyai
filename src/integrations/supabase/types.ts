@@ -14,29 +14,61 @@ export type Database = {
   }
   public: {
     Tables: {
+      plans: {
+        Row: {
+          created_at: string
+          id: string
+          messages_included: number
+          name: string
+          price: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          messages_included: number
+          name: string
+          price: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          messages_included?: number
+          name?: string
+          price?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
           email: string | null
           id: string
           phone: string | null
-          plan: string
+          plan_id: string
         }
         Insert: {
           created_at?: string
           email?: string | null
           id: string
           phone?: string | null
-          plan?: string
+          plan_id?: string
         }
         Update: {
           created_at?: string
           email?: string | null
           id?: string
           phone?: string | null
-          plan?: string
+          plan_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       purchases: {
         Row: {
@@ -113,7 +145,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      add_purchased_messages: {
+        Args: {
+          p_amount: number
+          p_messages: number
+          p_package: string
+          p_stripe_payment_id: string
+          p_user_id: string
+        }
+        Returns: undefined
+      }
+      can_send_message: { Args: { p_user_id: string }; Returns: boolean }
+      decrement_messages: {
+        Args: { p_count: number; p_user_id: string }
+        Returns: undefined
+      }
+      reset_expired_usage_balances: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
