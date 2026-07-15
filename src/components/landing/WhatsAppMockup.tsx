@@ -1,5 +1,3 @@
-import { motion } from "framer-motion";
-
 const messages = [
   { id: 1, type: "in", text: "Hola, ¿tienen esta casa en venta?", delay: 0 },
   { id: 2, type: "out", text: "¡Hola! Sí, la tenemos disponible. ¿Te gustaría agendar una visita?", delay: 0.2 },
