@@ -1,8 +1,8 @@
 const messages = [
-  { id: 1, type: "in", text: "Hola, ¿tienen esta casa en venta?", delay: 0 },
-  { id: 2, type: "out", text: "¡Hola! Sí, la tenemos disponible. ¿Te gustaría agendar una visita?", delay: 0.2 },
-  { id: 3, type: "in", text: "¿Podría ser mañana a las 5pm?", delay: 0.4 },
-  { id: 4, type: "out", text: "Perfecto, te confirmo la cita para mañana a las 5pm. Te esperamos.", delay: 0.6 },
+  { id: 1, type: "in", text: "Hola, ¿tienen esta casa en venta?" },
+  { id: 2, type: "out", text: "¡Hola! Sí, la tenemos disponible. ¿Te gustaría agendar una visita?" },
+  { id: 3, type: "in", text: "¿Podría ser mañana a las 5pm?" },
+  { id: 4, type: "out", text: "Perfecto, te confirmo la cita para mañana a las 5pm. Te esperamos." },
 ];
 
 export function WhatsAppMockup() {
@@ -28,11 +28,8 @@ export function WhatsAppMockup() {
         </div>
 
         {messages.map((msg) => (
-          <motion.div
+          <div
             key={msg.id}
-            initial={{ opacity: 0, y: 16, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.4, delay: 0.8 + msg.delay, ease: "easeOut" }}
             className={`flex ${msg.type === "out" ? "justify-end" : "justify-start"}`}
           >
             <div
@@ -42,15 +39,10 @@ export function WhatsAppMockup() {
             >
               {msg.text}
             </div>
-          </motion.div>
+          </div>
         ))}
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2.2, duration: 0.5 }}
-          className="flex justify-start"
-        >
+        <div className="flex justify-start">
           <div className="whatsapp-bubble-in max-w-[80%] px-4 py-2.5 text-sm leading-relaxed shadow-sm">
             <span className="inline-flex gap-1">
               <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground" />
@@ -58,7 +50,7 @@ export function WhatsAppMockup() {
               <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground [animation-delay:0.3s]" />
             </span>
           </div>
-        </motion.div>
+        </div>
       </div>
 
       <div className="flex items-center gap-2 border-t border-border bg-card px-4 py-3">
