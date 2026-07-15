@@ -77,14 +77,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Larkey — Agentes de IA para WhatsApp" },
+      { name: "description", content: "Larkey conecta Chatwoot con agentes de IA que atienden WhatsApp, agendan citas y escalan tu atención." },
+      { name: "author", content: "Larkey" },
+      { property: "og:title", content: "Larkey — Agentes de IA para WhatsApp" },
+      { property: "og:description", content: "Larkey conecta Chatwoot con agentes de IA que atienden WhatsApp, agendan citas y escalan tu atención." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:site", content: "@larkey" },
     ],
     links: [
       {
