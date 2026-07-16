@@ -146,7 +146,7 @@ export type Database = {
     }
     Functions: {
       activate_client: {
-        Args: { p_plan_name: string; p_user_id: string }
+        Args: { p_phone: string; p_plan_id: string; p_user_id: string }
         Returns: undefined
       }
       add_purchased_messages: {
