@@ -44,21 +44,21 @@ export type Database = {
           email: string | null
           id: string
           phone: string | null
-          plan_id: string
+          plan_id: string | null
         }
         Insert: {
           created_at?: string
           email?: string | null
           id: string
           phone?: string | null
-          plan_id?: string
+          plan_id?: string | null
         }
         Update: {
           created_at?: string
           email?: string | null
           id?: string
           phone?: string | null
-          plan_id?: string
+          plan_id?: string | null
         }
         Relationships: [
           {
@@ -145,6 +145,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      activate_client: {
+        Args: { p_plan_name: string; p_user_id: string }
+        Returns: undefined
+      }
       add_purchased_messages: {
         Args: {
           p_amount: number
