@@ -1,80 +1,60 @@
-## Plan: Add plans table, plan_id FK, billing SQL functions, and monthly reset job
+# Plan: separar "lead" de "cliente activo"
 
-All changes are backend-only (SQL migrations + one scheduled job). No frontend/UI edits. The existing `profiles.phone` column and the three existing tables are preserved — only additive changes plus the controlled drop of the old `profiles.plan` text column after backfill.
+## Estado actual (revisado)
 
-### Step 1 — Migration A: create `plans` and seed
+- **`profiles`**: columna `plan_id uuid NOT NULL DEFAULT '6e93713d-...'` (fuerza el plan Basic a todo signup).
+- **`usage_balance`**: cada usuario tiene fila con `messages_remaining` = Basic incluidos, período de 1 mes.
+- **`plans`**: catálogo (basic/pro/enterprise) — correcto.
+- **`purchases`**: correcto, se llena vía `add_purchased_messages`.
+- **Trigger `on_auth_user_created` → `handle_new_user()`**: al registrarse, inserta `profiles` con `plan_id = basic` **e** inserta `usage_balance` con los mensajes del Basic. Esto convierte cada signup en cliente pagante automáticamente.
+- **`can_send_message`**: devuelve `messages_remaining > 0`; con el diseño nuevo, un lead sin balance debería devolver `false` (ya lo hace por `COALESCE`, ✓).
+- **`reset_expired_usage_balances`**: reinicia balance al plan del profile. Debe seguir funcionando, pero solo debe tocar filas de usuarios que sí tienen `plan_id` (clientes activos).
+- **Dashboard (`/dashboard`)**: asume que siempre existen `profiles.plans` y `usage_balance`. Con leads reales, ambos serán `null` → hoy muestra "Sin plan asignado" y 0/0, pero sin un mensaje claro de "cuenta pendiente de activación".
+- **RLS**: los usuarios solo pueden leer sus propios `profiles`/`usage_balance`/`purchases`. Ningún path del cliente inserta plan o balance (solo lee). ✓
 
-Single migration that:
+## Cambios requeridos (solo lo mínimo)
 
-- Creates `public.plans` with columns: `id uuid pk default gen_random_uuid()`, `name text unique not null`, `messages_included integer not null`, `price numeric not null`, `created_at timestamptz default now()`.
-- GRANTs: `SELECT` to `anon` and `authenticated` (public pricing), `ALL` to `service_role`.
-- Enables RLS and adds a public `SELECT` policy (`USING (true)`) so pricing is readable by anyone.
-- Seeds three rows with placeholder values marked `-- TODO: edit`:
-  - `basic` → 100 messages, 0
-  - `pro` → 1000 messages, 0
-  - `enterprise` → 5000 messages, 0
+### 1. Esquema (`profiles`)
+- Quitar el `DEFAULT` de `profiles.plan_id`.
+- Hacer `profiles.plan_id` **nullable** (`DROP NOT NULL`). Un lead tendrá `plan_id = NULL` hasta que lo actives.
+- No renombrar ni eliminar la columna.
+- No tocar filas existentes (los usuarios ya creados conservan su `plan_id` actual).
 
-### Step 2 — Migration B: add `profiles.plan_id`, backfill, drop old `plan`
+### 2. Trigger `handle_new_user()`
+Reescribir la función para que un signup **solo** cree la fila de `profiles` como lead:
+- `INSERT INTO profiles (id, email, phone)` **sin** `plan_id` (queda `NULL`).
+- **Eliminar** el `INSERT INTO usage_balance`. Un lead no tiene balance.
+- Mantener `SECURITY DEFINER` y `search_path = public`.
+- El trigger `on_auth_user_created` no se toca (sigue apuntando a la misma función).
 
-Single migration that:
+### 3. Nueva función de activación manual (para uso tuyo desde el backend con service_role)
+Añadir `public.activate_client(p_user_id uuid, p_plan_name text)`:
+- Busca `plans` por `name`.
+- Set `profiles.plan_id` al plan encontrado.
+- `INSERT` en `usage_balance` (o `UPDATE` si ya existe) con `messages_remaining = plan.messages_included`, `messages_used_period = 0`, `period_start = now()`, `period_end = now() + 1 month`.
+- `SECURITY DEFINER`, `search_path = public`, `EXECUTE` revocado de `anon`/`authenticated` — solo `service_role`. Así activas manualmente desde tu backend Python.
 
-- `ALTER TABLE public.profiles ADD COLUMN plan_id uuid REFERENCES public.plans(id)`.
-- Backfills: `UPDATE profiles SET plan_id = (SELECT id FROM plans WHERE name = profiles.plan)`; then a second `UPDATE` to set any remaining NULLs to the `basic` plan id.
-- `ALTER COLUMN plan_id SET NOT NULL` and `SET DEFAULT` to the basic plan id (via subquery-safe approach: set default in a follow-up statement referencing the id).
-- `ALTER TABLE public.profiles DROP COLUMN plan`.
-- Leaves `phone` untouched.
+### 4. `reset_expired_usage_balances()`
+Añadir filtro `AND pr.plan_id IS NOT NULL` en el `WHERE`, para que el reset ignore leads (por si en el futuro se hace `INSERT` prematuro). El `JOIN plans` ya lo excluye naturalmente, pero dejarlo explícito es más seguro.
 
-### Step 3 — Migration C: update `handle_new_user` trigger function
+### 5. `add_purchased_messages()`
+Sin cambios de firma. Nota funcional: si intenta correr sobre un lead sin `usage_balance`, el `UPDATE` no afecta filas y solo se registra `purchases`. Recomendación: añadir un guard que lance excepción si no existe balance, para evitar cobros a leads no activados. **Cambio menor sugerido**, confirma si lo quieres incluido.
 
-Replace the function body so it:
+### 6. RLS / GRANTs
+- Sin cambios en policies existentes.
+- `REVOKE EXECUTE` de `activate_client` a `PUBLIC, anon, authenticated`; `GRANT EXECUTE` solo a `service_role`.
 
-- Looks up `basic_plan_id` and `basic_messages` from `plans` where `name = 'basic'`.
-- Inserts into `profiles(id, email, phone, plan_id)` using `basic_plan_id`.
-- Inserts into `usage_balance(user_id, messages_remaining, messages_used_period, period_start, period_end)` using `basic_messages` instead of the hardcoded `100`.
+### 7. Dashboard (`src/routes/_authenticated/dashboard.tsx`)
+- Detectar el caso "lead" (`data.plan === null` **y** `data.balance === null`) y mostrar un estado dedicado: mensaje tipo "Tu cuenta está registrada. Contacta con nosotros para activar tu plan." + ocultar tarjetas de uso/consumo/compras (o mostrarlas vacías con CTA de contacto).
+- No tocar diseño para clientes activos.
 
-Trigger `on_auth_user_created` remains as-is (function replaced in place).
+## Lo que **NO** cambia
+- Nombres de tablas y columnas (incluido `phone`).
+- Datos existentes.
+- `plans`, `purchases`, `can_send_message`, `decrement_messages`.
+- Policies RLS existentes.
+- Trigger `on_auth_user_created` (solo cambia el cuerpo de la función que invoca).
 
-### Step 4 — Migration D: billing SQL functions
-
-Create three `SECURITY DEFINER` functions with `SET search_path = public`:
-
-- `decrement_messages(p_user_id uuid, p_count int)` — single `UPDATE usage_balance SET messages_remaining = messages_remaining - p_count, messages_used_period = messages_used_period + p_count WHERE user_id = p_user_id`. Atomic by nature of the single UPDATE.
-- `can_send_message(p_user_id uuid) RETURNS boolean` — `SELECT messages_remaining > 0 FROM usage_balance WHERE user_id = p_user_id`.
-- `add_purchased_messages(p_user_id uuid, p_messages int, p_package text, p_amount numeric, p_stripe_payment_id text)` — one `UPDATE usage_balance` + one `INSERT INTO purchases`, both inside the function (single transaction).
-
-Execute grants: revoke from `public`, grant `EXECUTE` to `service_role` only (backend calls these). `can_send_message` also granted to `authenticated` in case the UI ever needs it.
-
-### Step 5 — Confirm RLS
-
-Verify (via `supabase--read_query` after migrations run) that RLS is still enabled on `profiles`, `usage_balance`, `purchases`, and that each keeps its per-user SELECT policy. The new `plans` public SELECT policy is added in Step 1. No changes to existing policies.
-
-### Step 6 — Monthly reset via pg_cron
-
-`pg_cron` is available on Lovable Cloud. Migration E:
-
-- `CREATE EXTENSION IF NOT EXISTS pg_cron;`
-- Creates a SECURITY DEFINER function `reset_expired_usage_balances()` that runs:
-  ```sql
-  UPDATE usage_balance ub
-  SET messages_remaining = p.messages_included,
-      messages_used_period = 0,
-      period_start = now(),
-      period_end = now() + interval '1 month'
-  FROM profiles pr
-  JOIN plans p ON p.id = pr.plan_id
-  WHERE ub.user_id = pr.id AND ub.period_end <= now();
-  ```
-- Schedules it daily at 03:00 UTC via `cron.schedule('reset-expired-usage-balances', '0 3 * * *', $$ SELECT public.reset_expired_usage_balances(); $$)`.
-
-No Edge Function needed.
-
-### Execution order & verification
-
-Migrations are approved by you one at a time. After each is applied I'll run a short `supabase--read_query` to verify (row counts in `plans`, `profiles.plan_id` populated with no NULLs before dropping `plan`, functions exist via `pg_proc`, RLS flags via `pg_tables`, cron job present in `cron.job`) and only then move to the next migration.
-
-### Not touched
-
-- No frontend/UI changes.
-- `profiles.phone` untouched.
-- Existing RLS policies on `profiles`/`usage_balance`/`purchases` untouched.
-- Existing trigger `on_auth_user_created` untouched (only its function body updated).
+## Preguntas antes de generar SQL
+1. ¿Añado el guard en `add_purchased_messages` para rechazar compras de leads sin `usage_balance`?
+2. La función `activate_client`: ¿te vale que reciba `plan_name` (`'basic'`/`'pro'`/`'enterprise'`), o prefieres `plan_id uuid`?

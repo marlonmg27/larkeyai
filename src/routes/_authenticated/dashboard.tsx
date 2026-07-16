@@ -139,7 +139,27 @@ function Dashboard() {
               </CardDescription>
             </CardHeader>
           </Card>
+        ) : !isLoading && !data?.plan && !data?.balance ? (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <AlertCircle className="h-5 w-5 text-brand" /> Cuenta pendiente de activación
+              </CardTitle>
+              <CardDescription>
+                Tu registro se completó correctamente. Para activar tu plan y empezar a usar Larkey,
+                contáctanos y activaremos tu cuenta manualmente.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button asChild className="bg-brand text-brand-foreground hover:bg-brand/90">
+                <a href="mailto:hola@larkey.ai?subject=Activar%20mi%20cuenta%20Larkey">
+                  Contactar para activar
+                </a>
+              </Button>
+            </CardContent>
+          </Card>
         ) : (
+
           <>
             <div className="grid gap-4 md:grid-cols-3">
               <Card>
