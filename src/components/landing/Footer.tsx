@@ -1,4 +1,4 @@
-import { MessageCircle, Mail } from "lucide-react";
+import { MessageCircle, Mail, Phone } from "lucide-react";
 
 const links = [
   { label: "Cómo funciona", href: "#como-funciona" },
@@ -22,7 +22,7 @@ export function Footer() {
               <span className="text-lg font-semibold tracking-tight">Larkey</span>
             </div>
             <p className="mt-3 text-sm text-muted-foreground">
-              Agentes de IA afinados a tu negocio, para que respondan tus mensajes por ti — hoy en WhatsApp, mañana donde tus clientes te escriban.
+              Asistentes conversacionales afinados a tu negocio, para que respondan tus mensajes por ti — hoy en WhatsApp, mañana en Instagram, Telegram, Messenger y WebApps. Incluye integración opcional con Chatwoot para supervisar tus conversaciones.
             </p>
           </div>
 
@@ -45,11 +45,18 @@ export function Footer() {
             <div>
               <h4 className="text-sm font-semibold text-foreground">Contacto</h4>
               <a
-                href="mailto:hola@larkey.io"
+                href="mailto:marlonmolinag@hotmail.com"
                 className="mt-3 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
               >
                 <Mail className="h-4 w-4" />
-                hola@larkey.io
+                marlonmolinag@hotmail.com
+              </a>
+              <a
+                href="https://wa.me/526622047650"
+                className="mt-2 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <Phone className="h-4 w-4" />
+                +52 662 204 7650
               </a>
             </div>
           </div>

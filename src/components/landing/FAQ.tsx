@@ -9,32 +9,32 @@ const faqs = [
   {
     question: "¿Qué es Larkey?",
     answer:
-      "Larkey es una compañía de agentes de IA. Diseñamos y ponemos en marcha agentes conversacionales afinados al contexto de cada cliente, para que respondan sus mensajes — hoy principalmente en WhatsApp — sin que el dueño del negocio tenga que estar pendiente del celular.",
+      "Larkey es una plataforma de asistentes conversacionales. Diseñamos y ponemos en marcha un asistente afinado al contexto de tu negocio para que responda tus mensajes — con WhatsApp como canal principal — sin que el dueño del negocio tenga que estar pendiente del celular.",
   },
   {
     question: "¿Tengo que saber de tecnología para usar Larkey?",
     answer:
-      "No. Larkey está pensado para cualquier persona, con conocimientos técnicos avanzados o cero. Nosotros nos encargamos de la parte técnica y del entrenamiento del agente; tú solo nos cuentas cómo funciona tu negocio.",
+      "No. Larkey está pensado para cualquier persona, con conocimientos técnicos avanzados o cero. Nosotros nos encargamos de la parte técnica y del entrenamiento; tú solo nos cuentas cómo funciona tu negocio.",
   },
   {
-    question: "¿En qué canal responde el agente?",
+    question: "¿En qué canales responde el asistente?",
     answer:
-      "Nuestro enfoque principal hoy es WhatsApp, porque es donde la mayoría de nuestros clientes recibe mensajes. Dicho esto, la arquitectura permite integrar el agente en otras plataformas de mensajería según las necesidades de cada proyecto.",
+      "WhatsApp es nuestro producto estrella, porque es donde la mayoría de nuestros clientes recibe mensajes. También podemos extenderlo a Instagram, Telegram, Messenger y WebApps según lo que necesites.",
   },
   {
-    question: "¿Puedo ver las conversaciones del agente con mis clientes?",
+    question: "¿Puedo ver las conversaciones del asistente con mis clientes?",
     answer:
-      "Sí. Ofrecemos una integración opcional con Chatwoot para que tengas una bandeja de entrada unificada y puedas leer, auditar o retomar cualquier conversación cuando lo necesites.",
+      "Sí. Desde tu bandeja unificada puedes leer en tiempo real cada interacción entre tu asistente y tus clientes. Si lo necesitas, tomas el control de la conversación con un solo clic.",
   },
   {
-    question: "¿El agente está entrenado exclusivamente para mi negocio?",
+    question: "¿El asistente está entrenado exclusivamente para mi negocio?",
     answer:
-      "Ese es el objetivo. Ajustamos el agente al contexto, tono y flujos de tu negocio para que responda como parte de tu equipo. El nivel de personalización y los detalles del entrenamiento se acuerdan con cada cliente según su caso.",
+      "Ese es el objetivo. Ajustamos el asistente a tu contexto, tono y flujos para que responda como parte de tu equipo. El nivel de personalización se acuerda contigo según tu caso.",
   },
   {
     question: "¿Cómo se cuenta el consumo de mensajes?",
     answer:
-      "Cada mensaje enviado por tu agente cuenta contra el límite de tu plan. Desde tu panel puedes ver el consumo en tiempo real y comprar mensajes adicionales cuando lo necesites.",
+      "Cada mensaje enviado por tu asistente cuenta contra el límite de tu plan. Desde tu panel puedes ver el consumo en tiempo real y comprar mensajes adicionales cuando lo necesites.",
   },
 ];
 

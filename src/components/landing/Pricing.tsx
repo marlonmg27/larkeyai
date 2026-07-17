@@ -13,8 +13,8 @@ const plans = [
     messages: "TODO",
     features: [
       "TODO mensajes incluidos/mes",
-      "1 agente afinado a tu negocio",
-      "Atención en WhatsApp",
+      "1 asistente afinado a tu operación",
+      "WhatsApp como canal principal",
       "Respuestas en horario extendido",
       "Soporte por email",
     ],
@@ -29,9 +29,9 @@ const plans = [
     messages: "TODO",
     features: [
       "TODO mensajes incluidos/mes",
-      "Agente afinado a tu negocio",
-      "Atención en WhatsApp 24/7",
-      "Bandeja unificada con Chatwoot (opcional)",
+      "Asistente afinado a tu operación",
+      "WhatsApp, Instagram, Telegram y Messenger",
+      "Bandeja unificada para supervisar conversaciones en tiempo real y tomar el control",
       "Ajustes de tono y flujos según tu caso",
       "Soporte prioritario",
     ],
@@ -46,9 +46,9 @@ const plans = [
     messages: "TODO+",
     features: [
       "TODO+ mensajes incluidos/mes",
-      "Agentes a medida para tu operación",
-      "WhatsApp + otras plataformas de mensajería",
-      "Integraciones dedicadas (Chatwoot, API, etc.)",
+      "Asistentes a medida para tu operación",
+      "WhatsApp, Instagram, Telegram, Messenger y WebApps",
+      "Integraciones dedicadas a tu stack",
       "Onboarding y acompañamiento cercano",
       "Soporte con cuenta asignada",
     ],
@@ -66,7 +66,7 @@ export function Pricing() {
             Planes y precios
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Escala tu atención sin contratar más gente. Pagas por mensajes reales de tu agente, no por promesas.
+            Escala tu atención sin contratar más gente. Pagas por mensajes reales, no por promesas.
           </p>
         </div>
 

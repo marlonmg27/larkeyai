@@ -10,15 +10,15 @@ const steps = [
   },
   {
     icon: Sparkles,
-    title: "Afinamos tu agente",
+    title: "Afinamos tu asistente",
     description:
-      "Nuestro equipo entrena y ajusta un agente de IA al contexto exacto de tu negocio. Tú no tocas una línea de código.",
+      "Nuestro equipo configura y entrena un asistente al contexto exacto de tu operación. Tú no tocas una línea de código.",
   },
   {
     icon: Rocket,
     title: "Empieza a responder por ti",
     description:
-      "Tu agente atiende WhatsApp — y otras plataformas de mensajería — respondiendo prospectos, resolviendo dudas y agendando citas 24/7.",
+      "Tu asistente atiende WhatsApp — tu canal principal — y puede extenderse a Instagram, Telegram, Messenger y WebApps. Responde prospectos, resuelve dudas y agenda citas 24/7.",
   },
 ];
 
@@ -31,7 +31,7 @@ export function HowItWorks() {
             Cómo trabajamos contigo
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Tú te enfocas en vender y hacer crecer tu negocio. Nosotros construimos y mantenemos el agente que responde por ti.
+            Tú te enfocas en vender y hacer crecer tu negocio. Nosotros construimos y mantenemos el asistente que responde por ti.
           </p>
         </div>
 
