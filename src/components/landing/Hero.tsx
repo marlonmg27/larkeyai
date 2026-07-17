@@ -22,7 +22,7 @@ export function Hero() {
               className="mb-6 gap-1.5 bg-accent text-accent-foreground hover:bg-accent"
             >
               <Sparkles className="h-3.5 w-3.5" />
-              Agentes de IA hechos a la medida de tu negocio
+              Un asistente que trabaja mientras tú descansas
             </Badge>
 
             <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
@@ -30,15 +30,15 @@ export function Hero() {
             </h1>
 
             <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-              Creamos agentes de IA conversacionales, afinados uno a uno al contexto
-              de tu negocio, para que atiendan tus conversaciones en WhatsApp — y en
-              cualquier plataforma de mensajería — como lo haría alguien de tu propio
-              equipo.
+              Larkey te da un asistente conversacional que atiende tus chats en
+              WhatsApp — tu canal principal — y se extiende a Instagram, Telegram,
+              Messenger y WebApps. Tú lo supervisas en tiempo real y tomas el control
+              cuando lo necesites.
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button size="lg" className="bg-brand text-brand-foreground hover:bg-brand/90">
-                Quiero mi agente
+                Quiero mi asistente
                 <ArrowRight className="h-4 w-4" />
               </Button>
               <Button size="lg" variant="outline">

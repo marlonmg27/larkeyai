@@ -10,10 +10,10 @@ export const Route = createFileRoute("/")({
   component: LandingPage,
   head: () => ({
     meta: [
-      { title: "Larkey — Agentes de IA para WhatsApp" },
-      { name: "description", content: "Larkey conecta Chatwoot con agentes de IA que atienden WhatsApp, agendan citas y escalan tu atención." },
-      { property: "og:title", content: "Larkey — Agentes de IA para WhatsApp" },
-      { property: "og:description", content: "Larkey conecta Chatwoot con agentes de IA que atienden WhatsApp, agendan citas y escalan tu atención." },
+      { title: "Larkey — Asistentes que responden por ti" },
+      { name: "description", content: "Larkey te da un asistente conversacional que atiende WhatsApp, Instagram, Telegram, Messenger y WebApps. Tú lo supervisas, él responde." },
+      { property: "og:title", content: "Larkey — Asistentes que responden por ti" },
+      { property: "og:description", content: "Larkey te da un asistente conversacional que atiende WhatsApp, Instagram, Telegram, Messenger y WebApps. Tú lo supervisas, él responde." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
