@@ -1,8 +1,8 @@
 const messages = [
-  { id: 1, type: "in", text: "Hola, ¿tienen esta casa en venta?" },
-  { id: 2, type: "out", text: "¡Hola! Sí, la tenemos disponible. ¿Te gustaría agendar una visita?" },
+  { id: 1, type: "in", text: "Hola, ¿siguen disponibles para esta semana?" },
+  { id: 2, type: "out", text: "¡Hola! Sí, tenemos espacio. ¿Qué día te viene mejor?" },
   { id: 3, type: "in", text: "¿Podría ser mañana a las 5pm?" },
-  { id: 4, type: "out", text: "Perfecto, te confirmo la cita para mañana a las 5pm. Te esperamos." },
+  { id: 4, type: "out", text: "Perfecto, te dejo agendado mañana a las 5pm. ¿Te confirmo por aquí?" },
 ];
 
 export function WhatsAppMockup() {
@@ -14,7 +14,7 @@ export function WhatsAppMockup() {
             <span className="text-sm font-semibold">L</span>
           </div>
           <div>
-            <p className="text-sm font-semibold text-brand-foreground">Larkey Inmobiliaria</p>
+            <p className="text-sm font-semibold text-brand-foreground">Agente Larkey</p>
             <p className="text-xs text-brand-foreground/80">En línea</p>
           </div>
         </div>

@@ -9,27 +9,32 @@ const faqs = [
   {
     question: "¿Qué es Larkey?",
     answer:
-      "Larkey es un servicio de agentes de IA que atienden tus conversaciones de WhatsApp a través de Chatwoot. Responde prospectos, agenda citas y escala tu atención sin necesidad de contratar más personas.",
+      "Larkey es una compañía de agentes de IA. Diseñamos y ponemos en marcha agentes conversacionales afinados al contexto de cada cliente, para que respondan sus mensajes — hoy principalmente en WhatsApp — sin que el dueño del negocio tenga que estar pendiente del celular.",
   },
   {
-    question: "¿Necesito tener Chatwoot?",
+    question: "¿Tengo que saber de tecnología para usar Larkey?",
     answer:
-      "Sí. Larkey se conecta a tu cuenta de Chatwoot para leer y responder mensajes de WhatsApp. Si aún no usas Chatwoot, podemos orientarte en la configuración inicial.",
+      "No. Larkey está pensado para cualquier persona, con conocimientos técnicos avanzados o cero. Nosotros nos encargamos de la parte técnica y del entrenamiento del agente; tú solo nos cuentas cómo funciona tu negocio.",
+  },
+  {
+    question: "¿En qué canal responde el agente?",
+    answer:
+      "Nuestro enfoque principal hoy es WhatsApp, porque es donde la mayoría de nuestros clientes recibe mensajes. Dicho esto, la arquitectura permite integrar el agente en otras plataformas de mensajería según las necesidades de cada proyecto.",
+  },
+  {
+    question: "¿Puedo ver las conversaciones del agente con mis clientes?",
+    answer:
+      "Sí. Ofrecemos una integración opcional con Chatwoot para que tengas una bandeja de entrada unificada y puedas leer, auditar o retomar cualquier conversación cuando lo necesites.",
+  },
+  {
+    question: "¿El agente está entrenado exclusivamente para mi negocio?",
+    answer:
+      "Ese es el objetivo. Ajustamos el agente al contexto, tono y flujos de tu negocio para que responda como parte de tu equipo. El nivel de personalización y los detalles del entrenamiento se acuerdan con cada cliente según su caso.",
   },
   {
     question: "¿Cómo se cuenta el consumo de mensajes?",
     answer:
-      "Cada mensaje enviado por el agente de IA se cuenta contra el límite de tu plan. Puedes comprar mensajes adicionales desde tu panel en cualquier momento. Tu backend puede actualizar el consumo directamente en la base de datos de Larkey.",
-  },
-  {
-    question: "¿Puedo cambiar de plan?",
-    answer:
-      "Sí. Puedes cambiar entre planes o comprar mensajes extra desde el área de cliente. El cambio se aplica de forma inmediata o al siguiente ciclo de facturación según la opción que elijas.",
-  },
-  {
-    question: "¿Qué pasa si supero los mensajes incluidos?",
-    answer:
-      "Si te acercas al límite, te avisamos con anticipación. Puedes comprar un paquete adicional de mensajes para seguir atendiendo sin interrupciones mientras definimos el siguiente plan.",
+      "Cada mensaje enviado por tu agente cuenta contra el límite de tu plan. Desde tu panel puedes ver el consumo en tiempo real y comprar mensajes adicionales cuando lo necesites.",
   },
 ];
 

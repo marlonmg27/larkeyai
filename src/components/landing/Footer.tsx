@@ -22,7 +22,7 @@ export function Footer() {
               <span className="text-lg font-semibold tracking-tight">Larkey</span>
             </div>
             <p className="mt-3 text-sm text-muted-foreground">
-              Agentes de IA que atienden WhatsApp para negocios que quieren escalar su atención sin perder calidad.
+              Agentes de IA afinados a tu negocio, para que respondan tus mensajes por ti — hoy en WhatsApp, mañana donde tus clientes te escriban.
             </p>
           </div>
 

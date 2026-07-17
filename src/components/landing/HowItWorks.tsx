@@ -1,24 +1,24 @@
 import { motion } from "framer-motion";
-import { Plug, Sliders, Clock } from "lucide-react";
+import { MessagesSquare, Sparkles, Rocket } from "lucide-react";
 
 const steps = [
   {
-    icon: Plug,
-    title: "Conecta Chatwoot",
+    icon: MessagesSquare,
+    title: "Nos cuentas tu negocio",
     description:
-      "Vinculamos tu cuenta de Chatwoot en minutos. Sin cambiar de herramienta ni de flujo.",
+      "Conversamos contigo para entender tu producto, tu tono y las preguntas que recibes cada día. Sin formularios kilométricos ni tecnicismos.",
   },
   {
-    icon: Sliders,
-    title: "Entrena tu agente",
+    icon: Sparkles,
+    title: "Afinamos tu agente",
     description:
-      "Define el tono, respuestas habituales y flujos de conversación. Tu agente aprende tu negocio.",
+      "Nuestro equipo entrena y ajusta un agente de IA al contexto exacto de tu negocio. Tú no tocas una línea de código.",
   },
   {
-    icon: Clock,
-    title: "Atiende 24/7",
+    icon: Rocket,
+    title: "Empieza a responder por ti",
     description:
-      "Responde automáticamente, califica prospectos y agenda citas mientras tu equipo descansa.",
+      "Tu agente atiende WhatsApp — y otras plataformas de mensajería — respondiendo prospectos, resolviendo dudas y agendando citas 24/7.",
   },
 ];
 
@@ -28,10 +28,10 @@ export function HowItWorks() {
       <div className="section-container">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-            Cómo funciona
+            Cómo trabajamos contigo
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Tres pasos para tener un agente de IA respondiendo tu WhatsApp de forma profesional.
+            Tú te enfocas en vender y hacer crecer tu negocio. Nosotros construimos y mantenemos el agente que responde por ti.
           </p>
         </div>
 
