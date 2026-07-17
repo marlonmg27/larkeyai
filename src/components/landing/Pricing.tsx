@@ -7,14 +7,14 @@ import { Check } from "lucide-react";
 const plans = [
   {
     name: "Básico",
-    description: "Para empezar a automatizar tu atención.",
+    description: "Para profesionales que quieren dejar de vivir pegados al celular.",
     price: "$TODO",
     period: "/mes",
     messages: "TODO",
     features: [
       "TODO mensajes incluidos/mes",
-      "1 agente de IA",
-      "Conector Chatwoot",
+      "1 agente afinado a tu negocio",
+      "Atención en WhatsApp",
       "Respuestas en horario extendido",
       "Soporte por email",
     ],
@@ -23,16 +23,16 @@ const plans = [
   },
   {
     name: "Pro",
-    description: "El equilibrio perfecto para negocios en crecimiento.",
+    description: "El equilibrio ideal para negocios que reciben mensajes cada día.",
     price: "$TODO",
     period: "/mes",
     messages: "TODO",
     features: [
       "TODO mensajes incluidos/mes",
-      "3 agentes de IA",
-      "Conector Chatwoot",
-      "Respuestas 24/7",
-      "Personalización de tono y flujos",
+      "Agente afinado a tu negocio",
+      "Atención en WhatsApp 24/7",
+      "Bandeja unificada con Chatwoot (opcional)",
+      "Ajustes de tono y flujos según tu caso",
       "Soporte prioritario",
     ],
     cta: "Elegir Pro",
@@ -46,10 +46,10 @@ const plans = [
     messages: "TODO+",
     features: [
       "TODO+ mensajes incluidos/mes",
-      "Agentes ilimitados",
-      "Conector Chatwoot + API",
-      "Respuestas 24/7 con SLA",
-      "Onboarding dedicado",
+      "Agentes a medida para tu operación",
+      "WhatsApp + otras plataformas de mensajería",
+      "Integraciones dedicadas (Chatwoot, API, etc.)",
+      "Onboarding y acompañamiento cercano",
       "Soporte con cuenta asignada",
     ],
     cta: "Contactar ventas",
@@ -66,7 +66,7 @@ export function Pricing() {
             Planes y precios
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Escala tu atención en WhatsApp sin aumentar tu equipo. Paga por mensajes usados, no por promesas.
+            Escala tu atención sin contratar más gente. Pagas por mensajes reales de tu agente, no por promesas.
           </p>
         </div>
 

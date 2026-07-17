@@ -22,22 +22,23 @@ export function Hero() {
               className="mb-6 gap-1.5 bg-accent text-accent-foreground hover:bg-accent"
             >
               <Sparkles className="h-3.5 w-3.5" />
-              Agentes de IA para WhatsApp
+              Agentes de IA hechos a la medida de tu negocio
             </Badge>
 
             <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-              Atiende WhatsApp automáticamente y nunca pierdas un cliente
+              Libérate de responder mensajes. Larkey lo hace por ti.
             </h1>
 
             <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-              Larkey conecta tu Chatwoot con agentes de IA entrenados para responder
-              prospectos, agendar citas y escalar tu atención — mientras tú cierras
-              ventas.
+              Creamos agentes de IA conversacionales, afinados uno a uno al contexto
+              de tu negocio, para que atiendan tus conversaciones en WhatsApp — y en
+              cualquier plataforma de mensajería — como lo haría alguien de tu propio
+              equipo.
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button size="lg" className="bg-brand text-brand-foreground hover:bg-brand/90">
-                Empezar ahora
+                Quiero mi agente
                 <ArrowRight className="h-4 w-4" />
               </Button>
               <Button size="lg" variant="outline">
@@ -46,7 +47,7 @@ export function Hero() {
             </div>
 
             <p className="mt-4 text-xs text-muted-foreground">
-              Ideal para inmobiliarias, concesionarios y negocios que venden por WhatsApp.
+              Para empresas y profesionales independientes que viven de conversar con sus clientes.
             </p>
           </motion.div>
 
