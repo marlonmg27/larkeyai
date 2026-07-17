@@ -22,7 +22,7 @@ export function Footer() {
               <span className="text-lg font-semibold tracking-tight">Larkey</span>
             </div>
             <p className="mt-3 text-sm text-muted-foreground">
-              Asistentes conversacionales afinados a tu negocio, para que respondan tus mensajes por ti — hoy en WhatsApp, mañana en Instagram, Telegram, Messenger y WebApps.
+              Asistentes conversacionales afinados a tu negocio, para que respondan tus mensajes por ti — hoy en WhatsApp, mañana en Instagram, Telegram, Messenger y WebApps. Incluye integración opcional con Chatwoot para supervisar tus conversaciones.
             </p>
           </div>
 
