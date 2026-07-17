@@ -14,7 +14,7 @@ export function WhatsAppMockup() {
             <span className="text-sm font-semibold">L</span>
           </div>
           <div>
-            <p className="text-sm font-semibold text-brand-foreground">Agente Larkey</p>
+            <p className="text-sm font-semibold text-brand-foreground">Larkey</p>
             <p className="text-xs text-brand-foreground/80">En línea</p>
           </div>
         </div>

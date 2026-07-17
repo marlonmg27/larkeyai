@@ -151,7 +151,7 @@ function Dashboard() {
             </CardHeader>
             <CardContent>
               <Button asChild className="bg-brand text-brand-foreground hover:bg-brand/90">
-                <a href="mailto:hola@larkey.ai?subject=Activate%20my%20Larkey%20account">
+                <a href="mailto:marlonmolinag@hotmail.com?subject=Activate%20my%20Larkey%20account">
                   Contact us
                 </a>
               </Button>
