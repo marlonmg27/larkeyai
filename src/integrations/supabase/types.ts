@@ -38,38 +38,6 @@ export type Database = {
         }
         Relationships: []
       }
-      profiles: {
-        Row: {
-          created_at: string
-          email: string | null
-          id: string
-          phone: string | null
-          plan_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          email?: string | null
-          id: string
-          phone?: string | null
-          plan_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          email?: string | null
-          id?: string
-          phone?: string | null
-          plan_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_plan_id_fkey"
-            columns: ["plan_id"]
-            isOneToOne: false
-            referencedRelation: "plans"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       purchases: {
         Row: {
           amount: number
@@ -103,7 +71,7 @@ export type Database = {
             foreignKeyName: "purchases_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
@@ -135,7 +103,39 @@ export type Database = {
             foreignKeyName: "usage_balance_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: true
-            referencedRelation: "profiles"
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          phone: string | null
+          plan_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id: string
+          phone?: string | null
+          plan_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          phone?: string | null
+          plan_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
             referencedColumns: ["id"]
           },
         ]
