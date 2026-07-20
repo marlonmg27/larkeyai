@@ -35,7 +35,7 @@ type DashboardData = {
 async function fetchDashboard(userId: string): Promise<DashboardData> {
   const [profileRes, balanceRes, purchasesRes] = await Promise.all([
     supabase
-      .from("profiles")
+      .from("users")
       .select("plan_id, plans:plan_id(name, price, messages_included)")
       .eq("id", userId)
       .maybeSingle(),
