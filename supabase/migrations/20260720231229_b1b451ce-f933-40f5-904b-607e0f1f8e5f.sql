@@ -1,0 +1,2 @@
+REVOKE EXECUTE ON FUNCTION public.prevent_protected_user_columns_update() FROM public, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.prevent_protected_user_columns_update() TO postgres, service_role;
