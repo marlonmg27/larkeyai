@@ -14,27 +14,84 @@ export type Database = {
   }
   public: {
     Tables: {
+      message_packs: {
+        Row: {
+          active: boolean
+          code: string
+          created_at: string
+          id: string
+          messages: number
+          name: string
+          price_mxn: number
+          stripe_price_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          created_at?: string
+          id?: string
+          messages: number
+          name: string
+          price_mxn: number
+          stripe_price_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          created_at?: string
+          id?: string
+          messages?: number
+          name?: string
+          price_mxn?: number
+          stripe_price_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       plans: {
         Row: {
+          active: boolean
+          billing_interval: string
           created_at: string
           id: string
           messages_included: number
           name: string
           price: number
+          stripe_price_id: string | null
+          tier: string | null
+          trial_days: number
+          trial_message_cap: number
+          trial_requires_payment_method: boolean
         }
         Insert: {
+          active?: boolean
+          billing_interval?: string
           created_at?: string
           id?: string
           messages_included: number
           name: string
           price: number
+          stripe_price_id?: string | null
+          tier?: string | null
+          trial_days?: number
+          trial_message_cap?: number
+          trial_requires_payment_method?: boolean
         }
         Update: {
+          active?: boolean
+          billing_interval?: string
           created_at?: string
           id?: string
           messages_included?: number
           name?: string
           price?: number
+          stripe_price_id?: string | null
+          tier?: string | null
+          trial_days?: number
+          trial_message_cap?: number
+          trial_requires_payment_method?: boolean
         }
         Relationships: []
       }
@@ -44,8 +101,10 @@ export type Database = {
           created_at: string
           id: string
           messages_purchased: number
+          pack_id: string | null
           package: string
           stripe_payment_id: string | null
+          stripe_session_id: string | null
           user_id: string
         }
         Insert: {
@@ -53,8 +112,10 @@ export type Database = {
           created_at?: string
           id?: string
           messages_purchased: number
+          pack_id?: string | null
           package: string
           stripe_payment_id?: string | null
+          stripe_session_id?: string | null
           user_id: string
         }
         Update: {
@@ -62,11 +123,20 @@ export type Database = {
           created_at?: string
           id?: string
           messages_purchased?: number
+          pack_id?: string | null
           package?: string
           stripe_payment_id?: string | null
+          stripe_session_id?: string | null
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "purchases_pack_id_fkey"
+            columns: ["pack_id"]
+            isOneToOne: false
+            referencedRelation: "message_packs"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "purchases_user_id_fkey"
             columns: ["user_id"]
@@ -75,6 +145,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      stripe_events: {
+        Row: {
+          id: string
+          payload: Json
+          processed_at: string
+          type: string
+        }
+        Insert: {
+          id: string
+          payload: Json
+          processed_at?: string
+          type: string
+        }
+        Update: {
+          id?: string
+          payload?: Json
+          processed_at?: string
+          type?: string
+        }
+        Relationships: []
       }
       usage_balance: {
         Row: {
@@ -110,25 +201,43 @@ export type Database = {
       }
       users: {
         Row: {
+          cancel_at_period_end: boolean
           created_at: string
+          current_period_end: string | null
           email: string | null
           id: string
           phone: string | null
           plan_id: string | null
+          stripe_customer_id: string | null
+          subscription_id: string | null
+          subscription_status: string
+          trial_ends_at: string | null
         }
         Insert: {
+          cancel_at_period_end?: boolean
           created_at?: string
+          current_period_end?: string | null
           email?: string | null
           id: string
           phone?: string | null
           plan_id?: string | null
+          stripe_customer_id?: string | null
+          subscription_id?: string | null
+          subscription_status?: string
+          trial_ends_at?: string | null
         }
         Update: {
+          cancel_at_period_end?: boolean
           created_at?: string
+          current_period_end?: string | null
           email?: string | null
           id?: string
           phone?: string | null
           plan_id?: string | null
+          stripe_customer_id?: string | null
+          subscription_id?: string | null
+          subscription_status?: string
+          trial_ends_at?: string | null
         }
         Relationships: [
           {
@@ -159,6 +268,20 @@ export type Database = {
         }
         Returns: undefined
       }
+      apply_subscription_event: {
+        Args: {
+          p_action: string
+          p_cancel_at_period_end?: boolean
+          p_current_period_end?: string
+          p_plan_id?: string
+          p_stripe_customer_id?: string
+          p_subscription_id?: string
+          p_trial_ends_at?: string
+          p_user_id: string
+        }
+        Returns: undefined
+      }
+      can_buy_pack: { Args: { p_user_id: string }; Returns: boolean }
       can_send_message: { Args: { p_user_id: string }; Returns: boolean }
       decrement_messages: {
         Args: { p_count: number; p_user_id: string }
