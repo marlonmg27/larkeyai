@@ -3,7 +3,6 @@
  *
  * FastAPI mapping:
  *   POST /webhooks/stripe  (raw body, x-stripe-signature header)
- *   Dispatch matches this function 1:1.
  *
  * Idempotency: every event is persisted to stripe_events (PK = event.id).
  * A conflict short-circuits with success — safe to retry.
@@ -14,7 +13,26 @@ import type { Database } from "@/integrations/supabase/types";
 import { getStripe } from "./client.server";
 import type { CheckoutSessionMetadata } from "./contracts";
 
+type Json = Database["public"]["Tables"]["stripe_events"]["Insert"]["payload"];
+
 export type WebhookOutcome = { status: number; body: string };
+
+/**
+ * Some Stripe API versions expose `current_period_end` on the subscription
+ * itself, others on the subscription item. Read whichever is available at
+ * runtime — the SDK types don't cover every wire shape.
+ */
+function subscriptionPeriodEndIso(sub: Stripe.Subscription): string | undefined {
+  const s = sub as unknown as { current_period_end?: number };
+  if (typeof s.current_period_end === "number") return new Date(s.current_period_end * 1000).toISOString();
+  const item = sub.items?.data?.[0] as unknown as { current_period_end?: number } | undefined;
+  if (item && typeof item.current_period_end === "number") return new Date(item.current_period_end * 1000).toISOString();
+  return undefined;
+}
+
+function iso(unixSeconds: number | null | undefined): string | undefined {
+  return typeof unixSeconds === "number" ? new Date(unixSeconds * 1000).toISOString() : undefined;
+}
 
 export async function verifyAndDispatch(
   supabaseAdmin: SupabaseClient<Database>,
@@ -34,14 +52,11 @@ export async function verifyAndDispatch(
     return { status: 400, body: "invalid signature" };
   }
 
-  // Idempotency guard
   const { error: insertErr } = await supabaseAdmin
     .from("stripe_events")
-    .insert({ id: event.id, type: event.type, payload: event as unknown as Record<string, unknown> });
+    .insert({ id: event.id, type: event.type, payload: JSON.parse(JSON.stringify(event)) as Json });
   if (insertErr) {
-    if ((insertErr as { code?: string }).code === "23505") {
-      return { status: 200, body: "duplicate" };
-    }
+    if ((insertErr as { code?: string }).code === "23505") return { status: 200, body: "duplicate" };
     console.error("[stripe-webhook] failed to persist event", insertErr);
     return { status: 500, body: "persist failed" };
   }
@@ -51,7 +66,6 @@ export async function verifyAndDispatch(
     return { status: 200, body: "ok" };
   } catch (err) {
     console.error("[stripe-webhook] handler failed", event.type, err);
-    // Roll back the idempotency row so Stripe can retry
     await supabaseAdmin.from("stripe_events").delete().eq("id", event.id);
     return { status: 500, body: "handler failed" };
   }
@@ -70,7 +84,6 @@ async function handleEvent(supabaseAdmin: SupabaseClient<Database>, event: Strip
     case "invoice.payment_failed":
       return handleInvoicePaymentFailed(supabaseAdmin, event.data.object as Stripe.Invoice);
     default:
-      // Persisted for audit; no state change.
       return;
   }
 }
@@ -94,6 +107,32 @@ async function userIdFromCustomer(
   return data?.id ?? null;
 }
 
+async function callApplySubscription(
+  supabaseAdmin: SupabaseClient<Database>,
+  params: {
+    userId: string;
+    action: string;
+    planId?: string;
+    stripeCustomerId?: string;
+    subscriptionId?: string;
+    trialEndsAt?: string;
+    currentPeriodEnd?: string;
+    cancelAtPeriodEnd?: boolean;
+  },
+) {
+  const { error } = await supabaseAdmin.rpc("apply_subscription_event", {
+    p_user_id: params.userId,
+    p_action: params.action,
+    p_plan_id: params.planId,
+    p_stripe_customer_id: params.stripeCustomerId,
+    p_subscription_id: params.subscriptionId,
+    p_trial_ends_at: params.trialEndsAt,
+    p_current_period_end: params.currentPeriodEnd,
+    p_cancel_at_period_end: params.cancelAtPeriodEnd,
+  });
+  if (error) throw error;
+}
+
 async function handleCheckoutCompleted(
   supabaseAdmin: SupabaseClient<Database>,
   session: Stripe.Checkout.Session,
@@ -110,25 +149,19 @@ async function handleCheckoutCompleted(
     if (!subscriptionId) throw new Error("Subscription id missing");
     const sub = await stripe.subscriptions.retrieve(subscriptionId);
 
-    const trialEnd = sub.trial_end ? new Date(sub.trial_end * 1000).toISOString() : null;
-    const periodEnd = sub.current_period_end
-      ? new Date(sub.current_period_end * 1000).toISOString()
-      : null;
-
-    // If Stripe reports trialing, seed trial balance; otherwise activate full.
+    const customerId = typeof session.customer === "string" ? session.customer : session.customer?.id;
     const action = sub.status === "trialing" ? "trial_started" : "activated";
 
-    const { error } = await supabaseAdmin.rpc("apply_subscription_event", {
-      p_user_id: userId,
-      p_action: action,
-      p_plan_id: md.plan_id,
-      p_stripe_customer_id: typeof session.customer === "string" ? session.customer : (session.customer?.id ?? null),
-      p_subscription_id: sub.id,
-      p_trial_ends_at: trialEnd,
-      p_current_period_end: periodEnd,
-      p_cancel_at_period_end: sub.cancel_at_period_end,
+    await callApplySubscription(supabaseAdmin, {
+      userId,
+      action,
+      planId: md.plan_id,
+      stripeCustomerId: customerId,
+      subscriptionId: sub.id,
+      trialEndsAt: iso(sub.trial_end),
+      currentPeriodEnd: subscriptionPeriodEndIso(sub),
+      cancelAtPeriodEnd: sub.cancel_at_period_end,
     });
-    if (error) throw error;
     return;
   }
 
@@ -152,13 +185,10 @@ async function handleCheckoutCompleted(
     });
     if (error) throw error;
 
-    // Also record pack_id + session_id for reporting (add_purchased_messages
-    // is legacy signature; we mirror pack_id into the last row it inserted).
     await supabaseAdmin
       .from("purchases")
       .update({ pack_id: md.pack_id, stripe_session_id: session.id })
       .eq("stripe_payment_id", session.id);
-    return;
   }
 }
 
@@ -169,26 +199,22 @@ async function handleSubscriptionUpdated(
   const userId = await userIdFromCustomer(supabaseAdmin, sub.customer);
   if (!userId) throw new Error("Cannot resolve user for subscription " + sub.id);
 
-  const planIdMeta = (sub.metadata?.plan_id as string | undefined) ?? null;
-
-  // Map Stripe status to our action. When trialing→active we activate full quota.
-  let action: string = "updated";
+  const planIdMeta = sub.metadata?.plan_id as string | undefined;
+  let action = "updated";
   if (sub.status === "active") action = "activated";
   else if (sub.status === "trialing") action = "trial_started";
   else if (sub.status === "past_due") action = "past_due";
   else if (sub.status === "canceled" || sub.status === "unpaid") action = "canceled";
 
-  const { error } = await supabaseAdmin.rpc("apply_subscription_event", {
-    p_user_id: userId,
-    p_action: action,
-    p_plan_id: planIdMeta,
-    p_stripe_customer_id: null,
-    p_subscription_id: sub.id,
-    p_trial_ends_at: sub.trial_end ? new Date(sub.trial_end * 1000).toISOString() : null,
-    p_current_period_end: sub.current_period_end ? new Date(sub.current_period_end * 1000).toISOString() : null,
-    p_cancel_at_period_end: sub.cancel_at_period_end,
+  await callApplySubscription(supabaseAdmin, {
+    userId,
+    action,
+    planId: planIdMeta,
+    subscriptionId: sub.id,
+    trialEndsAt: iso(sub.trial_end),
+    currentPeriodEnd: subscriptionPeriodEndIso(sub),
+    cancelAtPeriodEnd: sub.cancel_at_period_end,
   });
-  if (error) throw error;
 }
 
 async function handleSubscriptionDeleted(
@@ -197,20 +223,17 @@ async function handleSubscriptionDeleted(
 ) {
   const userId = await userIdFromCustomer(supabaseAdmin, sub.customer);
   if (!userId) return;
-  const { error } = await supabaseAdmin.rpc("apply_subscription_event", {
-    p_user_id: userId,
-    p_action: "canceled",
-    p_subscription_id: sub.id,
+  await callApplySubscription(supabaseAdmin, {
+    userId,
+    action: "canceled",
+    subscriptionId: sub.id,
   });
-  if (error) throw error;
 }
 
 async function handleInvoicePaid(
   supabaseAdmin: SupabaseClient<Database>,
   invoice: Stripe.Invoice,
 ) {
-  // Renewal invoices carry a subscription reference; first invoice does too
-  // but that path is already covered by checkout.session.completed.
   const subRef = (invoice as Stripe.Invoice & { subscription?: string | Stripe.Subscription | null }).subscription;
   if (!subRef) return;
   if (invoice.billing_reason !== "subscription_cycle") return;
@@ -221,17 +244,16 @@ async function handleInvoicePaid(
   const stripe = getStripe();
   const subscriptionId = typeof subRef === "string" ? subRef : subRef.id;
   const sub = await stripe.subscriptions.retrieve(subscriptionId);
-  const planIdMeta = (sub.metadata?.plan_id as string | undefined) ?? null;
+  const planIdMeta = sub.metadata?.plan_id as string | undefined;
 
-  const { error } = await supabaseAdmin.rpc("apply_subscription_event", {
-    p_user_id: userId,
-    p_action: "renewed",
-    p_plan_id: planIdMeta,
-    p_subscription_id: sub.id,
-    p_current_period_end: sub.current_period_end ? new Date(sub.current_period_end * 1000).toISOString() : null,
-    p_cancel_at_period_end: sub.cancel_at_period_end,
+  await callApplySubscription(supabaseAdmin, {
+    userId,
+    action: "renewed",
+    planId: planIdMeta,
+    subscriptionId: sub.id,
+    currentPeriodEnd: subscriptionPeriodEndIso(sub),
+    cancelAtPeriodEnd: sub.cancel_at_period_end,
   });
-  if (error) throw error;
 }
 
 async function handleInvoicePaymentFailed(
@@ -240,9 +262,8 @@ async function handleInvoicePaymentFailed(
 ) {
   const userId = await userIdFromCustomer(supabaseAdmin, invoice.customer);
   if (!userId) return;
-  const { error } = await supabaseAdmin.rpc("apply_subscription_event", {
-    p_user_id: userId,
-    p_action: "past_due",
+  await callApplySubscription(supabaseAdmin, {
+    userId,
+    action: "past_due",
   });
-  if (error) throw error;
 }
