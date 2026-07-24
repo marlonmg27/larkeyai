@@ -1,9 +1,10 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { LarkeyMark } from "@/components/brand/LarkeyMark";
 
 export function Header() {
   const { user } = useAuth();
@@ -19,9 +20,7 @@ export function Header() {
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-md">
       <div className="section-container flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center gap-2 text-foreground">
-          <div className="grid h-8 w-8 place-items-center rounded-lg bg-brand text-brand-foreground">
-            <MessageCircle className="h-5 w-5" />
-          </div>
+          <LarkeyMark className="h-8 w-8" />
           <span className="text-lg font-semibold tracking-tight">Larkey</span>
         </Link>
 
