@@ -91,6 +91,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:description", content: "Larkey te da un asistente conversacional que atiende WhatsApp, Instagram, Telegram, Messenger y WebApps. Tú lo supervisas, él responde." },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ca5ccabc-d63f-4c78-9e8d-6c8a432f0e5c/id-preview-50495209--c2d08889-ea0a-462f-bee4-3d95a3ea2d73.lovable.app-1784156369589.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ca5ccabc-d63f-4c78-9e8d-6c8a432f0e5c/id-preview-50495209--c2d08889-ea0a-462f-bee4-3d95a3ea2d73.lovable.app-1784156369589.png" },
+      { name: "facebook-domain-verification", content: "oxjjuezvnft5kx4ik14pizs7lprv9a" },
     ],
     links: [
       {
