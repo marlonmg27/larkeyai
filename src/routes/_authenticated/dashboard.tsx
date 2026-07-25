@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
@@ -16,6 +17,7 @@ import {
   AlertCircle,
   Sparkles,
   Clock,
+  ArrowDown,
 } from "lucide-react";
 import { toast } from "sonner";
 import { PlansShowcase } from "@/components/dashboard/PlansShowcase";
@@ -140,7 +142,21 @@ function Dashboard() {
   const total = included > 0 ? included : used + remaining;
   const pct = total > 0 ? Math.min(100, Math.round((used / total) * 100)) : 0;
   const isTrial = data?.subscription.status === "trialing" && data?.subscription.trialEndsAt;
-  const noBalance = !isLoading && !data?.balance;
+  const needsPlan =
+    !isLoading &&
+    (data?.subscription.status === "none" || data?.subscription.status === "canceled");
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const checkout = params.get("checkout");
+    if (checkout === "success") {
+      toast.success("¡Pago completado! Tu plan se activará en unos segundos.");
+      navigate({ to: "/dashboard", replace: true, search: {} });
+    } else if (checkout === "cancel") {
+      toast.info("Checkout cancelado. Puedes elegir un plan cuando quieras.");
+      navigate({ to: "/dashboard", replace: true, search: {} });
+    }
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -171,7 +187,7 @@ function Dashboard() {
               </CardDescription>
             </CardHeader>
           </Card>
-        ) : noBalance ? (
+        ) : needsPlan ? (
           <LeadOnboarding email={user?.email ?? ""} />
         ) : (
           <>
@@ -343,6 +359,10 @@ function Dashboard() {
   );
 }
 
+function scrollToPlans() {
+  document.getElementById("plans")?.scrollIntoView({ behavior: "smooth" });
+}
+
 function LeadOnboarding({ email }: { email: string }) {
   return (
     <div className="space-y-10">
@@ -350,7 +370,7 @@ function LeadOnboarding({ email }: { email: string }) {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-brand/10 via-background to-background p-8 md:p-12"
+        className="relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-brand/10 via-background to-background p-6 md:p-10"
       >
         <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-brand/10 blur-3xl" aria-hidden />
         <div className="relative max-w-2xl">
@@ -379,10 +399,24 @@ function LeadOnboarding({ email }: { email: string }) {
               </div>
             ))}
           </div>
+          <Button
+            size="lg"
+            className="mt-6 bg-brand text-brand-foreground hover:bg-brand/90"
+            onClick={scrollToPlans}
+          >
+            Elegir plan
+            <ArrowDown className="ml-2 h-4 w-4" />
+          </Button>
         </div>
       </motion.div>
 
-      <PlansShowcase />
+      <div id="plans" className="scroll-mt-24">
+        <PlansShowcase />
+      </div>
+
+      <p className="text-center text-sm text-muted-foreground">
+        Los paquetes de mensajes extra estarán disponibles después de activar tu plan.
+      </p>
 
       <p className="text-center text-xs text-muted-foreground">
         ¿Necesitas algo a medida o eres un cliente existente?{" "}

@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { motion } from "framer-motion";
-import { Check, Sparkles, Rocket, Crown, Loader2 } from "lucide-react";
+import { Check, Sparkles, Rocket, Crown, Loader2, AlertCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -75,7 +75,7 @@ export function PlansShowcase() {
   const [pendingId, setPendingId] = useState<string | null>(null);
   const checkout = useServerFn(createSubscriptionCheckout);
 
-  const { data: plans, isLoading } = useQuery<PlanRow[]>({
+  const { data: plans, isLoading, isError, error } = useQuery<PlanRow[]>({
     queryKey: ["plans-catalog"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -98,6 +98,8 @@ export function PlansShowcase() {
     }
     return m;
   }, [plans]);
+
+  const hasPlansForInterval = TIER_ORDER.some((tier) => Boolean(byTier[tier]?.[interval]));
 
   async function handleSubscribe(planId: string) {
     setPendingId(planId);
@@ -143,12 +145,32 @@ export function PlansShowcase() {
         </div>
       </div>
 
+      {isError ? (
+        <Card className="border-destructive/50">
+          <CardContent className="flex items-start gap-3 py-6">
+            <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
+            <div>
+              <p className="font-medium text-destructive">No pudimos cargar los planes</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {error instanceof Error ? error.message : "Intenta recargar la página."}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      ) : !isLoading && !hasPlansForInterval ? (
+        <Card>
+          <CardContent className="py-8 text-center text-sm text-muted-foreground">
+            No hay planes disponibles en este momento. Escríbenos si necesitas ayuda.
+          </CardContent>
+        </Card>
+      ) : (
       <div className="grid gap-6 lg:grid-cols-3">
         {TIER_ORDER.map((tier, idx) => {
           const meta = TIER_META[tier];
           const plan = byTier[tier]?.[interval];
           const Icon = meta.icon;
-          const monthlyEq = interval === "year" && plan ? plan.price / 12 : null;
+          const planPrice = plan ? Number(plan.price) : 0;
+          const monthlyEq = interval === "year" && plan ? planPrice / 12 : null;
           return (
             <motion.div
               key={tier}
@@ -181,7 +203,7 @@ export function PlansShowcase() {
                       <>
                         <div className="flex items-baseline gap-1">
                           <span className="text-4xl font-bold tracking-tight">
-                            {formatMxn(plan.price)}
+                            {formatMxn(planPrice)}
                           </span>
                           <span className="text-sm text-muted-foreground">
                             /{interval === "month" ? "mes" : "año"}
@@ -224,7 +246,7 @@ export function PlansShowcase() {
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Redirigiendo…
                       </>
                     ) : (
-                      "Empezar prueba de 14 días"
+                      "Empezar prueba gratis"
                     )}
                   </Button>
                 </CardContent>
@@ -233,6 +255,7 @@ export function PlansShowcase() {
           );
         })}
       </div>
+      )}
     </section>
   );
 }
