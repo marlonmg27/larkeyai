@@ -20,6 +20,7 @@ export type Database = {
           code: string
           created_at: string
           id: string
+          lookup_key: string | null
           messages: number
           name: string
           price_mxn: number
@@ -31,6 +32,7 @@ export type Database = {
           code: string
           created_at?: string
           id?: string
+          lookup_key?: string | null
           messages: number
           name: string
           price_mxn: number
@@ -42,6 +44,7 @@ export type Database = {
           code?: string
           created_at?: string
           id?: string
+          lookup_key?: string | null
           messages?: number
           name?: string
           price_mxn?: number
@@ -56,6 +59,7 @@ export type Database = {
           billing_interval: string
           created_at: string
           id: string
+          lookup_key: string | null
           messages_included: number
           name: string
           price: number
@@ -70,6 +74,7 @@ export type Database = {
           billing_interval?: string
           created_at?: string
           id?: string
+          lookup_key?: string | null
           messages_included: number
           name: string
           price: number
@@ -84,6 +89,7 @@ export type Database = {
           billing_interval?: string
           created_at?: string
           id?: string
+          lookup_key?: string | null
           messages_included?: number
           name?: string
           price?: number
