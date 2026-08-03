@@ -15,7 +15,13 @@ import { getOrCreateCustomer } from "./customers.server";
 import type { CheckoutSessionMetadata } from "./contracts";
 
 function siteUrl(): string {
-  return process.env.SITE_URL ?? "http://localhost:8080";
+  const url = process.env.SITE_URL;
+  if (!url) {
+    throw new Error(
+      "SITE_URL is not configured. Set it to the public base URL (e.g. https://larkeyai.lovable.app).",
+    );
+  }
+  return url.replace(/\/+$/, "");
 }
 
 export async function createSubscriptionCheckout(
