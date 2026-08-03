@@ -11,8 +11,10 @@ let _stripe: Stripe | null = null;
 
 export function getStripe(): Stripe {
   if (_stripe) return _stripe;
-  const key = process.env.STRIPE_TEST_API_KEY;
-  if (!key) throw new Error("STRIPE_TEST_API_KEY is not set");
+  // Accepts either name: STRIPE_SECRET_KEY (preferred going forward) or the
+  // legacy STRIPE_TEST_API_KEY already provisioned in this project.
+  const key = process.env.STRIPE_SECRET_KEY ?? process.env.STRIPE_TEST_API_KEY;
+  if (!key) throw new Error("Stripe secret key is not set (STRIPE_SECRET_KEY / STRIPE_TEST_API_KEY)");
   _stripe = new Stripe(key, {
     apiVersion: "2024-11-20.acacia" as Stripe.LatestApiVersion,
     typescript: true,
