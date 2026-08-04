@@ -11,6 +11,7 @@ import type Stripe from "stripe";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { getStripe } from "./client.server";
+import { buildSubscriptionPayload, forwardToBackend } from "./backend-forward.server";
 import type { CheckoutSessionMetadata } from "./contracts";
 
 type Json = Database["public"]["Tables"]["stripe_events"]["Insert"]["payload"];
@@ -63,12 +64,25 @@ export async function verifyAndDispatch(
 
   try {
     await handleEvent(supabaseAdmin, event);
-    return { status: 200, body: "ok" };
   } catch (err) {
     console.error("[stripe-webhook] handler failed", event.type, err);
     await supabaseAdmin.from("stripe_events").delete().eq("id", event.id);
     return { status: 500, body: "handler failed" };
   }
+
+  // Forward to the Python backend. Never affects the response to Stripe:
+  // the event is already persisted in stripe_events and can be replayed.
+  try {
+    const payload = buildSubscriptionPayload(event);
+    if (!payload.user_id && payload.stripe_customer_id) {
+      payload.user_id = await userIdFromCustomer(supabaseAdmin, payload.stripe_customer_id);
+    }
+    await forwardToBackend(payload);
+  } catch (err) {
+    console.error("[stripe-webhook] backend forward crashed", event.id, err);
+  }
+
+  return { status: 200, body: "ok" };
 }
 
 async function handleEvent(supabaseAdmin: SupabaseClient<Database>, event: Stripe.Event) {
