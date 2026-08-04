@@ -255,6 +255,41 @@ export type Database = {
           },
         ]
       }
+      whatsapp_connections: {
+        Row: {
+          chatwoot_inbox_id: string | null
+          id: string
+          phone_display: string | null
+          status: Database["public"]["Enums"]["whatsapp_connection_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          chatwoot_inbox_id?: string | null
+          id?: string
+          phone_display?: string | null
+          status?: Database["public"]["Enums"]["whatsapp_connection_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          chatwoot_inbox_id?: string | null
+          id?: string
+          phone_display?: string | null
+          status?: Database["public"]["Enums"]["whatsapp_connection_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_connections_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -296,7 +331,11 @@ export type Database = {
       reset_expired_usage_balances: { Args: never; Returns: undefined }
     }
     Enums: {
-      [_ in never]: never
+      whatsapp_connection_status:
+        | "not_connected"
+        | "pending"
+        | "connected"
+        | "error"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -423,6 +462,13 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      whatsapp_connection_status: [
+        "not_connected",
+        "pending",
+        "connected",
+        "error",
+      ],
+    },
   },
 } as const
