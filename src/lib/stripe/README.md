@@ -96,6 +96,22 @@ Stripe → our SQL mapping (via `apply_subscription_event`):
 Idempotency: every event is inserted into `stripe_events(id PK)`. Duplicate
 deliveries short-circuit with 200.
 
+### Forwarding to the Python backend
+
+After the event is persisted and applied locally, `backend-forward.server.ts`
+POSTs a normalized payload (`BackendSubscriptionPayload` in `contracts.ts`) to
+`${BACKEND_URL}/webhooks/subscription` with header
+`X-Internal-Secret: ${BACKEND_INTERNAL_SECRET}` and a 10s timeout.
+
+Fields: `stripe_event_id`, `event_type`, `user_id`, `plan_id`, `pack_id`,
+`kind`, `email`, `stripe_customer_id`, `stripe_subscription_id`, `status`.
+`user_id` falls back to a lookup by `stripe_customer_id` when metadata is absent.
+
+Failures (timeout, refused connection, non-2xx, missing secrets) are logged with
+`console.error` and never change the 200 returned to Stripe — replay from
+`stripe_events` if needed.
+
+
 ## Trial policy
 
 - 14 days, no payment method required (`payment_method_collection: if_required`).
