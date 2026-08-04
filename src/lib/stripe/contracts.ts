@@ -40,3 +40,21 @@ export const HANDLED_STRIPE_EVENTS = [
 ] as const;
 
 export type HandledStripeEventType = (typeof HANDLED_STRIPE_EVENTS)[number];
+
+/**
+ * Payload forwarded to the Python backend at
+ * POST ${BACKEND_URL}/webhooks/subscription.
+ * Port to a Pydantic model with the same field names.
+ */
+export type BackendSubscriptionPayload = {
+  stripe_event_id: string;
+  event_type: string;
+  user_id: string | null;
+  plan_id: string | null;
+  pack_id: string | null;
+  kind: string | null;
+  email: string | null;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
+  status: string | null;
+};
