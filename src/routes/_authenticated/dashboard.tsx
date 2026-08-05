@@ -214,6 +214,24 @@ function Dashboard() {
               <p className="mt-1 text-muted-foreground">Resumen de tu plan y uso de mensajes.</p>
             </div>
 
+            <div className="mb-6">
+              <SubscriptionOverview
+                isLoading={isLoading}
+                planName={data?.plan?.name ?? null}
+                planPrice={data?.plan?.price ?? null}
+                planInterval={data?.plan?.interval ?? null}
+                status={data?.subscription.status ?? "none"}
+                cancelAtPeriodEnd={data?.subscription.cancelAtPeriodEnd ?? false}
+                trialEndsAt={data?.subscription.trialEndsAt ?? null}
+                currentPeriodEnd={data?.subscription.currentPeriodEnd ?? null}
+                messagesRemaining={data?.balance?.messagesRemaining ?? null}
+                messagesIncluded={data?.plan?.messagesIncluded ?? null}
+                balancePeriodEnd={data?.balance?.periodEnd ?? null}
+              />
+            </div>
+
+
+
             {isTrial && data?.subscription.trialEndsAt && (
               <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-brand/30 bg-brand/5 p-4">
                 <div className="flex items-center gap-3">
