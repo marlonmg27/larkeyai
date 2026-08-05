@@ -20,6 +20,7 @@ Sin cambios de esquema, de RLS ni de permisos: el usuario ya tiene solo `SELECT`
 
 Nuevo hook `src/hooks/use-whatsapp-connection-realtime.ts`:
 
+- Usa **el mismo cliente autenticado existente**: `import { supabase } from "@/integrations/supabase/client"` — la misma instancia (singleton) que ya usan las queries del dashboard, con la sesión del usuario persistida. No se crea ninguna instancia nueva ni se pasa una key aparte; así el socket de Realtime va autenticado y RLS filtra los eventos a la fila del usuario.
 - Dentro de `useEffect`, crea un canal por usuario (`whatsapp-connection-${userId}`) escuchando `postgres_changes` con `event: "*"`, `schema: "public"`, `table: "whatsapp_connections"`, `filter: user_id=eq.${userId}`.
 - En cada evento, invalida la consulta `["dashboard", userId]` para que el dashboard vuelva a leer el estado.
 - Limpieza con `supabase.removeChannel(channel)` al desmontar y cuando cambia `userId` (evita suscripciones duplicadas y reconexiones en bucle).
