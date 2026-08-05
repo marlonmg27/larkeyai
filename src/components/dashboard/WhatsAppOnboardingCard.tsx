@@ -1,7 +1,15 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Eye, EyeOff, MessageSquare, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  MessageSquare,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+  RefreshCw,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -17,10 +25,17 @@ type FormErrors = Partial<Record<keyof FormValues, string>>;
 
 const EMPTY: FormValues = { displayName: "", phoneNumberId: "", wabaId: "", accessToken: "" };
 
-export function WhatsAppOnboardingCard({ userId }: { userId: string }) {
+export function WhatsAppOnboardingCard({
+  userId,
+  status,
+}: {
+  userId: string;
+  status?: string | null;
+}) {
   const [values, setValues] = useState<FormValues>(EMPTY);
   const [errors, setErrors] = useState<FormErrors>({});
   const [showToken, setShowToken] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const queryClient = useQueryClient();
   const connect = useServerFn(connectWhatsAppAccount);
@@ -33,6 +48,15 @@ export function WhatsAppOnboardingCard({ userId }: { userId: string }) {
       void queryClient.invalidateQueries({ queryKey: ["dashboard", userId] });
     },
   });
+
+  async function handleRefresh() {
+    setRefreshing(true);
+    try {
+      await queryClient.invalidateQueries({ queryKey: ["dashboard", userId] });
+    } finally {
+      setRefreshing(false);
+    }
+  }
 
   function setField(key: keyof FormValues, value: string) {
     setValues((v) => ({ ...v, [key]: value }));
@@ -55,6 +79,30 @@ export function WhatsAppOnboardingCard({ userId }: { userId: string }) {
     mutation.mutate(parsed.data);
   }
 
+  // Verificación en curso: no mostramos el formulario para que no se reenvíen los mismos datos.
+  if (status === "pending") {
+    return (
+      <Card className="border-brand/30">
+        <CardHeader>
+          <Badge className="mb-2 w-fit bg-brand/15 text-brand hover:bg-brand/15">
+            <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> En verificación
+          </Badge>
+          <CardTitle>Estamos verificando tu conexión…</CardTitle>
+          <CardDescription>
+            Ya recibimos tus credenciales de WhatsApp Business. Esto puede tardar unos
+            minutos; en cuanto quede lista, esta sección se actualizará automáticamente.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button variant="outline" onClick={handleRefresh} disabled={refreshing}>
+            <RefreshCw className={`mr-2 h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
+            Actualizar estado
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="border-brand/30">
       <CardHeader>
@@ -68,6 +116,14 @@ export function WhatsAppOnboardingCard({ userId }: { userId: string }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {status === "error" && (
+          <p className="mb-4 flex items-start gap-2 rounded-lg border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            No pudimos verificar tu conexión anterior. Revisa que el Phone number ID, el WABA
+            ID y el access token sean correctos e inténtalo de nuevo.
+          </p>
+        )}
+
         <form onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="wa-display-name">Nombre a mostrar del negocio</Label>

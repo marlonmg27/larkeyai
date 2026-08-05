@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
@@ -25,6 +25,8 @@ import { PacksSection } from "@/components/dashboard/PacksSection";
 import { SubscriptionActions } from "@/components/dashboard/SubscriptionActions";
 import { SubscriptionOverview } from "@/components/dashboard/SubscriptionOverview";
 import { WhatsAppOnboardingCard } from "@/components/dashboard/WhatsAppOnboardingCard";
+import { useWhatsappConnectionRealtime } from "@/hooks/use-whatsapp-connection-realtime";
+
 
 import { LarkeyMark } from "@/components/brand/LarkeyMark";
 
@@ -171,8 +173,19 @@ function Dashboard() {
     (data?.subscription.status === "none" || data?.subscription.status === "canceled");
   const hasActiveSubscription =
     data?.subscription.status === "active" || data?.subscription.status === "trialing";
-  const showWhatsappOnboarding =
-    hasActiveSubscription && data?.whatsapp?.status !== "connected";
+  const whatsappStatus = data?.whatsapp?.status ?? null;
+  const showWhatsappOnboarding = hasActiveSubscription && whatsappStatus !== "connected";
+
+  useWhatsappConnectionRealtime(user.id);
+
+  const prevWhatsappStatus = useRef<string | null>(null);
+  useEffect(() => {
+    if (whatsappStatus === "connected" && prevWhatsappStatus.current !== null) {
+      toast.success("WhatsApp conectado");
+    }
+    prevWhatsappStatus.current = whatsappStatus;
+  }, [whatsappStatus]);
+
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -364,7 +377,7 @@ function Dashboard() {
 
             {showWhatsappOnboarding && (
               <div className="mt-6">
-                <WhatsAppOnboardingCard userId={user.id} />
+                <WhatsAppOnboardingCard userId={user.id} status={whatsappStatus} />
               </div>
             )}
 
