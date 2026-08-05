@@ -1,32 +1,45 @@
 # Card de onboarding de WhatsApp en el dashboard
 
-Nueva tarjeta que solo aparece cuando el usuario ya paga pero aún no tiene WhatsApp conectado.
+## 1. Permisos de lectura en whatsapp_connections (verificado)
 
-## Cuándo se muestra
+Revisé la base de datos:
 
-Se muestra si **ambas** condiciones se cumplen:
+- La policy de lectura **ya existe**: `SELECT` para `authenticated` con `auth.uid() = user_id`. No hace falta agregarla.
+- **Pero la tabla no tiene ningún permiso concedido** (cero GRANTs). Sin eso, la consulta desde el cliente falla con error de permisos, así que el síntoma que describes es real, solo que la causa es el GRANT ausente, no la policy.
 
-- La suscripción está activa (`subscription_status` en `active` o `trialing`).
-- Su fila en `whatsapp_connections` tiene `status` distinto de `connected`, o no existe fila.
+Migración necesaria:
 
-Si el usuario no tiene suscripción activa, o ya está `connected`, la tarjeta no se renderiza.
+```sql
+GRANT SELECT ON public.whatsapp_connections TO authenticated;
+GRANT ALL ON public.whatsapp_connections TO service_role;
+```
 
-## Contenido de la tarjeta
+Solo lectura para el usuario; escritura reservada al backend con service role, como se definió.
 
-Título "Conecta tu WhatsApp" + descripción corta en español, con formulario:
+## 2. Manejo de error aislado en fetchDashboard
+
+En `src/routes/_authenticated/dashboard.tsx`:
+
+- La consulta a `whatsapp_connections` se hace por separado, envuelta en su propio try/catch (o `.then().catch()` dentro del `Promise.all`), y su error nunca se propaga.
+- Si falla (permisos, red, timeout): `console.error` con el motivo y `whatsapp: null` en `DashboardData`; el resto del dashboard carga normal.
+- `DashboardData` gana `whatsapp: { status: string } | null`.
+
+## 3. WhatsAppOnboardingCard
+
+Nuevo componente `src/components/dashboard/WhatsAppOnboardingCard.tsx`.
+
+Se muestra solo si **ambas** condiciones se cumplen:
+
+- `subscription_status` está en `active` o `trialing`.
+- `whatsapp.status` es distinto de `connected`, o no hay fila (`whatsapp === null`).
+
+Contenido: título "Conecta tu WhatsApp" + descripción corta en español, y formulario con:
 
 - Nombre a mostrar del negocio (texto)
 - Phone number ID (texto)
 - WABA ID — WhatsApp Business Account ID (texto)
-- Access token (campo tipo password, con botón de mostrar/ocultar)
+- Access token (tipo password, con botón de mostrar/ocultar)
 
-Botón "Guardar conexión": por ahora solo hace `console.log` de los valores. Validación básica con zod (campos requeridos, límites de longitud) y mensajes de error inline.
+Validación con zod (requeridos, trim, longitudes máximas) y errores inline. Botón "Guardar conexión" solo hace `console.log`, con el access token **enmascarado** (longitud + últimos 4 caracteres), nunca en texto plano.
 
-Nota de seguridad: en el `console.log` el access token se imprime enmascarado (solo longitud/últimos caracteres), no en texto plano, para no dejar credenciales en la consola del navegador.
-
-## Detalles técnicos
-
-- Nuevo componente `src/components/dashboard/WhatsAppOnboardingCard.tsx` (Card + Input + Label + Button de shadcn, `react-hook-form` + `zod` si ya están disponibles; si no, estado local controlado).
-- La lectura de `whatsapp_connections` se añade a `fetchDashboard` en `src/routes/_authenticated/dashboard.tsx` como una consulta más del `Promise.all` (`select status, phone_display` con `eq("user_id", userId).maybeSingle()`), expuesta en `DashboardData` como `whatsapp: { status } | null`.
-- La tarjeta se renderiza en la vista de cliente activo, arriba de la sección de packs.
-- Sin cambios de base de datos y sin escrituras: la tabla ya permite solo lectura al usuario; el guardado real llegará cuando se conecte al backend.
+Se renderiza en la vista de cliente activo, arriba de la sección de packs. Sin escrituras a la base de datos todavía.
