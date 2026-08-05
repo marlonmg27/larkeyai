@@ -23,6 +23,8 @@ import { toast } from "sonner";
 import { PlansShowcase } from "@/components/dashboard/PlansShowcase";
 import { PacksSection } from "@/components/dashboard/PacksSection";
 import { SubscriptionActions } from "@/components/dashboard/SubscriptionActions";
+import { SubscriptionOverview } from "@/components/dashboard/SubscriptionOverview";
+
 import { LarkeyMark } from "@/components/brand/LarkeyMark";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -188,13 +190,47 @@ function Dashboard() {
             </CardHeader>
           </Card>
         ) : needsPlan ? (
-          <LeadOnboarding email={user?.email ?? ""} />
+          <div className="space-y-8">
+            <SubscriptionOverview
+              isLoading={isLoading}
+              planName={data?.plan?.name ?? null}
+              planPrice={data?.plan?.price ?? null}
+              planInterval={data?.plan?.interval ?? null}
+              status={data?.subscription.status ?? "none"}
+              cancelAtPeriodEnd={data?.subscription.cancelAtPeriodEnd ?? false}
+              trialEndsAt={data?.subscription.trialEndsAt ?? null}
+              currentPeriodEnd={data?.subscription.currentPeriodEnd ?? null}
+              messagesRemaining={data?.balance?.messagesRemaining ?? null}
+              messagesIncluded={data?.plan?.messagesIncluded ?? null}
+              balancePeriodEnd={data?.balance?.periodEnd ?? null}
+            />
+            <LeadOnboarding email={user?.email ?? ""} />
+          </div>
+
         ) : (
           <>
             <div className="mb-8">
               <h1 className="text-3xl font-semibold tracking-tight">Tu dashboard</h1>
               <p className="mt-1 text-muted-foreground">Resumen de tu plan y uso de mensajes.</p>
             </div>
+
+            <div className="mb-6">
+              <SubscriptionOverview
+                isLoading={isLoading}
+                planName={data?.plan?.name ?? null}
+                planPrice={data?.plan?.price ?? null}
+                planInterval={data?.plan?.interval ?? null}
+                status={data?.subscription.status ?? "none"}
+                cancelAtPeriodEnd={data?.subscription.cancelAtPeriodEnd ?? false}
+                trialEndsAt={data?.subscription.trialEndsAt ?? null}
+                currentPeriodEnd={data?.subscription.currentPeriodEnd ?? null}
+                messagesRemaining={data?.balance?.messagesRemaining ?? null}
+                messagesIncluded={data?.plan?.messagesIncluded ?? null}
+                balancePeriodEnd={data?.balance?.periodEnd ?? null}
+              />
+            </div>
+
+
 
             {isTrial && data?.subscription.trialEndsAt && (
               <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-brand/30 bg-brand/5 p-4">
