@@ -24,6 +24,7 @@ import { PlansShowcase } from "@/components/dashboard/PlansShowcase";
 import { PacksSection } from "@/components/dashboard/PacksSection";
 import { SubscriptionActions } from "@/components/dashboard/SubscriptionActions";
 import { SubscriptionOverview } from "@/components/dashboard/SubscriptionOverview";
+import { WhatsAppOnboardingCard } from "@/components/dashboard/WhatsAppOnboardingCard";
 
 import { LarkeyMark } from "@/components/brand/LarkeyMark";
 
@@ -53,10 +54,29 @@ type DashboardData = {
     messages_purchased: number;
     amount: number;
   }>;
+  whatsapp: { status: string } | null;
 };
 
+async function fetchWhatsappConnection(userId: string): Promise<{ status: string } | null> {
+  try {
+    const { data, error } = await supabase
+      .from("whatsapp_connections")
+      .select("status")
+      .eq("user_id", userId)
+      .maybeSingle();
+    if (error) throw error;
+    return data ? { status: data.status } : null;
+  } catch (err) {
+    console.error(
+      "[dashboard] No se pudo leer whatsapp_connections:",
+      err instanceof Error ? err.message : err,
+    );
+    return null;
+  }
+}
+
 async function fetchDashboard(userId: string): Promise<DashboardData> {
-  const [profileRes, balanceRes, purchasesRes] = await Promise.all([
+  const [profileRes, balanceRes, purchasesRes, whatsapp] = await Promise.all([
     supabase
       .from("users")
       .select(
@@ -74,6 +94,7 @@ async function fetchDashboard(userId: string): Promise<DashboardData> {
       .select("id, created_at, package, messages_purchased, amount")
       .eq("user_id", userId)
       .order("created_at", { ascending: false }),
+    fetchWhatsappConnection(userId),
   ]);
 
   if (profileRes.error) throw profileRes.error;
@@ -107,6 +128,7 @@ async function fetchDashboard(userId: string): Promise<DashboardData> {
         }
       : null,
     purchases: purchasesRes.data ?? [],
+    whatsapp,
   };
 }
 
@@ -147,6 +169,10 @@ function Dashboard() {
   const needsPlan =
     !isLoading &&
     (data?.subscription.status === "none" || data?.subscription.status === "canceled");
+  const hasActiveSubscription =
+    data?.subscription.status === "active" || data?.subscription.status === "trialing";
+  const showWhatsappOnboarding =
+    hasActiveSubscription && data?.whatsapp?.status !== "connected";
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -335,6 +361,12 @@ function Dashboard() {
                 </div>
               </CardContent>
             </Card>
+
+            {showWhatsappOnboarding && (
+              <div className="mt-6">
+                <WhatsAppOnboardingCard />
+              </div>
+            )}
 
             <div id="packs" className="mt-6 scroll-mt-24">
               <PacksSection />
