@@ -173,8 +173,19 @@ function Dashboard() {
     (data?.subscription.status === "none" || data?.subscription.status === "canceled");
   const hasActiveSubscription =
     data?.subscription.status === "active" || data?.subscription.status === "trialing";
-  const showWhatsappOnboarding =
-    hasActiveSubscription && data?.whatsapp?.status !== "connected";
+  const whatsappStatus = data?.whatsapp?.status ?? null;
+  const showWhatsappOnboarding = hasActiveSubscription && whatsappStatus !== "connected";
+
+  useWhatsappConnectionRealtime(user.id);
+
+  const prevWhatsappStatus = useRef<string | null>(null);
+  useEffect(() => {
+    if (whatsappStatus === "connected" && prevWhatsappStatus.current !== null) {
+      toast.success("WhatsApp conectado");
+    }
+    prevWhatsappStatus.current = whatsappStatus;
+  }, [whatsappStatus]);
+
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
