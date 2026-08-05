@@ -93,6 +93,7 @@ async function fetchDashboard(userId: string): Promise<DashboardData> {
       .select("id, created_at, package, messages_purchased, amount")
       .eq("user_id", userId)
       .order("created_at", { ascending: false }),
+    fetchWhatsappConnection(userId),
   ]);
 
   if (profileRes.error) throw profileRes.error;
@@ -126,6 +127,7 @@ async function fetchDashboard(userId: string): Promise<DashboardData> {
         }
       : null,
     purchases: purchasesRes.data ?? [],
+    whatsapp,
   };
 }
 
