@@ -20,6 +20,7 @@ Sin cambios de esquema, de RLS ni de permisos: el usuario ya tiene solo `SELECT`
 
 Nuevo hook `src/hooks/use-whatsapp-connection-realtime.ts`:
 
+- Usa **el mismo cliente autenticado existente**: `import { supabase } from "@/integrations/supabase/client"` — la misma instancia (singleton) que ya usan las queries del dashboard, con la sesión del usuario persistida. No se crea ninguna instancia nueva ni se pasa una key aparte; así el socket de Realtime va autenticado y RLS filtra los eventos a la fila del usuario.
 - Dentro de `useEffect`, crea un canal por usuario (`whatsapp-connection-${userId}`) escuchando `postgres_changes` con `event: "*"`, `schema: "public"`, `table: "whatsapp_connections"`, `filter: user_id=eq.${userId}`.
 - En cada evento, invalida la consulta `["dashboard", userId]` para que el dashboard vuelva a leer el estado.
 - Limpieza con `supabase.removeChannel(channel)` al desmontar y cuando cambia `userId` (evita suscripciones duplicadas y reconexiones en bucle).
@@ -32,6 +33,15 @@ Se monta en el dashboard (no dentro de la card), porque la card se desmonta just
 - Mientras el status es `pending` tras un envío exitoso, la card muestra un aviso de "Estamos verificando tu conexión…" con indicador, en lugar del formulario editable, para que el usuario no reenvíe los mismos datos.
 - Si el status es `error`, la card muestra el formulario de nuevo con un aviso de que la conexión falló y hay que revisar las credenciales.
 - Al conectarse correctamente se muestra un toast de confirmación ("WhatsApp conectado").
+- **Fallback manual**: mientras `whatsappStatus === "pending"`, junto al aviso de verificación aparece un botón "Actualizar estado" que al hacer click invalida `["dashboard", userId]` (exactamente la misma invalidación del hook de realtime), con estado de carga breve mientras refetchea. Cubre a usuarios cuyo WebSocket nunca conecta (bloqueadores, proxies, redes restrictivas) para que no queden atrapados en "Estamos verificando tu conexión…".
+
+## 4. Contrato de `status`
+
+Nuevo `src/lib/whatsapp/README.md` (mismo estilo que `src/lib/stripe/README.md`) documentando el flujo de onboarding y, de forma explícita, que:
+
+- `pending`, `connected` y `error` (más `not_connected` como valor inicial) son un **contrato fijo** del enum `whatsapp_connection_status`. El backend de FastAPI (`POST /onboarding/whatsapp`) debe escribir únicamente esos valores.
+- La UI tiene lógica condicional construida sobre esos valores exactos; introducir `failed`, `verifying`, etc. desde el backend rompe la card silenciosamente.
+- Si se necesita un valor nuevo: primero se agrega al enum aquí y se actualiza la UI, y solo después el backend empieza a escribirlo. Nunca al revés.
 
 ## Detalles técnicos
 
