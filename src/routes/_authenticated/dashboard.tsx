@@ -24,6 +24,7 @@ import { PlansShowcase } from "@/components/dashboard/PlansShowcase";
 import { PacksSection } from "@/components/dashboard/PacksSection";
 import { SubscriptionActions } from "@/components/dashboard/SubscriptionActions";
 import { SubscriptionOverview } from "@/components/dashboard/SubscriptionOverview";
+import { WhatsAppOnboardingCard } from "@/components/dashboard/WhatsAppOnboardingCard";
 
 import { LarkeyMark } from "@/components/brand/LarkeyMark";
 
@@ -356,6 +357,12 @@ function Dashboard() {
                 </div>
               </CardContent>
             </Card>
+
+            {showWhatsappOnboarding && (
+              <div className="mt-6">
+                <WhatsAppOnboardingCard />
+              </div>
+            )}
 
             <div id="packs" className="mt-6 scroll-mt-24">
               <PacksSection />
