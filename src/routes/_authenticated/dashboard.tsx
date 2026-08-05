@@ -364,7 +364,7 @@ function Dashboard() {
 
             {showWhatsappOnboarding && (
               <div className="mt-6">
-                <WhatsAppOnboardingCard />
+                <WhatsAppOnboardingCard userId={user.id} />
               </div>
             )}
 
