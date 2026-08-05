@@ -154,18 +154,24 @@ export type Database = {
       }
       stripe_events: {
         Row: {
+          forward_error: string | null
+          forwarded_to_backend: boolean
           id: string
           payload: Json
           processed_at: string
           type: string
         }
         Insert: {
+          forward_error?: string | null
+          forwarded_to_backend?: boolean
           id: string
           payload: Json
           processed_at?: string
           type: string
         }
         Update: {
+          forward_error?: string | null
+          forwarded_to_backend?: boolean
           id?: string
           payload?: Json
           processed_at?: string

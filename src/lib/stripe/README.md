@@ -108,8 +108,31 @@ Fields: `stripe_event_id`, `event_type`, `user_id`, `plan_id`, `pack_id`,
 `user_id` falls back to a lookup by `stripe_customer_id` when metadata is absent.
 
 Failures (timeout, refused connection, non-2xx, missing secrets) are logged with
-`console.error` and never change the 200 returned to Stripe — replay from
-`stripe_events` if needed.
+`console.error` and never change the 200 returned to Stripe.
+
+#### Forward tracking (`stripe_events`)
+
+| Column | Meaning |
+|--------|---------|
+| `forwarded_to_backend` | `true` once the POST returned 2xx |
+| `forward_error` | reason of the last failure (`HTTP 500: …`, `TimeoutError: …`, missing secrets), `null` on success |
+
+Replay pending events from the stored payload:
+
+```sql
+SELECT id, type, forward_error, payload
+  FROM public.stripe_events
+ WHERE forwarded_to_backend = false
+ ORDER BY processed_at;
+```
+
+> **TEMPORARY bridge:** the local state application (`apply_subscription_event`,
+> `add_purchased_messages`) runs *in addition to* the forward, only so the
+> current dashboard keeps working. Both calls — and the SQL functions
+> themselves — are to be **removed** once `/webhooks/subscription` in FastAPI is
+> validated as the single source of truth for subscription and usage state.
+
+
 
 
 ## Trial policy

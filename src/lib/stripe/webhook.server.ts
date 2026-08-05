@@ -77,13 +77,26 @@ export async function verifyAndDispatch(
     if (!payload.user_id && payload.stripe_customer_id) {
       payload.user_id = await userIdFromCustomer(supabaseAdmin, payload.stripe_customer_id);
     }
-    await forwardToBackend(payload);
+    const result = await forwardToBackend(payload);
+
+    const { error: trackErr } = await supabaseAdmin
+      .from("stripe_events")
+      .update(
+        result.ok
+          ? { forwarded_to_backend: true, forward_error: null }
+          : { forwarded_to_backend: false, forward_error: result.error },
+      )
+      .eq("id", event.id);
+    if (trackErr) {
+      console.error("[stripe-webhook] failed to record forward status", event.id, trackErr);
+    }
   } catch (err) {
     console.error("[stripe-webhook] backend forward crashed", event.id, err);
   }
 
   return { status: 200, body: "ok" };
 }
+
 
 async function handleEvent(supabaseAdmin: SupabaseClient<Database>, event: Stripe.Event) {
   switch (event.type) {
