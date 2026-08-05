@@ -75,7 +75,7 @@ async function fetchWhatsappConnection(userId: string): Promise<{ status: string
 }
 
 async function fetchDashboard(userId: string): Promise<DashboardData> {
-  const [profileRes, balanceRes, purchasesRes] = await Promise.all([
+  const [profileRes, balanceRes, purchasesRes, whatsapp] = await Promise.all([
     supabase
       .from("users")
       .select(
