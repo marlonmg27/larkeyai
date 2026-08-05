@@ -1,53 +1,43 @@
 import { useState } from "react";
-import { z } from "zod";
-import { Eye, EyeOff, MessageSquare } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { Eye, EyeOff, MessageSquare, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { connectWhatsAppAccount } from "@/lib/whatsapp.functions";
+import { whatsappOnboardingSchema, type WhatsAppOnboardingValues } from "@/lib/whatsapp/schema";
 
-const schema = z.object({
-  displayName: z
-    .string()
-    .trim()
-    .nonempty({ message: "Ingresa el nombre de tu negocio" })
-    .max(80, { message: "Máximo 80 caracteres" }),
-  phoneNumberId: z
-    .string()
-    .trim()
-    .nonempty({ message: "Ingresa el Phone number ID" })
-    .max(64, { message: "Máximo 64 caracteres" }),
-  wabaId: z
-    .string()
-    .trim()
-    .nonempty({ message: "Ingresa el WABA ID" })
-    .max(64, { message: "Máximo 64 caracteres" }),
-  accessToken: z
-    .string()
-    .trim()
-    .nonempty({ message: "Ingresa el access token" })
-    .max(512, { message: "Máximo 512 caracteres" }),
-});
+const schema = whatsappOnboardingSchema;
 
-type FormValues = z.infer<typeof schema>;
+type FormValues = WhatsAppOnboardingValues;
 type FormErrors = Partial<Record<keyof FormValues, string>>;
 
 const EMPTY: FormValues = { displayName: "", phoneNumberId: "", wabaId: "", accessToken: "" };
 
-function maskToken(token: string) {
-  const trimmed = token.trim();
-  return `***${trimmed.slice(-4)} (longitud: ${trimmed.length})`;
-}
-
-export function WhatsAppOnboardingCard() {
+export function WhatsAppOnboardingCard({ userId }: { userId: string }) {
   const [values, setValues] = useState<FormValues>(EMPTY);
   const [errors, setErrors] = useState<FormErrors>({});
   const [showToken, setShowToken] = useState(false);
 
+  const queryClient = useQueryClient();
+  const connect = useServerFn(connectWhatsAppAccount);
+
+  const mutation = useMutation({
+    mutationFn: (input: FormValues) => connect({ data: input }),
+    onSuccess: () => {
+      setValues((v) => ({ ...v, accessToken: "" }));
+      setShowToken(false);
+      void queryClient.invalidateQueries({ queryKey: ["dashboard", userId] });
+    },
+  });
+
   function setField(key: keyof FormValues, value: string) {
     setValues((v) => ({ ...v, [key]: value }));
     setErrors((e) => ({ ...e, [key]: undefined }));
+    mutation.reset();
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -62,14 +52,7 @@ export function WhatsAppOnboardingCard() {
       setErrors(next);
       return;
     }
-
-    // TODO: conectar al backend. Por ahora solo log, con el token enmascarado.
-    console.log("[WhatsApp onboarding]", {
-      displayName: parsed.data.displayName,
-      phoneNumberId: parsed.data.phoneNumberId,
-      wabaId: parsed.data.wabaId,
-      accessToken: maskToken(parsed.data.accessToken),
-    });
+    mutation.mutate(parsed.data);
   }
 
   return (
@@ -155,9 +138,29 @@ export function WhatsAppOnboardingCard() {
             )}
           </div>
 
-          <div className="sm:col-span-2">
-            <Button type="submit" className="bg-brand text-brand-foreground hover:bg-brand/90">
-              Guardar conexión
+          <div className="space-y-3 sm:col-span-2">
+            {mutation.isError && (
+              <p className="flex items-start gap-2 text-sm text-destructive">
+                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                {mutation.error instanceof Error
+                  ? mutation.error.message
+                  : "No pudimos guardar la conexión. Inténtalo de nuevo."}
+              </p>
+            )}
+            {mutation.isSuccess && (
+              <p className="flex items-start gap-2 text-sm text-brand">
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+                {mutation.data?.message ??
+                  "Recibimos tus datos. Estamos activando tu conexión de WhatsApp."}
+              </p>
+            )}
+            <Button
+              type="submit"
+              disabled={mutation.isPending}
+              className="bg-brand text-brand-foreground hover:bg-brand/90"
+            >
+              {mutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {mutation.isPending ? "Conectando…" : "Guardar conexión"}
             </Button>
           </div>
         </form>
