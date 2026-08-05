@@ -21,7 +21,6 @@ export type ConnectWhatsAppResult = {
   ok: boolean;
   status: string | null;
   message: string | null;
-  backend: unknown;
 };
 
 export async function connectWhatsApp(
@@ -93,6 +92,5 @@ export async function connectWhatsApp(
     ok: true,
     status: typeof obj["status"] === "string" ? obj["status"] : null,
     message: typeof obj["message"] === "string" ? obj["message"] : null,
-    backend: parsed,
   };
 }
