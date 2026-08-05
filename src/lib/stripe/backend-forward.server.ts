@@ -56,16 +56,19 @@ export function buildSubscriptionPayload(event: Stripe.Event): BackendSubscripti
   };
 }
 
-export async function forwardToBackend(payload: BackendSubscriptionPayload): Promise<void> {
+export type ForwardResult = { ok: true } | { ok: false; error: string };
+
+/** Never throws. Returns the outcome so the caller can persist it. */
+export async function forwardToBackend(payload: BackendSubscriptionPayload): Promise<ForwardResult> {
   const baseUrl = process.env["BACKEND_URL"];
   const internalSecret = process.env["BACKEND_INTERNAL_SECRET"];
 
+  const logCtx = { event_id: payload.stripe_event_id, event_type: payload.event_type };
+
   if (!baseUrl || !internalSecret) {
-    console.error(
-      "[stripe-webhook] backend forward skipped: BACKEND_URL or BACKEND_INTERNAL_SECRET not configured",
-      { event_id: payload.stripe_event_id, event_type: payload.event_type },
-    );
-    return;
+    const error = "BACKEND_URL or BACKEND_INTERNAL_SECRET not configured";
+    console.error("[stripe-webhook] backend forward skipped:", error, logCtx);
+    return { ok: false, error };
   }
 
   const url = `${baseUrl.replace(/\/+$/, "")}/webhooks/subscription`;
@@ -83,18 +86,16 @@ export async function forwardToBackend(payload: BackendSubscriptionPayload): Pro
 
     if (!res.ok) {
       const body = await res.text().catch(() => "");
-      console.error("[stripe-webhook] backend forward returned non-2xx", {
-        event_id: payload.stripe_event_id,
-        event_type: payload.event_type,
-        status: res.status,
-        body: body.slice(0, 500),
-      });
+      const error = `HTTP ${res.status}: ${body.slice(0, 500)}`;
+      console.error("[stripe-webhook] backend forward returned non-2xx", { ...logCtx, status: res.status, body: body.slice(0, 500) });
+      return { ok: false, error };
     }
+
+    return { ok: true };
   } catch (err) {
-    console.error("[stripe-webhook] backend forward failed", {
-      event_id: payload.stripe_event_id,
-      event_type: payload.event_type,
-      reason: err instanceof Error ? err.message : String(err),
-    });
+    const error = err instanceof Error ? `${err.name}: ${err.message}` : String(err);
+    console.error("[stripe-webhook] backend forward failed", { ...logCtx, reason: error });
+    return { ok: false, error };
   }
 }
+
