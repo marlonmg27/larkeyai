@@ -23,6 +23,8 @@ import { toast } from "sonner";
 import { PlansShowcase } from "@/components/dashboard/PlansShowcase";
 import { PacksSection } from "@/components/dashboard/PacksSection";
 import { SubscriptionActions } from "@/components/dashboard/SubscriptionActions";
+import { SubscriptionOverview } from "@/components/dashboard/SubscriptionOverview";
+
 import { LarkeyMark } from "@/components/brand/LarkeyMark";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
