@@ -169,6 +169,10 @@ function Dashboard() {
   const needsPlan =
     !isLoading &&
     (data?.subscription.status === "none" || data?.subscription.status === "canceled");
+  const hasActiveSubscription =
+    data?.subscription.status === "active" || data?.subscription.status === "trialing";
+  const showWhatsappOnboarding =
+    hasActiveSubscription && data?.whatsapp?.status !== "connected";
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
