@@ -188,7 +188,23 @@ function Dashboard() {
             </CardHeader>
           </Card>
         ) : needsPlan ? (
-          <LeadOnboarding email={user?.email ?? ""} />
+          <div className="space-y-8">
+            <SubscriptionOverview
+              isLoading={isLoading}
+              planName={data?.plan?.name ?? null}
+              planPrice={data?.plan?.price ?? null}
+              planInterval={data?.plan?.interval ?? null}
+              status={data?.subscription.status ?? "none"}
+              cancelAtPeriodEnd={data?.subscription.cancelAtPeriodEnd ?? false}
+              trialEndsAt={data?.subscription.trialEndsAt ?? null}
+              currentPeriodEnd={data?.subscription.currentPeriodEnd ?? null}
+              messagesRemaining={data?.balance?.messagesRemaining ?? null}
+              messagesIncluded={data?.plan?.messagesIncluded ?? null}
+              balancePeriodEnd={data?.balance?.periodEnd ?? null}
+            />
+            <LeadOnboarding email={user?.email ?? ""} />
+          </div>
+
         ) : (
           <>
             <div className="mb-8">
