@@ -335,6 +335,18 @@ export type Database = {
         Returns: undefined
       }
       reset_expired_usage_balances: { Args: never; Returns: undefined }
+      test_clear_subscription: {
+        Args: { p_user_id: string }
+        Returns: undefined
+      }
+      test_set_active_subscription: {
+        Args: {
+          p_messages_remaining?: number
+          p_plan_id: string
+          p_user_id: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       whatsapp_connection_status:
