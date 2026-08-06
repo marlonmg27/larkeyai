@@ -1,4 +1,4 @@
-import { MessageCircle, Mail, Phone } from "lucide-react";
+import { MessageCircle, Mail } from "lucide-react";
 
 const links = [
   { label: "Cómo funciona", href: "#como-funciona" },
