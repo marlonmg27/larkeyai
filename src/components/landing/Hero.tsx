@@ -1,8 +1,10 @@
 import { motion } from "framer-motion";
+import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { WhatsAppMockup } from "./WhatsAppMockup";
 import { ArrowRight, Sparkles } from "lucide-react";
+
 
 export function Hero() {
   return (
@@ -37,14 +39,21 @@ export function Hero() {
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Button size="lg" className="bg-brand text-brand-foreground hover:bg-brand/90">
+              <Button
+                size="lg"
+                className="bg-brand text-brand-foreground hover:bg-brand/90"
+                onClick={() =>
+                  document.getElementById("precios")?.scrollIntoView({ behavior: "smooth" })
+                }
+              >
                 Quiero mi asistente
                 <ArrowRight className="h-4 w-4" />
               </Button>
-              <Button size="lg" variant="outline">
-                Iniciar sesión
+              <Button asChild size="lg" variant="outline">
+                <Link to="/auth">Iniciar sesión</Link>
               </Button>
             </div>
+
 
             <p className="mt-4 text-xs text-muted-foreground">
               Para empresas y profesionales independientes que viven de conversar con sus clientes.

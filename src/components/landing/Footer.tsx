@@ -45,20 +45,14 @@ export function Footer() {
             <div>
               <h4 className="text-sm font-semibold text-foreground">Contacto</h4>
               <a
-                href="mailto:marlonmolinag@hotmail.com"
+                href="mailto:marlonmolinag12@gmail.com"
                 className="mt-3 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
               >
                 <Mail className="h-4 w-4" />
-                marlonmolinag@hotmail.com
-              </a>
-              <a
-                href="https://wa.me/526622047650"
-                className="mt-2 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
-              >
-                <Phone className="h-4 w-4" />
-                +52 662 204 7650
+                marlonmolinag12@gmail.com
               </a>
             </div>
+
           </div>
         </div>
 
