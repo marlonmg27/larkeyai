@@ -88,7 +88,16 @@ export async function buildSubscriptionPayload(
       null,
     stripe_customer_id: refId(obj["customer"]),
     stripe_subscription_id: stripeSubscriptionId,
-    status: str(obj["status"]) ?? str(obj["payment_status"]) ?? null,
+    // For checkout.session.completed in subscription mode, the session status
+    // ("complete"/"paid") isn't enough for the backend to decide its action —
+    // it needs the Subscription status ("trialing" vs "active"), the same value
+    // the local bridge uses via the retrieve() above. Use it when the
+    // subscription flow resolved; otherwise keep the previous behavior.
+    status:
+      event.type === "checkout.session.completed" && subscriptionStatus
+        ? subscriptionStatus
+        : str(obj["status"]) ?? str(obj["payment_status"]) ?? null,
+
     trial_ends_at: trialEndsAt,
     current_period_end: currentPeriodEnd,
     cancel_at_period_end: cancelAtPeriodEnd,
