@@ -23,7 +23,7 @@ export type WebhookOutcome = { status: number; body: string };
  * itself, others on the subscription item. Read whichever is available at
  * runtime — the SDK types don't cover every wire shape.
  */
-function subscriptionPeriodEndIso(sub: Stripe.Subscription): string | undefined {
+export function subscriptionPeriodEndIso(sub: Stripe.Subscription): string | undefined {
   const s = sub as unknown as { current_period_end?: number };
   if (typeof s.current_period_end === "number") return new Date(s.current_period_end * 1000).toISOString();
   const item = sub.items?.data?.[0] as unknown as { current_period_end?: number } | undefined;
@@ -31,7 +31,7 @@ function subscriptionPeriodEndIso(sub: Stripe.Subscription): string | undefined 
   return undefined;
 }
 
-function iso(unixSeconds: number | null | undefined): string | undefined {
+export function iso(unixSeconds: number | null | undefined): string | undefined {
   return typeof unixSeconds === "number" ? new Date(unixSeconds * 1000).toISOString() : undefined;
 }
 
@@ -73,7 +73,7 @@ export async function verifyAndDispatch(
   // Forward to the Python backend. Never affects the response to Stripe:
   // the event is already persisted in stripe_events and can be replayed.
   try {
-    const payload = buildSubscriptionPayload(event);
+    const payload = await buildSubscriptionPayload(event);
     if (!payload.user_id && payload.stripe_customer_id) {
       payload.user_id = await userIdFromCustomer(supabaseAdmin, payload.stripe_customer_id);
     }
