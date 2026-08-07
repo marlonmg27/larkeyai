@@ -31,11 +31,45 @@ function refId(value: unknown): string | null {
  * Extracts the fields the Python backend needs from any handled Stripe event.
  * Shapes differ per event type, so all reads are defensive.
  */
-export function buildSubscriptionPayload(event: Stripe.Event): BackendSubscriptionPayload {
+export async function buildSubscriptionPayload(
+  event: Stripe.Event,
+): Promise<BackendSubscriptionPayload> {
   const obj = event.data.object as unknown as AnyRecord;
   const metadata = (obj["metadata"] ?? {}) as AnyRecord;
   const customerDetails = (obj["customer_details"] ?? {}) as AnyRecord;
   const customerObj = (typeof obj["customer"] === "object" ? obj["customer"] : {}) as AnyRecord;
+
+  const isSubscriptionEvent = event.type.startsWith("customer.subscription.");
+  const stripeSubscriptionId = isSubscriptionEvent ? str(obj["id"]) : refId(obj["subscription"]);
+
+  let trialEndsAt: string | null = null;
+  let currentPeriodEnd: string | null = null;
+  let cancelAtPeriodEnd: boolean | null = null;
+
+  const readFrom = (sub: Stripe.Subscription) => {
+    trialEndsAt = iso(sub.trial_end) ?? null;
+    currentPeriodEnd = subscriptionPeriodEndIso(sub) ?? null;
+    cancelAtPeriodEnd = typeof sub.cancel_at_period_end === "boolean" ? sub.cancel_at_period_end : null;
+  };
+
+  if (isSubscriptionEvent) {
+    // The event object already IS the full Subscription — no extra API call.
+    readFrom(event.data.object as unknown as Stripe.Subscription);
+  } else if (
+    (event.type === "checkout.session.completed" || event.type === "invoice.paid") &&
+    stripeSubscriptionId
+  ) {
+    try {
+      readFrom(await getStripe().subscriptions.retrieve(stripeSubscriptionId));
+    } catch (err) {
+      console.error("[stripe-webhook] could not retrieve subscription for payload", {
+        event_id: event.id,
+        event_type: event.type,
+        subscription_id: stripeSubscriptionId,
+        reason: err instanceof Error ? err.message : String(err),
+      });
+    }
+  }
 
   return {
     stripe_event_id: event.id,
@@ -50,11 +84,11 @@ export function buildSubscriptionPayload(event: Stripe.Event): BackendSubscripti
       str(customerObj["email"]) ??
       null,
     stripe_customer_id: refId(obj["customer"]),
-    stripe_subscription_id:
-      event.type.startsWith("customer.subscription.")
-        ? str(obj["id"])
-        : refId(obj["subscription"]),
+    stripe_subscription_id: stripeSubscriptionId,
     status: str(obj["status"]) ?? str(obj["payment_status"]) ?? null,
+    trial_ends_at: trialEndsAt,
+    current_period_end: currentPeriodEnd,
+    cancel_at_period_end: cancelAtPeriodEnd,
   };
 }
 
