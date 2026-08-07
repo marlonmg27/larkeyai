@@ -45,12 +45,15 @@ export async function buildSubscriptionPayload(
   let trialEndsAt: string | null = null;
   let currentPeriodEnd: string | null = null;
   let cancelAtPeriodEnd: boolean | null = null;
+  let subscriptionStatus: string | null = null;
 
   const readFrom = (sub: Stripe.Subscription) => {
     trialEndsAt = iso(sub.trial_end) ?? null;
     currentPeriodEnd = subscriptionPeriodEndIso(sub) ?? null;
     cancelAtPeriodEnd = typeof sub.cancel_at_period_end === "boolean" ? sub.cancel_at_period_end : null;
+    subscriptionStatus = str(sub.status) ?? null;
   };
+
 
   if (isSubscriptionEvent) {
     // The event object already IS the full Subscription — no extra API call.
