@@ -54,7 +54,6 @@ export async function buildSubscriptionPayload(
     subscriptionStatus = str(sub.status) ?? null;
   };
 
-
   if (isSubscriptionEvent) {
     // The event object already IS the full Subscription — no extra API call.
     readFrom(event.data.object as unknown as Stripe.Subscription);
