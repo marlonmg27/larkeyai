@@ -1,0 +1,2 @@
+SELECT set_config('request.jwt.claims', '{"role":"service_role"}', true);
+SELECT public.test_set_active_subscription('4d37caff-62a0-4672-885f-95836baadce6'::uuid, '4403885c-b340-4872-b274-1869fd5bd762'::uuid, 7000);
