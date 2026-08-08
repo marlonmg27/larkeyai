@@ -1,19 +1,41 @@
-# Onboarding de WhatsApp
+# Onboarding del canal de mensajería
 
-Flujo por el que un cliente con suscripción activa conecta su WhatsApp Business API.
+Flujo por el que un cliente con suscripción activa conecta su canal. La card primero muestra
+un listado de canales disponibles (hoy solo **WhatsApp**) y, al elegir uno, despliega el
+formulario correspondiente.
 
 ## Piezas
 
 | Archivo | Rol |
 | --- | --- |
-| `src/lib/whatsapp/schema.ts` | Validación Zod compartida entre el formulario y el servidor |
+| `src/lib/whatsapp/schema.ts` | Validación Zod compartida entre el formulario y el servidor + lista de canales (`messagingChannels`) |
 | `src/lib/whatsapp.functions.ts` | `connectWhatsAppAccount`: server function con `requireSupabaseAuth` (el `user_id` sale del JWT verificado, nunca del body) |
 | `src/lib/whatsapp/onboarding.server.ts` | `POST ${BACKEND_URL}/onboarding/whatsapp` con `X-Internal-Secret: ${BACKEND_INTERNAL_SECRET}` |
-| `src/components/dashboard/WhatsAppOnboardingCard.tsx` | Formulario + estados de carga/éxito/error y vista de "verificando" |
+| `src/components/dashboard/WhatsAppOnboardingCard.tsx` | Selector de canal + formulario y estados de carga/éxito/error y vista de "verificando" |
 | `src/hooks/use-whatsapp-connection-realtime.ts` | Suscripción Realtime a la fila del usuario; invalida `["dashboard", userId]` |
+
+## Payload enviado al backend
+
+```json
+{
+  "channel": "whatsapp",
+  "user_id": "<uuid del JWT verificado>",
+  "display_name": "Nombre del negocio",
+  "user_name": "Nombre del usuario",
+  "email": "contacto@negocio.com",
+  "phone_number": "+52 662 123 4567",
+  "phone_number_id": "123456789012345",
+  "waba_id": "...",
+  "api_key": "..."
+}
+```
+
+`channel` se fija en el servidor a un valor de `messagingChannels`. La credencial se llama
+`api_key` (antes `access_token`) y nunca se escribe en logs.
 
 El frontend **nunca escribe** en `public.whatsapp_connections`: el usuario solo tiene `SELECT`
 de su propia fila. El backend de FastAPI (service role) es el único dueño de la escritura.
+
 
 ## Contrato fijo de `status`
 

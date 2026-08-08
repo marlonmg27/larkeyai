@@ -1,20 +1,26 @@
 /**
- * Envía el onboarding de WhatsApp al backend de Python (FastAPI).
+ * Envía el onboarding del canal de mensajería al backend de Python (FastAPI).
  *
  * FastAPI mapping:
  *   POST ${BACKEND_URL}/onboarding/whatsapp
  *   header: X-Internal-Secret: ${BACKEND_INTERNAL_SECRET}
  *
- * Nunca registra el access token en logs.
+ * Nunca registra la API Key en logs.
  */
+import { messagingChannels, type MessagingChannel } from "@/lib/whatsapp/schema";
+
 const TIMEOUT_MS = 15_000;
 
 export type ConnectWhatsAppInput = {
   userId: string;
+  channel: MessagingChannel;
   displayName: string;
+  userName: string;
+  email: string;
+  phoneNumber: string;
   phoneNumberId: string;
   wabaId: string;
-  accessToken: string;
+  apiKey: string;
 };
 
 export type ConnectWhatsAppResult = {
@@ -34,6 +40,11 @@ export async function connectWhatsApp(
     throw new Error("La conexión con el servicio de WhatsApp no está configurada todavía.");
   }
 
+  // El canal se fija a un valor permitido del servidor, no se confía en texto libre.
+  const channel: MessagingChannel = messagingChannels.includes(input.channel)
+    ? input.channel
+    : "whatsapp";
+
   const url = `${baseUrl.replace(/\/+$/, "")}/onboarding/whatsapp`;
 
   let res: Response;
@@ -45,11 +56,15 @@ export async function connectWhatsApp(
         "X-Internal-Secret": internalSecret,
       },
       body: JSON.stringify({
+        channel,
         user_id: input.userId,
         display_name: input.displayName,
+        user_name: input.userName,
+        email: input.email,
+        phone_number: input.phoneNumber,
         phone_number_id: input.phoneNumberId,
         waba_id: input.wabaId,
-        access_token: input.accessToken,
+        api_key: input.apiKey,
       }),
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });

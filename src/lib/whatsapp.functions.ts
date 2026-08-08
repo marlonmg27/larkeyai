@@ -13,9 +13,13 @@ export const connectWhatsAppAccount = createServerFn({ method: "POST" })
     const { connectWhatsApp } = await import("@/lib/whatsapp/onboarding.server");
     return connectWhatsApp({
       userId: context.userId,
+      channel: data.channel,
       displayName: data.displayName,
+      userName: data.userName,
+      email: data.email,
+      phoneNumber: data.phoneNumber,
       phoneNumberId: data.phoneNumberId,
       wabaId: data.wabaId,
-      accessToken: data.accessToken,
+      apiKey: data.apiKey,
     });
   });
