@@ -5,7 +5,7 @@
  *   POST ${BACKEND_URL}/onboarding/whatsapp
  *   header: X-Internal-Secret: ${BACKEND_INTERNAL_SECRET}
  *
- * Nunca registra la API Key en logs.
+ * Nunca registra el access token en logs.
  */
 import { messagingChannels, type MessagingChannel } from "@/lib/whatsapp/schema";
 
@@ -20,7 +20,7 @@ export type ConnectWhatsAppInput = {
   phoneNumber: string;
   phoneNumberId: string;
   wabaId: string;
-  apiKey: string;
+  accessToken: string;
 };
 
 export type ConnectWhatsAppResult = {
@@ -64,7 +64,7 @@ export async function connectWhatsApp(
         phone_number: input.phoneNumber,
         phone_number_id: input.phoneNumberId,
         waba_id: input.wabaId,
-        api_key: input.apiKey,
+        access_token: input.accessToken,
       }),
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });

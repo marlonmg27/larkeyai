@@ -20,6 +20,6 @@ export const connectWhatsAppAccount = createServerFn({ method: "POST" })
       phoneNumber: data.phoneNumber,
       phoneNumberId: data.phoneNumberId,
       wabaId: data.wabaId,
-      apiKey: data.apiKey,
+      accessToken: data.accessToken,
     });
   });
