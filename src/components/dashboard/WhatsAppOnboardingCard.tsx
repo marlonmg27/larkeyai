@@ -37,7 +37,7 @@ const EMPTY: FormValues = {
   phoneNumber: "",
   phoneNumberId: "",
   wabaId: "",
-  apiKey: "",
+  accessToken: "",
 };
 
 const CHANNELS: {
@@ -62,7 +62,7 @@ export function WhatsAppOnboardingCard({
   const [channel, setChannel] = useState<MessagingChannel | null>(null);
   const [values, setValues] = useState<FormValues>(EMPTY);
   const [errors, setErrors] = useState<FormErrors>({});
-  const [showKey, setShowKey] = useState(false);
+  const [showToken, setShowKey] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
   const queryClient = useQueryClient();
@@ -71,7 +71,7 @@ export function WhatsAppOnboardingCard({
   const mutation = useMutation({
     mutationFn: (input: FormValues) => connect({ data: input }),
     onSuccess: () => {
-      setValues((v) => ({ ...v, apiKey: "" }));
+      setValues((v) => ({ ...v, accessToken: "" }));
       setShowKey(false);
       void queryClient.invalidateQueries({ queryKey: ["dashboard", userId] });
     },
@@ -156,7 +156,7 @@ export function WhatsAppOnboardingCard({
           <p className="mb-4 flex items-start gap-2 rounded-lg border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">
             <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
             No pudimos verificar tu conexión anterior. Revisa que el Phone number ID, el WABA
-            ID y la API Key sean correctos e inténtalo de nuevo.
+            ID y el access token sean correctos e inténtalo de nuevo.
           </p>
         )}
 
@@ -283,13 +283,13 @@ export function WhatsAppOnboardingCard({
               </div>
 
               <div className="space-y-2 sm:col-span-2">
-                <Label htmlFor="wa-api-key">API Key</Label>
+                <Label htmlFor="wa-access-token">Access token</Label>
                 <div className="relative">
                   <Input
-                    id="wa-api-key"
-                    type={showKey ? "text" : "password"}
-                    value={values.apiKey}
-                    onChange={(e) => setField("apiKey", e.target.value)}
+                    id="wa-access-token"
+                    type={showToken ? "text" : "password"}
+                    value={values.accessToken}
+                    onChange={(e) => setField("accessToken", e.target.value)}
                     placeholder="••••••••••••"
                     maxLength={512}
                     autoComplete="off"
@@ -298,13 +298,13 @@ export function WhatsAppOnboardingCard({
                   <button
                     type="button"
                     onClick={() => setShowKey((s) => !s)}
-                    aria-label={showKey ? "Ocultar API Key" : "Mostrar API Key"}
+                    aria-label={showToken ? "Ocultar Access token" : "Mostrar Access token"}
                     className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
                   >
-                    {showKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showToken ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
-                {errors.apiKey && <p className="text-xs text-destructive">{errors.apiKey}</p>}
+                {errors.accessToken && <p className="text-xs text-destructive">{errors.accessToken}</p>}
               </div>
 
               <div className="space-y-3 sm:col-span-2">
