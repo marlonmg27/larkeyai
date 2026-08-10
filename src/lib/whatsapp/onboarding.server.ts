@@ -20,7 +20,6 @@ export type ConnectWhatsAppInput = {
   phoneNumber: string;
   phoneNumberId: string;
   wabaId: string;
-  accessToken: string;
 };
 
 export type ConnectWhatsAppResult = {
@@ -64,7 +63,6 @@ export async function connectWhatsApp(
         phone_number: input.phoneNumber,
         phone_number_id: input.phoneNumberId,
         waba_id: input.wabaId,
-        access_token: input.accessToken,
       }),
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });

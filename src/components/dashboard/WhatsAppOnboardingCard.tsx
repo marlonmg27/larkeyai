@@ -2,8 +2,6 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
-  Eye,
-  EyeOff,
   MessageSquare,
   CheckCircle2,
   AlertCircle,
@@ -37,7 +35,6 @@ const EMPTY: FormValues = {
   phoneNumber: "",
   phoneNumberId: "",
   wabaId: "",
-  accessToken: "",
 };
 
 const CHANNELS: {
@@ -62,7 +59,6 @@ export function WhatsAppOnboardingCard({
   const [channel, setChannel] = useState<MessagingChannel | null>(null);
   const [values, setValues] = useState<FormValues>(EMPTY);
   const [errors, setErrors] = useState<FormErrors>({});
-  const [showToken, setShowKey] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
   const queryClient = useQueryClient();
@@ -71,9 +67,8 @@ export function WhatsAppOnboardingCard({
   const mutation = useMutation({
     mutationFn: (input: FormValues) => connect({ data: input }),
     onSuccess: () => {
-      setValues((v) => ({ ...v, accessToken: "" }));
-      setShowKey(false);
       void queryClient.invalidateQueries({ queryKey: ["dashboard", userId] });
+
     },
   });
 
@@ -155,8 +150,8 @@ export function WhatsAppOnboardingCard({
         {status === "error" && (
           <p className="mb-4 flex items-start gap-2 rounded-lg border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">
             <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-            No pudimos verificar tu conexión anterior. Revisa que el Phone number ID, el WABA
-            ID y el access token sean correctos e inténtalo de nuevo.
+            No pudimos verificar tu conexión anterior. Revisa que el Phone number ID y el
+            WABA ID sean correctos e inténtalo de nuevo.
           </p>
         )}
 
@@ -282,30 +277,8 @@ export function WhatsAppOnboardingCard({
                 {errors.wabaId && <p className="text-xs text-destructive">{errors.wabaId}</p>}
               </div>
 
-              <div className="space-y-2 sm:col-span-2">
-                <Label htmlFor="wa-access-token">Access token</Label>
-                <div className="relative">
-                  <Input
-                    id="wa-access-token"
-                    type={showToken ? "text" : "password"}
-                    value={values.accessToken}
-                    onChange={(e) => setField("accessToken", e.target.value)}
-                    placeholder="••••••••••••"
-                    maxLength={512}
-                    autoComplete="off"
-                    className="pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowKey((s) => !s)}
-                    aria-label={showToken ? "Ocultar Access token" : "Mostrar Access token"}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    {showToken ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-                {errors.accessToken && <p className="text-xs text-destructive">{errors.accessToken}</p>}
-              </div>
+
+
 
               <div className="space-y-3 sm:col-span-2">
                 {mutation.isError && (
