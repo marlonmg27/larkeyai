@@ -234,21 +234,21 @@ export function WhatsAppOnboardingCard({
                 {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="wa-phone-number">Phone number</Label>
-                <Input
-                  id="wa-phone-number"
-                  type="tel"
-                  value={values.phoneNumber}
-                  onChange={(e) => setField("phoneNumber", e.target.value)}
-                  placeholder="+52 662 123 4567"
-                  maxLength={20}
-                  autoComplete="tel"
-                />
-                {errors.phoneNumber && (
-                  <p className="text-xs text-destructive">{errors.phoneNumber}</p>
-                )}
-              </div>
+              <PhoneField
+                country={country}
+                onCountryChange={(c) => {
+                  setCountry(c);
+                  setErrors((e) => ({ ...e, phoneNumber: undefined }));
+                  mutation.reset();
+                }}
+                nationalNumber={nationalNumber}
+                onNationalNumberChange={(v) => {
+                  setNationalNumber(v);
+                  setErrors((e) => ({ ...e, phoneNumber: undefined }));
+                  mutation.reset();
+                }}
+                error={errors.phoneNumber}
+              />
 
               <div className="space-y-2">
                 <Label htmlFor="wa-phone-number-id">Phone number ID</Label>

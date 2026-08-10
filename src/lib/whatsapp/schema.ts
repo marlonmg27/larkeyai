@@ -23,12 +23,13 @@ export const whatsappOnboardingSchema = z.object({
     .nonempty({ message: "Ingresa el email" })
     .max(160, { message: "Máximo 160 caracteres" })
     .email({ message: "Ingresa un email válido" }),
+  // Siempre normalizado en E.164 por el formulario (+<prefijo><nacional>).
   phoneNumber: z
     .string()
     .trim()
     .nonempty({ message: "Ingresa el número de teléfono" })
-    .max(20, { message: "Máximo 20 caracteres" })
-    .regex(/^[\d\s+()-]+$/, { message: "Solo dígitos, espacios, +, - y paréntesis" }),
+    .max(16, { message: "Número demasiado largo" })
+    .regex(/^\+[1-9]\d{7,14}$/, { message: "Ingresa un número válido con código de país" }),
   phoneNumberId: z
     .string()
     .trim()
