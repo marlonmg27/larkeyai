@@ -25,13 +25,12 @@ formulario correspondiente.
   "email": "contacto@negocio.com",
   "phone_number": "+52 662 123 4567",
   "phone_number_id": "123456789012345",
-  "waba_id": "...",
-  "access_token": "..."
+  "waba_id": "..."
 }
 ```
 
-`channel` se fija en el servidor a un valor de `messagingChannels`. La credencial se llama
-`access_token` (antes `access_token`) y nunca se escribe en logs.
+`channel` se fija en el servidor a un valor de `messagingChannels`. El formulario ya **no**
+pide ni reenvía `access_token`.
 
 El frontend **nunca escribe** en `public.whatsapp_connections`: el usuario solo tiene `SELECT`
 de su propia fila. El backend de FastAPI (service role) es el único dueño de la escritura.
