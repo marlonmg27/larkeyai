@@ -32,6 +32,11 @@ formulario correspondiente.
 `channel` se fija en el servidor a un valor de `messagingChannels`. El formulario ya **no**
 pide ni reenvía `access_token`.
 
+`phone_number` llega **siempre normalizado en E.164** (`+` + código de país + dígitos
+nacionales, sin espacios ni separadores). El formulario tiene un selector de código de país
+(`src/lib/phone/countries.ts`) y valida el largo de dígitos por país; el esquema compartido
+además rechaza cualquier valor que no cumpla `^\+[1-9]\d{7,14}$`.
+
 El frontend **nunca escribe** en `public.whatsapp_connections`: el usuario solo tiene `SELECT`
 de su propia fila. El backend de FastAPI (service role) es el único dueño de la escritura.
 
