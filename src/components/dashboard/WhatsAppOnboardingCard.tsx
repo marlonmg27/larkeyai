@@ -16,6 +16,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { connectWhatsAppAccount } from "@/lib/whatsapp.functions";
+import { PhoneField } from "@/components/dashboard/PhoneField";
+import {
+  defaultCountry,
+  toE164,
+  validateNationalNumber,
+  type Country,
+} from "@/lib/phone/countries";
 import {
   whatsappOnboardingSchema,
   type MessagingChannel,
