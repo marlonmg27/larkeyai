@@ -65,6 +65,8 @@ export function WhatsAppOnboardingCard({
 }) {
   const [channel, setChannel] = useState<MessagingChannel | null>(null);
   const [values, setValues] = useState<FormValues>(EMPTY);
+  const [country, setCountry] = useState<Country>(defaultCountry);
+  const [nationalNumber, setNationalNumber] = useState("");
   const [errors, setErrors] = useState<FormErrors>({});
   const [refreshing, setRefreshing] = useState(false);
 
@@ -103,13 +105,19 @@ export function WhatsAppOnboardingCard({
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const parsed = schema.safeParse(values);
-    if (!parsed.success) {
+
+    const phoneError = validateNationalNumber(country, nationalNumber);
+    const parsed = schema.safeParse({ ...values, phoneNumber: toE164(country, nationalNumber) });
+
+    if (!parsed.success || phoneError) {
       const next: FormErrors = {};
-      for (const issue of parsed.error.issues) {
-        const key = issue.path[0] as keyof FormValues;
-        if (!next[key]) next[key] = issue.message;
+      if (!parsed.success) {
+        for (const issue of parsed.error.issues) {
+          const key = issue.path[0] as keyof FormValues;
+          if (!next[key]) next[key] = issue.message;
+        }
       }
+      if (phoneError) next.phoneNumber = phoneError;
       setErrors(next);
       return;
     }
