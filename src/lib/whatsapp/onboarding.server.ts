@@ -33,11 +33,19 @@ export async function connectWhatsApp(
 ): Promise<ConnectWhatsAppResult> {
   const baseUrl = process.env["BACKEND_URL"];
   const internalSecret = process.env["BACKEND_INTERNAL_SECRET"];
+  // El access_token reenviado es SIEMPRE el secreto del servidor, nunca el del cliente.
+  const wabaAccessToken = process.env["WABA_ACCESS_TOKEN"];
 
   if (!baseUrl || !internalSecret) {
     console.error("[whatsapp-onboarding] BACKEND_URL o BACKEND_INTERNAL_SECRET sin configurar");
     throw new Error("La conexión con el servicio de WhatsApp no está configurada todavía.");
   }
+
+  if (!wabaAccessToken) {
+    console.error("[whatsapp-onboarding] WABA_ACCESS_TOKEN sin configurar");
+    throw new Error("La conexión con el servicio de WhatsApp no está configurada todavía.");
+  }
+
 
   // El canal se fija a un valor permitido del servidor, no se confía en texto libre.
   const channel: MessagingChannel = messagingChannels.includes(input.channel)
@@ -63,6 +71,7 @@ export async function connectWhatsApp(
         phone_number: input.phoneNumber,
         phone_number_id: input.phoneNumberId,
         waba_id: input.wabaId,
+        access_token: wabaAccessToken,
       }),
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
