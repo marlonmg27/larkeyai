@@ -8,15 +8,15 @@ verificación pasa, se reenvía el onboarding al backend de Python.
 
 1. El usuario llena el formulario (negocio, usuario, email, teléfono, Phone number ID, WABA ID).
 2. Al enviar, el servidor consulta la Graph API usando `WABA_ACCESS_TOKEN`:
-   - Lee los números de la WABA indicada y busca el `Phone number ID` capturado.
+   - Lee los números de la WhatsApp Business Account indicada y busca el `Phone number ID` capturado.
    - Compara el `display_phone_number` que devuelve Meta con el número E.164 del formulario.
 3. Resultados posibles:
    - **Coincide** → se envía el onboarding al backend igual que hoy.
    - **No coincide / no existe** → no se envía nada al backend y el formulario muestra el error
      debajo del campo correspondiente, en español:
-     - "Ese Phone number ID no existe en la WABA indicada" (sobre Phone number ID).
-     - "El número no coincide con el registrado en WhatsApp Business (+1555…)" (sobre el teléfono),
-       mostrando el número que Meta tiene registrado para que el usuario lo corrija.
+     - "Ese Phone number ID no existe en la WhatsApp Business Account indicada" (sobre Phone number ID).
+     - "El número no coincide con el registrado en la WhatsApp Business Account (+1555…)" (sobre el
+       teléfono), mostrando el número que Meta tiene registrado para que el usuario lo corrija.
      - "No pudimos validar el número con WhatsApp en este momento. Inténtalo de nuevo."
        (error de red/token, mensaje general arriba del botón).
 
