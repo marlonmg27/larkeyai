@@ -37,6 +37,27 @@ nacionales, sin espacios ni separadores). El formulario tiene un selector de có
 (`src/lib/phone/countries.ts`) y valida el largo de dígitos por país; el esquema compartido
 además rechaza cualquier valor que no cumpla `^\+[1-9]\d{7,14}$`.
 
+## Verificación con la Graph API (antes de llamar al backend)
+
+`src/lib/whatsapp/graph.server.ts` (`verifyPhoneBelongsToWaba`) consulta la Graph API de Meta
+**v25.0** con el secreto de servidor `WABA_ACCESS_TOKEN` (nunca se expone al cliente ni se
+loguea):
+
+1. `GET /v25.0/{waba_id}/phone_numbers?fields=id,display_phone_number,verified_name,code_verification_status`
+   y busca el `phone_number_id` capturado.
+2. Si esa llamada responde 400/403 (sin permisos sobre la cuenta), se usa el fallback
+   `GET /v25.0/{phone_number_id}?fields=display_phone_number,verified_name`.
+3. Compara solo dígitos entre `display_phone_number` y el `phone_number` E.164 del formulario.
+
+Solo si la verificación pasa se hace el `POST` al backend. Si falla, la server function devuelve
+`{ ok: false, verification: { field, message } }` y la card pinta el error en el campo:
+
+| Caso | Campo | Mensaje |
+| --- | --- | --- |
+| ID inexistente en la cuenta | `phoneNumberId` | "Ese Phone number ID no existe en la WhatsApp Business Account indicada." |
+| Número distinto al registrado | `phoneNumber` | "El número no coincide con el registrado en la WhatsApp Business Account (…)." |
+| Red / token / error de Meta | — | "No pudimos validar el número con WhatsApp en este momento. Inténtalo de nuevo." |
+
 El frontend **nunca escribe** en `public.whatsapp_connections`: el usuario solo tiene `SELECT`
 de su propia fila. El backend de FastAPI (service role) es el único dueño de la escritura.
 
