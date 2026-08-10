@@ -61,9 +61,9 @@ async function graphGet(
 export async function verifyPhoneBelongsToWaba(
   input: VerifyPhoneInput,
 ): Promise<VerifyPhoneResult> {
-  const token = process.env["WABA_ACCESS_TOKEN"];
+  const token = input.accessToken?.trim() || process.env["WABA_ACCESS_TOKEN"];
   if (!token) {
-    console.error("[whatsapp-graph] WABA_ACCESS_TOKEN sin configurar");
+    console.error("[whatsapp-graph] sin access token para verificar");
     return {
       ok: false,
       reason: "unavailable",
