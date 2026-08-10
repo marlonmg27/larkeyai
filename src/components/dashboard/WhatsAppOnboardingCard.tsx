@@ -16,6 +16,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { connectWhatsAppAccount } from "@/lib/whatsapp.functions";
+import { PhoneField } from "@/components/dashboard/PhoneField";
+import {
+  defaultCountry,
+  toE164,
+  validateNationalNumber,
+  type Country,
+} from "@/lib/phone/countries";
 import {
   whatsappOnboardingSchema,
   type MessagingChannel,
@@ -58,6 +65,8 @@ export function WhatsAppOnboardingCard({
 }) {
   const [channel, setChannel] = useState<MessagingChannel | null>(null);
   const [values, setValues] = useState<FormValues>(EMPTY);
+  const [country, setCountry] = useState<Country>(defaultCountry);
+  const [nationalNumber, setNationalNumber] = useState("");
   const [errors, setErrors] = useState<FormErrors>({});
   const [refreshing, setRefreshing] = useState(false);
 
@@ -96,13 +105,19 @@ export function WhatsAppOnboardingCard({
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const parsed = schema.safeParse(values);
-    if (!parsed.success) {
+
+    const phoneError = validateNationalNumber(country, nationalNumber);
+    const parsed = schema.safeParse({ ...values, phoneNumber: toE164(country, nationalNumber) });
+
+    if (!parsed.success || phoneError) {
       const next: FormErrors = {};
-      for (const issue of parsed.error.issues) {
-        const key = issue.path[0] as keyof FormValues;
-        if (!next[key]) next[key] = issue.message;
+      if (!parsed.success) {
+        for (const issue of parsed.error.issues) {
+          const key = issue.path[0] as keyof FormValues;
+          if (!next[key]) next[key] = issue.message;
+        }
       }
+      if (phoneError) next.phoneNumber = phoneError;
       setErrors(next);
       return;
     }
@@ -234,21 +249,21 @@ export function WhatsAppOnboardingCard({
                 {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="wa-phone-number">Phone number</Label>
-                <Input
-                  id="wa-phone-number"
-                  type="tel"
-                  value={values.phoneNumber}
-                  onChange={(e) => setField("phoneNumber", e.target.value)}
-                  placeholder="+52 662 123 4567"
-                  maxLength={20}
-                  autoComplete="tel"
-                />
-                {errors.phoneNumber && (
-                  <p className="text-xs text-destructive">{errors.phoneNumber}</p>
-                )}
-              </div>
+              <PhoneField
+                country={country}
+                onCountryChange={(c) => {
+                  setCountry(c);
+                  setErrors((e) => ({ ...e, phoneNumber: undefined }));
+                  mutation.reset();
+                }}
+                nationalNumber={nationalNumber}
+                onNationalNumberChange={(v) => {
+                  setNationalNumber(v);
+                  setErrors((e) => ({ ...e, phoneNumber: undefined }));
+                  mutation.reset();
+                }}
+                error={errors.phoneNumber}
+              />
 
               <div className="space-y-2">
                 <Label htmlFor="wa-phone-number-id">Phone number ID</Label>
