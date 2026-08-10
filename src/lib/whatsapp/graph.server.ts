@@ -15,6 +15,8 @@ export type VerifyPhoneInput = {
   phoneNumberId: string;
   /** E.164, p. ej. +526621234567 */
   phoneNumber: string;
+  /** Token del usuario, usado solo para esta verificación. */
+  accessToken?: string;
 };
 
 export type VerifyPhoneResult =
