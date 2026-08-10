@@ -37,7 +37,6 @@ const EMPTY: FormValues = {
   phoneNumber: "",
   phoneNumberId: "",
   wabaId: "",
-  accessToken: "",
 };
 
 const CHANNELS: {
@@ -71,9 +70,8 @@ export function WhatsAppOnboardingCard({
   const mutation = useMutation({
     mutationFn: (input: FormValues) => connect({ data: input }),
     onSuccess: () => {
-      setValues((v) => ({ ...v, accessToken: "" }));
-      setShowKey(false);
       void queryClient.invalidateQueries({ queryKey: ["dashboard", userId] });
+
     },
   });
 
@@ -282,30 +280,8 @@ export function WhatsAppOnboardingCard({
                 {errors.wabaId && <p className="text-xs text-destructive">{errors.wabaId}</p>}
               </div>
 
-              <div className="space-y-2 sm:col-span-2">
-                <Label htmlFor="wa-access-token">Access token</Label>
-                <div className="relative">
-                  <Input
-                    id="wa-access-token"
-                    type={showToken ? "text" : "password"}
-                    value={values.accessToken}
-                    onChange={(e) => setField("accessToken", e.target.value)}
-                    placeholder="••••••••••••"
-                    maxLength={512}
-                    autoComplete="off"
-                    className="pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowKey((s) => !s)}
-                    aria-label={showToken ? "Ocultar Access token" : "Mostrar Access token"}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    {showToken ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-                {errors.accessToken && <p className="text-xs text-destructive">{errors.accessToken}</p>}
-              </div>
+
+
 
               <div className="space-y-3 sm:col-span-2">
                 {mutation.isError && (
