@@ -26,11 +26,11 @@ El formulario no cambia de campos ni de diseño; solo aparecen estos errores nue
 
 - Nuevo `src/lib/whatsapp/graph.server.ts`:
   - `verifyPhoneBelongsToWaba({ wabaId, phoneNumberId, phoneNumber })`.
-  - `GET https://graph.facebook.com/v21.0/{wabaId}/phone_numbers?fields=id,display_phone_number,verified_name,code_verification_status`
+  - `GET https://graph.facebook.com/v25.0/{wabaId}/phone_numbers?fields=id,display_phone_number,verified_name,code_verification_status`
     con `Authorization: Bearer ${process.env['WABA_ACCESS_TOKEN']}` (leído dentro del handler),
     `AbortSignal.timeout(10_000)`.
-  - Fallback: si esa llamada responde 400/403 por permisos de WABA, consulta
-    `GET /v21.0/{phoneNumberId}?fields=display_phone_number,verified_name` y valida solo el número.
+  - Fallback: si esa llamada responde 400/403 por permisos de la cuenta, consulta
+    `GET /v25.0/{phoneNumberId}?fields=display_phone_number,verified_name` y valida solo el número.
   - Normaliza ambos lados a dígitos (`display_phone_number` viene con `+`, espacios y guiones) y
     compara con los dígitos del E.164 del formulario.
   - Devuelve una unión discriminada: `{ ok: true, displayPhoneNumber, verifiedName }` o
