@@ -23,7 +23,7 @@ formulario correspondiente.
   "display_name": "Nombre del negocio",
   "user_name": "Nombre del usuario",
   "email": "contacto@negocio.com",
-  "phone_number": "+52 662 123 4567",
+  "phone_number": "+526621234567",
   "phone_number_id": "123456789012345",
   "waba_id": "..."
 }
