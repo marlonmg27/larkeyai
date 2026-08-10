@@ -16,6 +16,7 @@ export const connectWhatsAppAccount = createServerFn({ method: "POST" })
       wabaId: data.wabaId,
       phoneNumberId: data.phoneNumberId,
       phoneNumber: data.phoneNumber,
+      accessToken: data.accessToken,
     });
 
     if (!verification.ok) {
