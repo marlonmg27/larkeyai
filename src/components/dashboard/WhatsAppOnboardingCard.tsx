@@ -2,8 +2,6 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
-  Eye,
-  EyeOff,
   MessageSquare,
   CheckCircle2,
   AlertCircle,
@@ -61,7 +59,7 @@ export function WhatsAppOnboardingCard({
   const [channel, setChannel] = useState<MessagingChannel | null>(null);
   const [values, setValues] = useState<FormValues>(EMPTY);
   const [errors, setErrors] = useState<FormErrors>({});
-  const [showToken, setShowKey] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
   const queryClient = useQueryClient();
@@ -153,8 +151,8 @@ export function WhatsAppOnboardingCard({
         {status === "error" && (
           <p className="mb-4 flex items-start gap-2 rounded-lg border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">
             <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-            No pudimos verificar tu conexión anterior. Revisa que el Phone number ID, el WABA
-            ID y el access token sean correctos e inténtalo de nuevo.
+            No pudimos verificar tu conexión anterior. Revisa que el Phone number ID y el
+            WABA ID sean correctos e inténtalo de nuevo.
           </p>
         )}
 
