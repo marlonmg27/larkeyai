@@ -60,7 +60,6 @@ export function WhatsAppOnboardingCard({
   const [values, setValues] = useState<FormValues>(EMPTY);
   const [errors, setErrors] = useState<FormErrors>({});
   const [refreshing, setRefreshing] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
 
   const queryClient = useQueryClient();
   const connect = useServerFn(connectWhatsAppAccount);
