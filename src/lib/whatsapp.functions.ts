@@ -10,8 +10,25 @@ export const connectWhatsAppAccount = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => whatsappOnboardingSchema.parse(data))
   .handler(async ({ data, context }) => {
+    const { verifyPhoneBelongsToWaba } = await import("@/lib/whatsapp/graph.server");
+
+    const verification = await verifyPhoneBelongsToWaba({
+      wabaId: data.wabaId,
+      phoneNumberId: data.phoneNumberId,
+      phoneNumber: data.phoneNumber,
+    });
+
+    if (!verification.ok) {
+      return {
+        ok: false as const,
+        verification: { field: verification.field, message: verification.message },
+        status: null,
+        message: null,
+      };
+    }
+
     const { connectWhatsApp } = await import("@/lib/whatsapp/onboarding.server");
-    return connectWhatsApp({
+    const result = await connectWhatsApp({
       userId: context.userId,
       channel: data.channel,
       displayName: data.displayName,
@@ -21,4 +38,6 @@ export const connectWhatsAppAccount = createServerFn({ method: "POST" })
       phoneNumberId: data.phoneNumberId,
       wabaId: data.wabaId,
     });
+
+    return { ...result, verification: null };
   });
