@@ -15,6 +15,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe/webhook'
+import { Route as ApiPublicWhatsappConnectionsUpsertRouteImport } from './routes/api/public/whatsapp/connections/upsert'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -45,6 +46,12 @@ const ApiPublicStripeWebhookRoute = ApiPublicStripeWebhookRouteImport.update({
   path: '/api/public/stripe/webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicWhatsappConnectionsUpsertRoute =
+  ApiPublicWhatsappConnectionsUpsertRouteImport.update({
+    id: '/api/public/whatsapp/connections/upsert',
+    path: '/api/public/whatsapp/connections/upsert',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -52,6 +59,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
+  '/api/public/whatsapp/connections/upsert': typeof ApiPublicWhatsappConnectionsUpsertRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -59,6 +67,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
+  '/api/public/whatsapp/connections/upsert': typeof ApiPublicWhatsappConnectionsUpsertRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -68,6 +77,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
+  '/api/public/whatsapp/connections/upsert': typeof ApiPublicWhatsappConnectionsUpsertRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -77,6 +87,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/dashboard'
     | '/api/public/stripe/webhook'
+    | '/api/public/whatsapp/connections/upsert'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -84,6 +95,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/dashboard'
     | '/api/public/stripe/webhook'
+    | '/api/public/whatsapp/connections/upsert'
   id:
     | '__root__'
     | '/'
@@ -92,6 +104,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/_authenticated/dashboard'
     | '/api/public/stripe/webhook'
+    | '/api/public/whatsapp/connections/upsert'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -100,6 +113,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
+  ApiPublicWhatsappConnectionsUpsertRoute: typeof ApiPublicWhatsappConnectionsUpsertRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -146,6 +160,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicStripeWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/whatsapp/connections/upsert': {
+      id: '/api/public/whatsapp/connections/upsert'
+      path: '/api/public/whatsapp/connections/upsert'
+      fullPath: '/api/public/whatsapp/connections/upsert'
+      preLoaderRoute: typeof ApiPublicWhatsappConnectionsUpsertRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -166,17 +187,9 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
+  ApiPublicWhatsappConnectionsUpsertRoute:
+    ApiPublicWhatsappConnectionsUpsertRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
