@@ -288,7 +288,7 @@ export function PlanCards({
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.35, delay: 0.24 }}
           >
-            <Card className="relative h-full overflow-hidden">
+            <Card className="relative flex h-full flex-col overflow-hidden">
               <CardHeader>
                 <div className="mb-2 grid h-10 w-10 place-items-center rounded-lg bg-brand/10 text-brand">
                   <ENTERPRISE_META.icon className="h-5 w-5" />
@@ -296,7 +296,8 @@ export function PlanCards({
                 <CardTitle className="text-xl">{ENTERPRISE_META.label}</CardTitle>
                 <CardDescription>{ENTERPRISE_META.tagline}</CardDescription>
               </CardHeader>
-              <CardContent className="flex h-full flex-col">
+              <CardContent className="flex flex-1 flex-col">
+
                 <div className="mb-4">
                   <div className="flex items-baseline gap-1">
                     <span className="text-3xl font-bold tracking-tight">Personalizado</span>
