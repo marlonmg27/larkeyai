@@ -121,23 +121,11 @@ export async function upsertConnection(data: Record<string, unknown> & Persisted
   );
 }
 
+/**
+ * Idempotente: actualiza la fila si existe, la crea si no.
+ * Ya no devuelve `connection_not_found`.
+ */
 export async function patchConnectionStatus(data: Record<string, unknown> & PersistedFields) {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
-  const { data: updated, error } = await supabaseAdmin
-    .from("whatsapp_connections")
-    .update(pickPresent(data) as never)
-    .eq("user_id", data.user_id)
-    .select("user_id")
-    .maybeSingle();
-
-  if (error) {
-    console.error("[whatsapp-connections] update falló", { code: error.code });
-    return json({ ok: false, error: "database_error" }, 500);
-  }
-  if (!updated) {
-    return json({ ok: false, error: "connection_not_found" }, 404);
-  }
-
-  return json({ ok: true, user_id: data.user_id, status: data.status }, 200);
+  return upsertConnection(data);
 }
+
