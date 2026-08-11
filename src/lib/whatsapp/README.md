@@ -104,7 +104,10 @@ este proyecto (`X-Internal-Secret: {BACKEND_INTERNAL_SECRET}`):
 | `POST /api/public/whatsapp/connections/upsert` | `src/routes/api/public/whatsapp/connections/upsert.ts` | `save_pending` |
 | `PATCH /api/public/whatsapp/connections/status` | `src/routes/api/public/whatsapp/connections/status.ts` | `update_status` |
 
-Lógica compartida en `src/lib/whatsapp/connections.server.ts`. Solo persisten
-`user_id`, `status`, `phone_display` y `chatwoot_inbox_id`; las credenciales que venga
-en el body (`display_name`, `phone_number_id`, `waba_id`, `access_token`) se aceptan pero
-se ignoran y nunca se loguean. Contratos completos en `src/lib/database/README.md`.
+Lógica compartida en `src/lib/whatsapp/connections.server.ts`. Ambos son idempotentes
+(upsert por `user_id`): el `PATCH` crea la fila si no existe y devuelve `created`, así que
+no responde `connection_not_found`. Solo persisten `user_id`, `status`, `phone_display` y
+`chatwoot_inbox_id`; las credenciales que vengan en el body (`display_name`,
+`phone_number_id`, `waba_id`, `access_token`) se aceptan pero se ignoran y nunca se
+loguean. Contratos completos en `src/lib/database/README.md`.
+
