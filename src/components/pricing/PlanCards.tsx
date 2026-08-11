@@ -206,7 +206,7 @@ export function PlanCards({
                     transition={{ duration: 0.35, delay: idx * 0.08 }}
                   >
                     <Card
-                      className={`relative h-full overflow-hidden ${
+                      className={`relative flex h-full flex-col overflow-hidden ${
                         meta.highlight ? "border-brand shadow-lg ring-1 ring-brand" : ""
                       }`}
                     >
