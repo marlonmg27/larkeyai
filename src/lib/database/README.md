@@ -200,11 +200,12 @@ Respuesta `200`: `{"ok":true,"user_id":"…","status":"pending","created":true}`
 
 ### `PATCH /api/public/whatsapp/connections/status`
 
-Equivale a `update_status`. Requiere `user_id` y `status`; `phone_display` y
-`chatwoot_inbox_id` solo se escriben si vienen presentes (omitir ≠ borrar).
-Si no existe fila → `404 {"ok":false,"error":"connection_not_found"}`.
+Equivale a `update_status`, pero es **idempotente**: si no existe fila para ese `user_id`
+la crea. Requiere `user_id` y `status`; `phone_display` y `chatwoot_inbox_id` solo se
+escriben si vienen presentes (omitir ≠ borrar).
 
-Respuesta `200`: `{"ok":true,"user_id":"…","status":"connected"}`
+Respuesta `200`: `{"ok":true,"user_id":"…","status":"connected","created":false}`
+(`created: true` cuando la fila se acaba de crear).
 
 ### Errores
 
@@ -212,9 +213,9 @@ Respuesta `200`: `{"ok":true,"user_id":"…","status":"connected"}`
 | --- | --- |
 | 400 | `invalid_json` o `validation_error` (uuid mal formado, status fuera del enum) |
 | 401 | `unauthorized`: falta o no coincide `X-Internal-Secret` |
-| 404 | Solo en patch: `connection_not_found` |
 | 405 | Método incorrecto |
 | 500 | `database_error` (detalle solo en logs del servidor) |
+
 
 ### Ejemplo (httpx)
 
