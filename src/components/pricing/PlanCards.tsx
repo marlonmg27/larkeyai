@@ -222,7 +222,8 @@ export function PlanCards({
                         <CardTitle className="text-xl">{meta.label}</CardTitle>
                         <CardDescription>{meta.tagline}</CardDescription>
                       </CardHeader>
-                      <CardContent className="flex h-full flex-col">
+                      <CardContent className="flex flex-1 flex-col">
+
                         <div className="mb-4">
                           {isLoading || !plan ? (
                             <div className="h-10 w-32 animate-pulse rounded bg-muted" />
