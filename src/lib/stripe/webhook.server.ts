@@ -47,7 +47,7 @@ export async function verifyAndDispatch(
   const stripe = getStripe();
   let event: Stripe.Event;
   try {
-    event = stripe.webhooks.constructEvent(rawBody, signature, secret);
+    event = await stripe.webhooks.constructEventAsync(rawBody, signature, secret);
   } catch (err) {
     console.error("[stripe-webhook] signature verification failed", err);
     return { status: 400, body: "invalid signature" };
