@@ -21,7 +21,10 @@ export type ConnectWhatsAppInput = {
   phoneNumber: string;
   phoneNumberId: string;
   wabaId: string;
+  /** Se muestra como "Api Key" en el formulario. Nunca se registra en logs. */
+  accessToken?: string;
 };
+
 
 export type ConnectWhatsAppResult = {
   ok: boolean;
