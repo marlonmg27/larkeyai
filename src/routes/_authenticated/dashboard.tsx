@@ -500,12 +500,24 @@ function LeadOnboarding({ email }: { email: string }) {
       </p>
 
       <p className="text-center text-xs text-muted-foreground">
+        ¿Aún no tienes una WhatsApp Business Account o una app de Meta? Escríbenos a{" "}
+        <a
+          href="mailto:marlonmolinag12@gmail.com"
+          className="underline-offset-4 hover:underline"
+        >
+          marlonmolinag12@gmail.com
+        </a>{" "}
+        y te ayudamos a crearlas.
+      </p>
+
+      <p className="text-center text-xs text-muted-foreground">
         ¿Necesitas algo a medida o eres un cliente existente?{" "}
         <a href="mailto:marlonmolinag@hotmail.com" className="text-brand underline-offset-4 hover:underline">
           Escríbenos
         </a>
         .
       </p>
+
     </div>
   );
 }

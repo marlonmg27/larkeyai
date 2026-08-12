@@ -9,8 +9,8 @@ import {
   RefreshCw,
   ArrowLeft,
   ChevronRight,
-
-
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,6 +20,8 @@ import { Badge } from "@/components/ui/badge";
 import { connectWhatsAppAccount } from "@/lib/whatsapp.functions";
 import { PhoneField } from "@/components/dashboard/PhoneField";
 import { EmbeddedSignupButton } from "@/components/dashboard/EmbeddedSignupButton";
+import { ChatwootSetupGuide } from "@/components/dashboard/ChatwootSetupGuide";
+
 
 import {
   defaultCountry,
@@ -46,7 +48,9 @@ const EMPTY: FormValues = {
   phoneNumber: "",
   phoneNumberId: "",
   wabaId: "",
+  accessToken: "",
 };
+
 
 
 const CHANNELS: {
@@ -74,6 +78,8 @@ export function WhatsAppOnboardingCard({
   const [nationalNumber, setNationalNumber] = useState("");
   const [errors, setErrors] = useState<FormErrors>({});
   const [refreshing, setRefreshing] = useState(false);
+  const [showApiKey, setShowApiKey] = useState(false);
+
   
 
   const queryClient = useQueryClient();
@@ -163,6 +169,36 @@ export function WhatsAppOnboardingCard({
       </Card>
     );
   }
+
+  // Datos enviados: mostramos la guía para entrar y configurar su plataforma.
+  if (isVerified) {
+    return (
+      <Card className="border-brand/30">
+        <CardHeader>
+          <Badge className="mb-2 w-fit bg-brand/15 text-brand hover:bg-brand/15">
+            <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" /> Conexión enviada
+          </Badge>
+          <CardTitle>Ya casi: configura tu plataforma de conversaciones</CardTitle>
+          <CardDescription>
+            Sigue estos pasos para entrar, cambiar tu contraseña y revisar tu inbox de WhatsApp.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ChatwootSetupGuide
+            email={values.email}
+            message={mutation.data?.message ?? null}
+          />
+          <div className="mt-6">
+            <Button variant="outline" onClick={handleRefresh} disabled={refreshing}>
+              <RefreshCw className={`mr-2 h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
+              Actualizar estado
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
 
   return (
     <Card className="border-brand/30">
@@ -319,7 +355,36 @@ export function WhatsAppOnboardingCard({
                 {errors.wabaId && <p className="text-xs text-destructive">{errors.wabaId}</p>}
               </div>
 
-
+              <div className="space-y-2 sm:col-span-2">
+                <Label htmlFor="wa-api-key">Api Key</Label>
+                <div className="relative">
+                  <Input
+                    id="wa-api-key"
+                    type={showApiKey ? "text" : "password"}
+                    value={values.accessToken}
+                    onChange={(e) => setField("accessToken", e.target.value)}
+                    placeholder="Token permanente de tu app de Meta"
+                    maxLength={512}
+                    autoComplete="off"
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowApiKey((v) => !v)}
+                    aria-label={showApiKey ? "Ocultar Api Key" : "Mostrar Api Key"}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    {showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  La encuentras en tu app de Meta, en WhatsApp → API Setup. La guardamos de forma
+                  segura.
+                </p>
+                {errors.accessToken && (
+                  <p className="text-xs text-destructive">{errors.accessToken}</p>
+                )}
+              </div>
 
 
               <div className="space-y-3 sm:col-span-2">
