@@ -88,7 +88,7 @@ export async function connectWhatsApp(
         phone_number: input.phoneNumber,
         phone_number_id: input.phoneNumberId,
         waba_id: input.wabaId,
-        access_token: wabaAccessToken,
+        access_token: accessToken,
       }),
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
