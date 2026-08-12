@@ -19,6 +19,8 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { connectWhatsAppAccount } from "@/lib/whatsapp.functions";
 import { PhoneField } from "@/components/dashboard/PhoneField";
+import { EmbeddedSignupButton } from "@/components/dashboard/EmbeddedSignupButton";
+
 import {
   defaultCountry,
   toE164,
