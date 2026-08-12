@@ -40,15 +40,15 @@ export const whatsappOnboardingSchema = z.object({
     .trim()
     .nonempty({ message: "Ingresa el WABA ID" })
     .max(64, { message: "Máximo 64 caracteres" }),
-  // Verificación con Graph API desactivada temporalmente.
-  // Para reactivarla: descomentar este campo, el input del formulario
-  // (WhatsAppOnboardingCard) y el bloque de verificación en whatsapp.functions.ts.
-  // accessToken: z
-  //   .string()
-  //   .trim()
-  //   .nonempty({ message: "Ingresa el access token" })
-  //   .max(512, { message: "Máximo 512 caracteres" }),
+  // En el formulario se muestra como "Api Key"; internamente sigue siendo el access token.
+  // La verificación con Graph API sigue desactivada (ver whatsapp.functions.ts).
+  accessToken: z
+    .string()
+    .trim()
+    .nonempty({ message: "Ingresa la Api Key" })
+    .max(512, { message: "Máximo 512 caracteres" }),
 });
+
 
 
 export type WhatsAppOnboardingValues = z.infer<typeof whatsappOnboardingSchema>;
