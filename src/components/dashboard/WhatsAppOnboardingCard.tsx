@@ -44,8 +44,8 @@ const EMPTY: FormValues = {
   phoneNumber: "",
   phoneNumberId: "",
   wabaId: "",
-  };
 };
+
 
 const CHANNELS: {
   id: MessagingChannel;
