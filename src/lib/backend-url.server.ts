@@ -39,14 +39,3 @@ export function resolveBackendBaseUrl(raw: string | undefined | null): BackendUr
 
   return { ok: true, base: `${url.origin}${url.pathname.replace(/\/+$/, "")}`, host: url.host };
 }
-
-/** Construye una URL absoluta del backend a partir de una ruta (`/onboarding/whatsapp`). */
-export function backendEndpoint(
-  raw: string | undefined | null,
-  path: string,
-): BackendUrlResult extends never ? never : { ok: true; url: URL } | Exclude<BackendUrlResult, { ok: true }> {
-  const resolved = resolveBackendBaseUrl(raw);
-  if (!resolved.ok) return resolved;
-  const suffix = path.startsWith("/") ? path : `/${path}`;
-  return { ok: true, url: new URL(`${resolved.base}${suffix}`) };
-}
