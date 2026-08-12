@@ -38,7 +38,7 @@ El formulario manual sigue funcionando exactamente igual.
 
 3. **Envío del `code` al backend** — server function autenticada
    `completeEmbeddedSignup` (`requireSupabaseAuth`, el `user_id` sale del JWT) que hace
-   `POST ${BACKEND_URL}/api/v1/onboarding/whatsapp/callback` con
+   `POST ${BACKEND_URL}/onboarding/whatsapp/embedded_signup` con
    `X-Internal-Secret: ${BACKEND_INTERNAL_SECRET}` y body
    `{ user_id, code, waba_id?, phone_number_id? }`. Nunca se loguea el `code`.
    El `code` no se manda desde el navegador al backend directamente: pasa por el
@@ -52,8 +52,9 @@ El formulario manual sigue funcionando exactamente igual.
 ## Detalles técnicos
 
 - `src/lib/whatsapp/embedded-signup.ts`: constantes de config (`appId`, `configId`,
-  `graphVersion`, `enabled`) leídas de `import.meta.env.VITE_FB_APP_ID`,
-  `VITE_FB_WHATSAPP_CONFIG_ID`, `VITE_WHATSAPP_EMBEDDED_SIGNUP_ENABLED`.
+  `graphVersion`, `enabled`) leídas de `import.meta.env.VITE_FB_APP_ID`
+  (valor: `871512495342882`), `VITE_FB_WHATSAPP_CONFIG_ID` (vacío por ahora) y
+  `VITE_WHATSAPP_EMBEDDED_SIGNUP_ENABLED` (`false`).
 - `src/hooks/use-facebook-sdk.ts`: carga idempotente del script + `FB.init`, con tipos
   mínimos para `window.FB` (sin `any` suelto).
 - `src/components/dashboard/EmbeddedSignupButton.tsx`: botón, etiqueta estática,
@@ -62,15 +63,27 @@ El formulario manual sigue funcionando exactamente igual.
 - `src/lib/whatsapp/embedded-signup.functions.ts`: `completeEmbeddedSignup`
   (server function `POST`, Zod: `code` requerido máx. 512, `wabaId`/`phoneNumberId`
   opcionales).
-- `src/lib/whatsapp/embedded-signup.server.ts`: fetch al backend reutilizando
+- `src/lib/whatsapp/embedded-signup.server.ts`: fetch a
+  `${BACKEND_URL}/onboarding/whatsapp/embedded_signup` reutilizando
   `resolveBackendBaseUrl`, timeout de 15 s, sin loguear credenciales.
 - `WhatsAppOnboardingCard.tsx`: renderiza el bloque nuevo + separador cuando
   `channel === "whatsapp"`.
 - Actualización de `src/lib/whatsapp/README.md` con el contrato del nuevo endpoint.
 - Sin cambios de base de datos, ni de Stripe, ni del formulario manual.
 
-## Necesito de ti (o lo dejo vacío y se llena luego)
+## Sobre el `config_id`
 
-El **App ID** de Meta y el **config_id** del Embedded Signup. Si me los das, los dejo
-configurados; si no, quedan como variables vacías y el botón simplemente permanece
-deshabilitado hasta que se agreguen.
+El `config_id` es el ID de una **configuración de Embedded Signup** que se crea en el
+panel de Meta, no un dato de la app en sí:
+
+1. developers.facebook.com → tu app (871512495342882) → producto **WhatsApp** →
+   **Embedded Signup** (también aparece como "Configuraciones de registro integrado").
+2. Crear una configuración: eliges los permisos/`featureType`, el tipo de solución
+   (Tech Provider / onboarding de clientes) y las opciones de precarga.
+3. Al guardarla, Meta muestra un **ID de configuración** numérico: ese es el `config_id`.
+
+Requisito previo: la app necesita el caso de uso de WhatsApp Business con los permisos
+`whatsapp_business_management` y `whatsapp_business_messaging`, y estar aprobada como
+Tech Provider — por eso el botón queda deshabilitado hasta entonces. Cuando tengas el
+número, lo cargo en `VITE_FB_WHATSAPP_CONFIG_ID` y solo falta poner el flag en `true`.
+
