@@ -220,6 +220,17 @@ export function WhatsAppOnboardingCard({
               Cambiar de canal
             </button>
 
+            <EmbeddedSignupButton />
+
+            <div className="mb-6 flex items-center gap-3">
+              <span className="h-px flex-1 bg-border" />
+              <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                o conecta manualmente
+              </span>
+              <span className="h-px flex-1 bg-border" />
+            </div>
+
+
             <form onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="wa-display-name">Nombre del negocio</Label>
