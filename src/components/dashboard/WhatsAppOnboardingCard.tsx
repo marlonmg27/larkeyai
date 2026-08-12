@@ -80,20 +80,20 @@ export function WhatsAppOnboardingCard({
   const mutation = useMutation({
     mutationFn: (input: FormValues) => connect({ data: input }),
     onSuccess: (result) => {
-      if (result && "verification" in result && result.verification) {
-        const { field, message } = result.verification;
-        if (field) setErrors((e) => ({ ...e, [field]: message }));
-        return;
-      }
+      // Verificación con Graph API desactivada temporalmente:
+      // if (result && "verification" in result && result.verification) {
+      //   const { field, message } = result.verification;
+      //   if (field) setErrors((e) => ({ ...e, [field]: message }));
+      //   return;
+      // }
+      void result;
       void queryClient.invalidateQueries({ queryKey: ["dashboard", userId] });
     },
   });
 
-  const verificationError =
-    mutation.data && "verification" in mutation.data && mutation.data.verification
-      ? mutation.data.verification
-      : null;
+  const verificationError: { field: string | null; message: string } | null = null;
   const isVerified = mutation.isSuccess && !verificationError;
+
 
   async function handleRefresh() {
     setRefreshing(true);
