@@ -46,7 +46,9 @@ const EMPTY: FormValues = {
   phoneNumber: "",
   phoneNumberId: "",
   wabaId: "",
+  accessToken: "",
 };
+
 
 
 const CHANNELS: {
