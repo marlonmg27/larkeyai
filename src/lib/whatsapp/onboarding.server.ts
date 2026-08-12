@@ -125,8 +125,10 @@ export async function connectWhatsApp(
   if (!res.ok) {
     console.error("[whatsapp-onboarding] backend respondió no-2xx", {
       user_id: input.userId,
+      host: target.host,
       status: res.status,
     });
+
     const detail =
       parsed && typeof parsed === "object"
         ? ((parsed as Record<string, unknown>)["detail"] ??
