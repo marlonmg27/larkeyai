@@ -14,7 +14,13 @@ El secreto existe (aparece en la lista), pero su valor no es una URL absoluta v�
 
 ## Arreglo
 
-1. **Corregir el valor del secreto `BACKEND_URL`** (esto es el arreglo real): debe ser una URL absoluta HTTPS, sin barra final ni espacios, por ejemplo `https://tu-backend.com`. Lo actualizo por el formulario seguro de secretos.
+1. **Corregir el valor del secreto `BACKEND_URL`** (esto es el arreglo real). Sí: el correcto es el **público** de Railway, con esquema y sin barra final:
+
+   ```text
+   https://larkey-production.up.railway.app
+   ```
+
+   El privado (`larkey.railway.internal`) solo resuelve dentro de la red de Railway; desde el runtime publicado de Lovable no es alcanzable. Lo dejo guardado con ese valor.
 
 2. **Hacer el parseo tolerante** en `src/lib/whatsapp/onboarding.server.ts`:
    - Normalizar el valor: recortar espacios y quitar comillas envolventes.
