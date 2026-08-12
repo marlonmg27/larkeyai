@@ -47,12 +47,29 @@ export async function connectWhatsApp(
   }
 
 
+  // Validamos la URL antes de intentar la conexión: un valor inválido o no
+  // HTTPS nunca es alcanzable desde el runtime publicado.
+  let target: URL;
+  try {
+    target = new URL(`${baseUrl.replace(/\/+$/, "")}/onboarding/whatsapp`);
+  } catch {
+    console.error("[whatsapp-onboarding] BACKEND_URL no es una URL válida");
+    throw new Error("La conexión con el servicio de WhatsApp no está configurada todavía.");
+  }
+  if (target.protocol !== "https:") {
+    console.error("[whatsapp-onboarding] BACKEND_URL debe ser HTTPS", {
+      protocol: target.protocol,
+      host: target.host,
+    });
+    throw new Error("La conexión con el servicio de WhatsApp no está configurada todavía.");
+  }
+
   // El canal se fija a un valor permitido del servidor, no se confía en texto libre.
   const channel: MessagingChannel = messagingChannels.includes(input.channel)
     ? input.channel
     : "whatsapp";
 
-  const url = `${baseUrl.replace(/\/+$/, "")}/onboarding/whatsapp`;
+  const url = target.toString();
 
   let res: Response;
   try {
@@ -77,12 +94,25 @@ export async function connectWhatsApp(
     });
   } catch (err) {
     const name = err instanceof Error ? err.name : "Error";
-    console.error("[whatsapp-onboarding] fetch falló", { user_id: input.userId, reason: name });
+    const detail = err instanceof Error ? err.message : String(err);
+    const cause =
+      err instanceof Error && err.cause instanceof Error ? err.cause.message : null;
+    console.error("[whatsapp-onboarding] fetch falló", {
+      user_id: input.userId,
+      host: target.host,
+      path: target.pathname,
+      reason: name,
+      detail,
+      cause,
+    });
     if (name === "TimeoutError" || name === "AbortError") {
       throw new Error("El servicio de WhatsApp tardó demasiado en responder. Inténtalo de nuevo.");
     }
-    throw new Error("No pudimos contactar al servicio de WhatsApp. Inténtalo de nuevo en un momento.");
+    throw new Error(
+      `No pudimos contactar al servicio de WhatsApp (${target.host}). Verifica que el backend esté publicado y accesible.`,
+    );
   }
+
 
   const raw = await res.text().catch(() => "");
   let parsed: unknown = null;
@@ -95,8 +125,10 @@ export async function connectWhatsApp(
   if (!res.ok) {
     console.error("[whatsapp-onboarding] backend respondió no-2xx", {
       user_id: input.userId,
+      host: target.host,
       status: res.status,
     });
+
     const detail =
       parsed && typeof parsed === "object"
         ? ((parsed as Record<string, unknown>)["detail"] ??
