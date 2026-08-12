@@ -8,6 +8,7 @@
  * Nunca registra el access token en logs.
  */
 import { messagingChannels, type MessagingChannel } from "@/lib/whatsapp/schema";
+import { resolveBackendBaseUrl } from "@/lib/backend-url.server";
 
 const TIMEOUT_MS = 15_000;
 
