@@ -37,18 +37,20 @@ export async function connectWhatsApp(
 ): Promise<ConnectWhatsAppResult> {
   const baseUrl = process.env["BACKEND_URL"];
   const internalSecret = process.env["BACKEND_INTERNAL_SECRET"];
-  // El access_token reenviado es SIEMPRE el secreto del servidor, nunca el del cliente.
-  const wabaAccessToken = process.env["WABA_ACCESS_TOKEN"];
+  // Se reenvía la Api Key que capturó el usuario; si viniera vacía usamos el secreto del servidor.
+  const clientToken = input.accessToken?.trim() ?? "";
+  const accessToken = clientToken.length > 0 ? clientToken : process.env["WABA_ACCESS_TOKEN"];
 
   if (!baseUrl || !internalSecret) {
     console.error("[whatsapp-onboarding] BACKEND_URL o BACKEND_INTERNAL_SECRET sin configurar");
     throw new Error("La conexión con el servicio de WhatsApp no está configurada todavía.");
   }
 
-  if (!wabaAccessToken) {
-    console.error("[whatsapp-onboarding] WABA_ACCESS_TOKEN sin configurar");
+  if (!accessToken) {
+    console.error("[whatsapp-onboarding] sin Api Key del usuario ni WABA_ACCESS_TOKEN");
     throw new Error("La conexión con el servicio de WhatsApp no está configurada todavía.");
   }
+
 
   // Normalizamos y validamos la URL antes de intentar la conexión: un valor
   // inválido o no HTTPS nunca es alcanzable desde el runtime publicado.
