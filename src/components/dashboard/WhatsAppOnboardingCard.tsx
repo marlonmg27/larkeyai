@@ -9,8 +9,8 @@ import {
   RefreshCw,
   ArrowLeft,
   ChevronRight,
-
-
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,6 +20,8 @@ import { Badge } from "@/components/ui/badge";
 import { connectWhatsAppAccount } from "@/lib/whatsapp.functions";
 import { PhoneField } from "@/components/dashboard/PhoneField";
 import { EmbeddedSignupButton } from "@/components/dashboard/EmbeddedSignupButton";
+import { ChatwootSetupGuide } from "@/components/dashboard/ChatwootSetupGuide";
+
 
 import {
   defaultCountry,
