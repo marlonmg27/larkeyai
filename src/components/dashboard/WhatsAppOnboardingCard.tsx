@@ -19,6 +19,8 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { connectWhatsAppAccount } from "@/lib/whatsapp.functions";
 import { PhoneField } from "@/components/dashboard/PhoneField";
+import { EmbeddedSignupButton } from "@/components/dashboard/EmbeddedSignupButton";
+
 import {
   defaultCountry,
   toE164,
@@ -219,6 +221,17 @@ export function WhatsAppOnboardingCard({
               <ArrowLeft className="h-4 w-4" />
               Cambiar de canal
             </button>
+
+            <EmbeddedSignupButton />
+
+            <div className="mb-6 flex items-center gap-3">
+              <span className="h-px flex-1 bg-border" />
+              <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                o conecta manualmente
+              </span>
+              <span className="h-px flex-1 bg-border" />
+            </div>
+
 
             <form onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">

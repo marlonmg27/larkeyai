@@ -1,8 +1,45 @@
 # Onboarding del canal de mensajería
 
 Flujo por el que un cliente con suscripción activa conecta su canal. La card primero muestra
-un listado de canales disponibles (hoy solo **WhatsApp**) y, al elegir uno, despliega el
-formulario correspondiente.
+un listado de canales disponibles (hoy solo **WhatsApp**) y, al elegir uno, despliega dos
+caminos: la **conexión rápida** (Embedded Signup de Meta, hoy deshabilitada) y el formulario
+manual.
+
+## Embedded Signup de WhatsApp Business (DESACTIVADO)
+
+Estructura completa, botón deshabilitado: la app de Meta todavía no está aprobada como
+Tech Provider.
+
+| Archivo | Rol |
+| --- | --- |
+| `src/lib/whatsapp/embedded-signup.ts` | Config del cliente: `appId` (`871512495342882`), `configId`, versión de Graph y flag `embeddedSignupEnabled` |
+| `src/hooks/use-facebook-sdk.ts` | Carga idempotente y condicional de `https://connect.facebook.net/en_US/sdk.js` + `FB.init` |
+| `src/components/dashboard/EmbeddedSignupButton.tsx` | Botón "Conectar WhatsApp Business" (disabled + tooltip "Próximamente"), `FB.login` y listener de `WA_EMBEDDED_SIGNUP` |
+| `src/lib/whatsapp/embedded-signup.functions.ts` | `completeEmbeddedSignup` (server function con `requireSupabaseAuth`) |
+| `src/lib/whatsapp/embedded-signup.server.ts` | `POST ${BACKEND_URL}/onboarding/whatsapp/embedded_signup` con `X-Internal-Secret` |
+
+Payload al backend:
+
+```json
+{
+  "channel": "whatsapp",
+  "user_id": "<uuid del JWT verificado>",
+  "code": "<response.authResponse.code>",
+  "waba_id": null,
+  "phone_number_id": null
+}
+```
+
+Para activarlo cuando Meta apruebe la app:
+
+1. Crear la configuración de Embedded Signup en el panel de Meta y copiar su ID.
+2. `VITE_FB_WHATSAPP_CONFIG_ID=<config_id>` y `VITE_WHATSAPP_EMBEDDED_SIGNUP_ENABLED=true`
+   (cliente) + `WHATSAPP_EMBEDDED_SIGNUP_ENABLED=true` (servidor, secreto).
+
+Mientras los flags estén apagados: el SDK no se carga, el botón está `disabled` y la server
+function devuelve `{ ok: false, reason: "disabled" }` sin contactar al backend. El `code`
+nunca se loguea ni viaja directo del navegador al backend.
+
 
 ## Piezas
 
