@@ -37,7 +37,15 @@ nacionales, sin espacios ni separadores). El formulario tiene un selector de có
 (`src/lib/phone/countries.ts`) y valida el largo de dígitos por país; el esquema compartido
 además rechaza cualquier valor que no cumpla `^\+[1-9]\d{7,14}$`.
 
-## Verificación con la Graph API (antes de llamar al backend)
+## Verificación con la Graph API (DESACTIVADA temporalmente)
+
+> Estado actual: el formulario no pide `access_token` y la verificación con Meta está
+> **comentada**. Para reactivarla, descomentar: el campo `accessToken` en
+> `src/lib/whatsapp/schema.ts`, su input en `WhatsAppOnboardingCard.tsx` (incluido el bloque
+> de error de verificación) y el bloque de `verifyPhoneBelongsToWaba` en
+> `src/lib/whatsapp.functions.ts`. `graph.server.ts` se conserva intacto.
+
+
 
 `src/lib/whatsapp/graph.server.ts` (`verifyPhoneBelongsToWaba`) consulta la Graph API de Meta
 **v25.0** con el secreto de servidor `WABA_ACCESS_TOKEN` (nunca se expone al cliente ni se
