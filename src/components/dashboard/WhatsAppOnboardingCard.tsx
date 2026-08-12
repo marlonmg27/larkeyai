@@ -323,7 +323,36 @@ export function WhatsAppOnboardingCard({
                 {errors.wabaId && <p className="text-xs text-destructive">{errors.wabaId}</p>}
               </div>
 
-
+              <div className="space-y-2 sm:col-span-2">
+                <Label htmlFor="wa-api-key">Api Key</Label>
+                <div className="relative">
+                  <Input
+                    id="wa-api-key"
+                    type={showApiKey ? "text" : "password"}
+                    value={values.accessToken}
+                    onChange={(e) => setField("accessToken", e.target.value)}
+                    placeholder="Token permanente de tu app de Meta"
+                    maxLength={512}
+                    autoComplete="off"
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowApiKey((v) => !v)}
+                    aria-label={showApiKey ? "Ocultar Api Key" : "Mostrar Api Key"}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    {showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  La encuentras en tu app de Meta, en WhatsApp → API Setup. La guardamos de forma
+                  segura.
+                </p>
+                {errors.accessToken && (
+                  <p className="text-xs text-destructive">{errors.accessToken}</p>
+                )}
+              </div>
 
 
               <div className="space-y-3 sm:col-span-2">
