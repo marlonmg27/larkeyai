@@ -318,12 +318,14 @@ export function WhatsAppOnboardingCard({
                       : "No pudimos guardar la conexión. Inténtalo de nuevo."}
                   </p>
                 )}
+                {/* Error de verificación con Graph API (desactivada temporalmente):
                 {verificationError && !verificationError.field && (
                   <p className="flex items-start gap-2 text-sm text-destructive">
                     <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                     {verificationError.message}
                   </p>
-                )}
+                )} */}
+
                 {isVerified && (
                   <p className="flex items-start gap-2 text-sm text-brand">
                     <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
