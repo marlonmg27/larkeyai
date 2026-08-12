@@ -12,6 +12,7 @@ import type Stripe from "stripe";
 import type { BackendSubscriptionPayload } from "./contracts";
 import { getStripe } from "./client.server";
 import { iso, subscriptionPeriodEndIso } from "./webhook.server";
+import { resolveBackendBaseUrl } from "@/lib/backend-url.server";
 
 const FORWARD_TIMEOUT_MS = 10_000;
 
@@ -118,7 +119,14 @@ export async function forwardToBackend(payload: BackendSubscriptionPayload): Pro
     return { ok: false, error };
   }
 
-  const url = `${baseUrl.replace(/\/+$/, "")}/webhooks/subscription`;
+  const resolved = resolveBackendBaseUrl(baseUrl);
+  if (!resolved.ok) {
+    const error = `BACKEND_URL invalid (${resolved.reason})`;
+    console.error("[stripe-webhook] backend forward skipped:", error, { ...logCtx, ...resolved.detail });
+    return { ok: false, error };
+  }
+
+  const url = `${resolved.base}/webhooks/subscription`;
 
   try {
     const res = await fetch(url, {

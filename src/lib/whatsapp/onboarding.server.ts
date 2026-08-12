@@ -8,6 +8,7 @@
  * Nunca registra el access token en logs.
  */
 import { messagingChannels, type MessagingChannel } from "@/lib/whatsapp/schema";
+import { resolveBackendBaseUrl } from "@/lib/backend-url.server";
 
 const TIMEOUT_MS = 15_000;
 
@@ -46,23 +47,17 @@ export async function connectWhatsApp(
     throw new Error("La conexión con el servicio de WhatsApp no está configurada todavía.");
   }
 
-
-  // Validamos la URL antes de intentar la conexión: un valor inválido o no
-  // HTTPS nunca es alcanzable desde el runtime publicado.
-  let target: URL;
-  try {
-    target = new URL(`${baseUrl.replace(/\/+$/, "")}/onboarding/whatsapp`);
-  } catch {
-    console.error("[whatsapp-onboarding] BACKEND_URL no es una URL válida");
-    throw new Error("La conexión con el servicio de WhatsApp no está configurada todavía.");
-  }
-  if (target.protocol !== "https:") {
-    console.error("[whatsapp-onboarding] BACKEND_URL debe ser HTTPS", {
-      protocol: target.protocol,
-      host: target.host,
+  // Normalizamos y validamos la URL antes de intentar la conexión: un valor
+  // inválido o no HTTPS nunca es alcanzable desde el runtime publicado.
+  const resolved = resolveBackendBaseUrl(baseUrl);
+  if (!resolved.ok) {
+    console.error("[whatsapp-onboarding] BACKEND_URL inválida", {
+      reason: resolved.reason,
+      ...resolved.detail,
     });
     throw new Error("La conexión con el servicio de WhatsApp no está configurada todavía.");
   }
+  const target = new URL(`${resolved.base}/onboarding/whatsapp`);
 
   // El canal se fija a un valor permitido del servidor, no se confía en texto libre.
   const channel: MessagingChannel = messagingChannels.includes(input.channel)
