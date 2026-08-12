@@ -9,8 +9,8 @@ import {
   RefreshCw,
   ArrowLeft,
   ChevronRight,
-  Eye,
-  EyeOff,
+
+
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -44,8 +44,8 @@ const EMPTY: FormValues = {
   phoneNumber: "",
   phoneNumberId: "",
   wabaId: "",
-  accessToken: "",
 };
+
 
 const CHANNELS: {
   id: MessagingChannel;
@@ -72,7 +72,7 @@ export function WhatsAppOnboardingCard({
   const [nationalNumber, setNationalNumber] = useState("");
   const [errors, setErrors] = useState<FormErrors>({});
   const [refreshing, setRefreshing] = useState(false);
-  const [showToken, setShowToken] = useState(false);
+  
 
   const queryClient = useQueryClient();
   const connect = useServerFn(connectWhatsAppAccount);
@@ -80,20 +80,20 @@ export function WhatsAppOnboardingCard({
   const mutation = useMutation({
     mutationFn: (input: FormValues) => connect({ data: input }),
     onSuccess: (result) => {
-      if (result && "verification" in result && result.verification) {
-        const { field, message } = result.verification;
-        if (field) setErrors((e) => ({ ...e, [field]: message }));
-        return;
-      }
+      // Verificación con Graph API desactivada temporalmente:
+      // if (result && "verification" in result && result.verification) {
+      //   const { field, message } = result.verification;
+      //   if (field) setErrors((e) => ({ ...e, [field]: message }));
+      //   return;
+      // }
+      void result;
       void queryClient.invalidateQueries({ queryKey: ["dashboard", userId] });
     },
   });
 
-  const verificationError =
-    mutation.data && "verification" in mutation.data && mutation.data.verification
-      ? mutation.data.verification
-      : null;
+  const verificationError: { field: string | null; message: string } | null = null;
   const isVerified = mutation.isSuccess && !verificationError;
+
 
   async function handleRefresh() {
     setRefreshing(true);
@@ -306,35 +306,8 @@ export function WhatsAppOnboardingCard({
                 {errors.wabaId && <p className="text-xs text-destructive">{errors.wabaId}</p>}
               </div>
 
-              <div className="space-y-2 sm:col-span-2">
-                <Label htmlFor="wa-access-token">Access token</Label>
-                <div className="relative">
-                  <Input
-                    id="wa-access-token"
-                    type={showToken ? "text" : "password"}
-                    value={values.accessToken}
-                    onChange={(e) => setField("accessToken", e.target.value)}
-                    placeholder="EAAG…"
-                    maxLength={512}
-                    autoComplete="off"
-                    className="pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowToken((s) => !s)}
-                    aria-label={showToken ? "Ocultar access token" : "Mostrar access token"}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    {showToken ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Solo se usa para verificar tu número con WhatsApp. No lo guardamos.
-                </p>
-                {errors.accessToken && (
-                  <p className="text-xs text-destructive">{errors.accessToken}</p>
-                )}
-              </div>
+
+
 
               <div className="space-y-3 sm:col-span-2">
                 {mutation.isError && (
@@ -345,12 +318,14 @@ export function WhatsAppOnboardingCard({
                       : "No pudimos guardar la conexión. Inténtalo de nuevo."}
                   </p>
                 )}
+                {/* Error de verificación con Graph API (desactivada temporalmente):
                 {verificationError && !verificationError.field && (
                   <p className="flex items-start gap-2 text-sm text-destructive">
                     <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                     {verificationError.message}
                   </p>
-                )}
+                )} */}
+
                 {isVerified && (
                   <p className="flex items-start gap-2 text-sm text-brand">
                     <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
