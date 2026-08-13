@@ -381,6 +381,12 @@ function Dashboard() {
               </div>
             )}
 
+            {showChatwootAccess && (
+              <div className="mt-6">
+                <ChatwootAccessCard email={user?.email ?? ""} status={whatsappStatus} />
+              </div>
+            )}
+
             <div id="packs" className="mt-6 scroll-mt-24">
               <PacksSection />
             </div>
