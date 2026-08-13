@@ -25,6 +25,7 @@ import { PacksSection } from "@/components/dashboard/PacksSection";
 import { SubscriptionActions } from "@/components/dashboard/SubscriptionActions";
 import { SubscriptionOverview } from "@/components/dashboard/SubscriptionOverview";
 import { WhatsAppOnboardingCard } from "@/components/dashboard/WhatsAppOnboardingCard";
+import { ChatwootAccessCard } from "@/components/dashboard/ChatwootAccessCard";
 import { useWhatsappConnectionRealtime } from "@/hooks/use-whatsapp-connection-realtime";
 
 
