@@ -1,0 +1,13 @@
+# Larkey
+
+> Larkey diseña y pone en marcha asistentes conversacionales de IA que atienden WhatsApp y otros canales de mensajería para negocios en México.
+
+Larkey es la compañía; el producto son asistentes de IA entrenados con el contexto de cada negocio. Responden mensajes de clientes en WhatsApp (canal principal) y pueden extenderse a Instagram, Telegram, Messenger y WebApps. El consumo se mide en mensajes enviados por el asistente y se administra con planes de suscripción; también se pueden comprar paquetes de mensajes adicionales.
+
+## Pages
+
+- [Inicio](/): Qué es Larkey, cómo funciona el asistente, planes y precios, y preguntas frecuentes.
+
+## Optional
+
+- Contacto: marlonmolinag12@gmail.com

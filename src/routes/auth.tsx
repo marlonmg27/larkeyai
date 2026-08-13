@@ -14,8 +14,22 @@ export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
       { title: "Iniciar sesión — Larkey" },
-      { name: "description", content: "Accede a tu cuenta de Larkey o crea una nueva." },
+      {
+        name: "description",
+        content:
+          "Inicia sesión en Larkey o crea tu cuenta para activar tu asistente de WhatsApp, revisar tu consumo de mensajes y gestionar tu plan.",
+      },
+      { property: "og:title", content: "Acceso de clientes — Larkey" },
+      {
+        property: "og:description",
+        content:
+          "Entra a tu cuenta Larkey para activar tu asistente de WhatsApp, ver tu consumo de mensajes y administrar tu suscripción.",
+      },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://larkeyai.lovable.app/auth" },
+      { name: "twitter:card", content: "summary" },
     ],
+    links: [{ rel: "canonical", href: "https://larkeyai.lovable.app/auth" }],
   }),
 });
 
@@ -70,7 +84,7 @@ function AuthPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Accede a Larkey</CardTitle>
+            <h1 className="text-2xl font-semibold leading-none tracking-tight">Accede a Larkey</h1>
             <CardDescription>Inicia sesión o crea una cuenta para empezar.</CardDescription>
           </CardHeader>
           <CardContent>

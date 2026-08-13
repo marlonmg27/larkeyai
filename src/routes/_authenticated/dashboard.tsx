@@ -35,9 +35,24 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
   head: () => ({
     meta: [
-      { title: "Dashboard — Larkey" },
-      { name: "description", content: "Gestiona tu plan, uso de mensajes y compras en Larkey." },
+      { title: "Panel de cliente — Larkey" },
+      {
+        name: "description",
+        content:
+          "Panel de cliente de Larkey: revisa tu plan activo, el consumo de mensajes de tu asistente, tus compras y la conexión de tu canal de WhatsApp.",
+      },
+      { name: "robots", content: "noindex, nofollow" },
+      { property: "og:title", content: "Panel de cliente — Larkey" },
+      {
+        property: "og:description",
+        content:
+          "Consulta tu plan, el consumo de mensajes de tu asistente y el estado de tu conexión de WhatsApp desde el panel de Larkey.",
+      },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://larkeyai.lovable.app/dashboard" },
+      { name: "twitter:card", content: "summary" },
     ],
+    links: [{ rel: "canonical", href: "https://larkeyai.lovable.app/dashboard" }],
   }),
 });
 
