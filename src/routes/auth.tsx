@@ -84,7 +84,9 @@ function AuthPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Accede a Larkey</CardTitle>
+            <CardTitle asChild>
+              <h1>Accede a Larkey</h1>
+            </CardTitle>
             <CardDescription>Inicia sesión o crea una cuenta para empezar.</CardDescription>
           </CardHeader>
           <CardContent>
