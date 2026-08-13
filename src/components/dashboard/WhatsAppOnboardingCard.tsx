@@ -178,22 +178,17 @@ export function WhatsAppOnboardingCard({
           <Badge className="mb-2 w-fit bg-brand/15 text-brand hover:bg-brand/15">
             <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" /> Conexión enviada
           </Badge>
-          <CardTitle>Ya casi: configura tu plataforma de conversaciones</CardTitle>
+          <CardTitle>Recibimos tus datos</CardTitle>
           <CardDescription>
-            Sigue estos pasos para entrar, cambiar tu contraseña y revisar tu inbox de WhatsApp.
+            {mutation.data?.message ??
+              "Estamos activando tu conexión de WhatsApp. Abajo encontrarás el acceso y los pasos de tu plataforma de conversaciones."}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ChatwootSetupGuide
-            email={values.email}
-            message={mutation.data?.message ?? null}
-          />
-          <div className="mt-6">
-            <Button variant="outline" onClick={handleRefresh} disabled={refreshing}>
-              <RefreshCw className={`mr-2 h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
-              Actualizar estado
-            </Button>
-          </div>
+          <Button variant="outline" onClick={handleRefresh} disabled={refreshing}>
+            <RefreshCw className={`mr-2 h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
+            Actualizar estado
+          </Button>
         </CardContent>
       </Card>
     );
