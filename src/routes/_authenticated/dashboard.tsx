@@ -176,6 +176,7 @@ function Dashboard() {
     data?.subscription.status === "active" || data?.subscription.status === "trialing";
   const whatsappStatus = data?.whatsapp?.status ?? null;
   const showWhatsappOnboarding = hasActiveSubscription && whatsappStatus !== "connected";
+  const showChatwootAccess = hasActiveSubscription && data?.whatsapp != null;
 
   useWhatsappConnectionRealtime(user.id);
 
