@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { CheckCircle2, Copy, Check, ExternalLink, AlertCircle } from "lucide-react";
+import { CheckCircle2, Copy, Check, ExternalLink, AlertCircle, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   CHATWOOT_DEFAULT_PASSWORD,
   CHATWOOT_FRONTEND_URL,
@@ -58,19 +59,31 @@ const INBOX_FIELDS: { name: string; help: string }[] = [
   },
 ];
 
+function defaultMessage(status?: string | null) {
+  if (status === "connected") return "Tu WhatsApp está conectado a tu plataforma de conversaciones.";
+  if (status === "error")
+    return "Hubo un problema con tu conexión de WhatsApp. Puedes reintentarlo desde la plataforma.";
+  if (status === "pending") return "Estamos activando tu conexión de WhatsApp.";
+  return "Recibimos tus datos y estamos activando tu conexión de WhatsApp.";
+}
+
 export function ChatwootSetupGuide({
   email,
   message,
+  status,
 }: {
   email: string;
   message?: string | null;
+  status?: string | null;
 }) {
+  const [open, setOpen] = useState(status === "error");
+
   return (
     <div className="space-y-8">
       <div className="rounded-lg border border-brand/30 bg-brand/5 p-4">
         <p className="flex items-start gap-2 text-sm font-medium text-brand">
           <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
-          {message ?? "Recibimos tus datos y estamos activando tu conexión de WhatsApp."}
+          {message ?? defaultMessage(status)}
         </p>
         <p className="mt-2 text-sm text-muted-foreground">
           Para ver y monitorear tus conversaciones, sigue estos pasos.
@@ -78,15 +91,7 @@ export function ChatwootSetupGuide({
       </div>
 
       <section className="space-y-3">
-        <h3 className="text-base font-semibold">1. Tu cuenta ya está creada</h3>
-        <p className="text-sm text-muted-foreground">
-          Creamos tu cuenta en la plataforma donde podrás ver y tomar el control de tus
-          conversaciones. Entra para revisar y configurar tu cuenta de WhatsApp Business.
-        </p>
-      </section>
-
-      <section className="space-y-3">
-        <h3 className="text-base font-semibold">2. Tus credenciales de acceso</h3>
+        <h3 className="text-base font-semibold">1. Tus credenciales de acceso</h3>
         <div className="grid gap-3 sm:grid-cols-2">
           <CopyField label="Email" value={email} />
           <CopyField label="Contraseña temporal" value={CHATWOOT_DEFAULT_PASSWORD} />
@@ -98,7 +103,7 @@ export function ChatwootSetupGuide({
       </section>
 
       <section className="space-y-3">
-        <h3 className="text-base font-semibold">3. Entra a la plataforma</h3>
+        <h3 className="text-base font-semibold">2. Entra a la plataforma</h3>
         <Button asChild size="lg" className="bg-brand text-brand-foreground hover:bg-brand/90">
           <a href={CHATWOOT_LOGIN_URL} target="_blank" rel="noopener noreferrer">
             Entrar a mi plataforma de conversaciones
@@ -108,50 +113,55 @@ export function ChatwootSetupGuide({
         <p className="break-all text-xs text-muted-foreground">{CHATWOOT_FRONTEND_URL}/app/login</p>
       </section>
 
-      <section className="space-y-4">
-        <h3 className="text-base font-semibold">
-          4. Si tu inbox falló o no llegan los mensajes
-        </h3>
-        <p className="flex items-start gap-2 rounded-lg border border-border bg-muted/40 p-3 text-sm text-muted-foreground">
-          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-          Si hubo un error al crear tu inbox o tu WhatsApp Business Account no recibe mensajes,
-          puedes intentarlo de nuevo directamente desde la plataforma.
-        </p>
-        <p className="text-sm text-muted-foreground">
-          En la barra lateral ve a <span className="font-medium text-foreground">Settings</span> →{" "}
-          <span className="font-medium text-foreground">Inboxes</span> y presiona el botón{" "}
-          <span className="font-medium text-foreground">Add Inbox</span>. Elige el canal{" "}
-          <span className="font-medium text-foreground">WhatsApp</span>.
-        </p>
-        <img
-          src={settingsInboxesImg}
-          alt="Barra lateral con Settings seleccionado, sección Inboxes y el botón Add Inbox arriba a la derecha"
-          loading="lazy"
-          width={1280}
-          height={800}
-          className="w-full rounded-lg border border-border"
-        />
-        <ul className="space-y-3">
-          {INBOX_FIELDS.map((f) => (
-            <li key={f.name} className="rounded-lg border border-border bg-background/60 p-3">
-              <p className="text-sm font-medium">{f.name}</p>
-              <p className="text-sm text-muted-foreground">{f.help}</p>
-            </li>
-          ))}
-        </ul>
-        <img
-          src={addWhatsappInboxImg}
-          alt="Formulario para crear un canal de WhatsApp con los campos Inbox Name, Phone Number, Phone number ID, Business Account ID y API Key"
-          loading="lazy"
-          width={1280}
-          height={800}
-          className="w-full rounded-lg border border-border"
-        />
-        <p className="text-sm text-muted-foreground">
-          Si tu app de Meta aún no está aprobada, este paso puede fallar. En ese caso escríbenos y
-          lo revisamos contigo.
-        </p>
-      </section>
+      <Collapsible open={open} onOpenChange={setOpen}>
+        <CollapsibleTrigger className="flex w-full items-center justify-between gap-3 rounded-lg border border-border bg-muted/40 p-3 text-left text-sm font-medium transition-colors hover:bg-muted/60">
+          <span>Si tu inbox falló o no llegan los mensajes</span>
+          <ChevronDown
+            className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
+          />
+        </CollapsibleTrigger>
+        <CollapsibleContent className="space-y-4 pt-4">
+          <p className="flex items-start gap-2 rounded-lg border border-border bg-muted/40 p-3 text-sm text-muted-foreground">
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            Si hubo un error al crear tu inbox o tu WhatsApp Business Account no recibe mensajes,
+            puedes intentarlo de nuevo directamente desde la plataforma.
+          </p>
+          <p className="text-sm text-muted-foreground">
+            En la barra lateral ve a <span className="font-medium text-foreground">Settings</span> →{" "}
+            <span className="font-medium text-foreground">Inboxes</span> y presiona el botón{" "}
+            <span className="font-medium text-foreground">Add Inbox</span>. Elige el canal{" "}
+            <span className="font-medium text-foreground">WhatsApp</span>.
+          </p>
+          <img
+            src={settingsInboxesImg}
+            alt="Barra lateral con Settings seleccionado, sección Inboxes y el botón Add Inbox arriba a la derecha"
+            loading="lazy"
+            width={1280}
+            height={800}
+            className="w-full rounded-lg border border-border"
+          />
+          <ul className="space-y-3">
+            {INBOX_FIELDS.map((f) => (
+              <li key={f.name} className="rounded-lg border border-border bg-background/60 p-3">
+                <p className="text-sm font-medium">{f.name}</p>
+                <p className="text-sm text-muted-foreground">{f.help}</p>
+              </li>
+            ))}
+          </ul>
+          <img
+            src={addWhatsappInboxImg}
+            alt="Formulario para crear un canal de WhatsApp con los campos Inbox Name, Phone Number, Phone number ID, Business Account ID y API Key"
+            loading="lazy"
+            width={1280}
+            height={800}
+            className="w-full rounded-lg border border-border"
+          />
+          <p className="text-sm text-muted-foreground">
+            Si tu app de Meta aún no está aprobada, este paso puede fallar. En ese caso escríbenos y
+            lo revisamos contigo.
+          </p>
+        </CollapsibleContent>
+      </Collapsible>
     </div>
   );
 }
