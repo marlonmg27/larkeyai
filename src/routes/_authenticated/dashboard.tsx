@@ -25,6 +25,7 @@ import { PacksSection } from "@/components/dashboard/PacksSection";
 import { SubscriptionActions } from "@/components/dashboard/SubscriptionActions";
 import { SubscriptionOverview } from "@/components/dashboard/SubscriptionOverview";
 import { WhatsAppOnboardingCard } from "@/components/dashboard/WhatsAppOnboardingCard";
+import { ChatwootAccessCard } from "@/components/dashboard/ChatwootAccessCard";
 import { useWhatsappConnectionRealtime } from "@/hooks/use-whatsapp-connection-realtime";
 
 
@@ -175,6 +176,7 @@ function Dashboard() {
     data?.subscription.status === "active" || data?.subscription.status === "trialing";
   const whatsappStatus = data?.whatsapp?.status ?? null;
   const showWhatsappOnboarding = hasActiveSubscription && whatsappStatus !== "connected";
+  const showChatwootAccess = hasActiveSubscription && data?.whatsapp != null;
 
   useWhatsappConnectionRealtime(user.id);
 
@@ -378,6 +380,12 @@ function Dashboard() {
             {showWhatsappOnboarding && (
               <div className="mt-6">
                 <WhatsAppOnboardingCard userId={user.id} status={whatsappStatus} />
+              </div>
+            )}
+
+            {showChatwootAccess && (
+              <div className="mt-6">
+                <ChatwootAccessCard email={user?.email ?? ""} status={whatsappStatus} />
               </div>
             )}
 
