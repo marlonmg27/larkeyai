@@ -38,19 +38,22 @@ export const faqs = [
   },
 ];
 
-export function FAQ() {
+export function FAQ({ hideHeading = false }: { hideHeading?: boolean }) {
   return (
     <section id="faq" className="py-20 lg:py-28">
       <div className="section-container">
         <div className="mx-auto max-w-3xl">
-          <div className="mb-12 text-center">
-            <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-              Preguntas frecuentes
-            </h2>
-            <p className="mt-4 text-lg text-muted-foreground">
-              Todo lo que necesitas saber antes de empezar con Larkey.
-            </p>
-          </div>
+          {!hideHeading && (
+            <div className="mb-12 text-center">
+              <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+                Preguntas frecuentes
+              </h2>
+              <p className="mt-4 text-lg text-muted-foreground">
+                Todo lo que necesitas saber antes de empezar con Larkey.
+              </p>
+            </div>
+          )}
+
 
           <Accordion type="single" collapsible className="w-full">
             {faqs.map((faq, index) => (
