@@ -1,13 +1,13 @@
 import { MessageCircle, Mail } from "lucide-react";
 
 const links = [
-  { label: "Cómo funciona", href: "#como-funciona" },
-  { label: "Precios", href: "#precios" },
-  { label: "FAQ", href: "#faq" },
-  { label: "Iniciar sesión", href: "#" },
-  { label: "Privacidad", href: "#" },
-  { label: "Términos", href: "#" },
+  { label: "Inicio", href: "/" },
+  { label: "Precios", href: "/precios" },
+  { label: "FAQ", href: "/faq" },
+  { label: "Contacto", href: "/contacto" },
+  { label: "Iniciar sesión", href: "/auth" },
 ];
+
 
 export function Footer() {
   return (

@@ -13,6 +13,8 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { SiteShell } from "@/components/layout/SiteShell";
+
 
 function NotFoundComponent() {
   return (
@@ -137,8 +139,11 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <SiteShell>
+        <Outlet />
+      </SiteShell>
       <Toaster />
     </QueryClientProvider>
   );
 }
+

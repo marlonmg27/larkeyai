@@ -17,8 +17,12 @@ export const Route = createFileRoute("/sitemap.xml")({
         // /dashboard is intentionally excluded: it requires authentication and is noindex.
         const entries: SitemapEntry[] = [
           { path: "/", changefreq: "weekly", priority: "1.0" },
+          { path: "/precios", changefreq: "weekly", priority: "0.9" },
+          { path: "/faq", changefreq: "monthly", priority: "0.7" },
+          { path: "/contacto", changefreq: "monthly", priority: "0.7" },
           { path: "/auth", changefreq: "monthly", priority: "0.5" },
         ];
+
 
         const urls = entries.map((e) =>
           [
