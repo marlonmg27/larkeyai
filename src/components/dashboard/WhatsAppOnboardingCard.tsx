@@ -137,7 +137,10 @@ export function WhatsAppOnboardingCard({
     setChannel(id);
     setValues((v) => ({ ...v, channel: id }));
     setErrors({});
+    setGuideDone(false);
+    setGuideOpen(false);
     mutation.reset();
+
   }
 
   function handleSubmit(e: React.FormEvent) {
