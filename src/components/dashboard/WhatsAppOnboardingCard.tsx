@@ -87,6 +87,9 @@ export function WhatsAppOnboardingCard({
   const [errors, setErrors] = useState<FormErrors>({});
   const [refreshing, setRefreshing] = useState(false);
   const [showApiKey, setShowApiKey] = useState(false);
+  const [guideDone, setGuideDone] = useState(false);
+  const [guideOpen, setGuideOpen] = useState(false);
+
 
   
 
