@@ -438,7 +438,10 @@ export function WhatsAppOnboardingCard({
                 </Button>
               </div>
             </form>
+              </>
+            )}
           </>
+
         )}
       </CardContent>
     </Card>
