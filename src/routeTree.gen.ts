@@ -16,6 +16,7 @@ import { Route as ContactoRouteImport } from './routes/contacto'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedGuiaRouteImport } from './routes/_authenticated/guia'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe/webhook'
 import { Route as ApiPublicWhatsappConnectionsUpsertRouteImport } from './routes/api/public/whatsapp/connections/upsert'
@@ -55,6 +56,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedGuiaRoute = AuthenticatedGuiaRouteImport.update({
+  id: '/guia',
+  path: '/guia',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -86,6 +92,7 @@ export interface FileRoutesByFullPath {
   '/precios': typeof PreciosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/guia': typeof AuthenticatedGuiaRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/whatsapp/connections/status': typeof ApiPublicWhatsappConnectionsStatusRoute
   '/api/public/whatsapp/connections/upsert': typeof ApiPublicWhatsappConnectionsUpsertRoute
@@ -98,6 +105,7 @@ export interface FileRoutesByTo {
   '/precios': typeof PreciosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/guia': typeof AuthenticatedGuiaRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/whatsapp/connections/status': typeof ApiPublicWhatsappConnectionsStatusRoute
   '/api/public/whatsapp/connections/upsert': typeof ApiPublicWhatsappConnectionsUpsertRoute
@@ -112,6 +120,7 @@ export interface FileRoutesById {
   '/precios': typeof PreciosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/guia': typeof AuthenticatedGuiaRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/whatsapp/connections/status': typeof ApiPublicWhatsappConnectionsStatusRoute
   '/api/public/whatsapp/connections/upsert': typeof ApiPublicWhatsappConnectionsUpsertRoute
@@ -126,6 +135,7 @@ export interface FileRouteTypes {
     | '/precios'
     | '/sitemap.xml'
     | '/dashboard'
+    | '/guia'
     | '/api/public/stripe/webhook'
     | '/api/public/whatsapp/connections/status'
     | '/api/public/whatsapp/connections/upsert'
@@ -138,6 +148,7 @@ export interface FileRouteTypes {
     | '/precios'
     | '/sitemap.xml'
     | '/dashboard'
+    | '/guia'
     | '/api/public/stripe/webhook'
     | '/api/public/whatsapp/connections/status'
     | '/api/public/whatsapp/connections/upsert'
@@ -151,6 +162,7 @@ export interface FileRouteTypes {
     | '/precios'
     | '/sitemap.xml'
     | '/_authenticated/dashboard'
+    | '/_authenticated/guia'
     | '/api/public/stripe/webhook'
     | '/api/public/whatsapp/connections/status'
     | '/api/public/whatsapp/connections/upsert'
@@ -220,6 +232,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/guia': {
+      id: '/_authenticated/guia'
+      path: '/guia'
+      fullPath: '/guia'
+      preLoaderRoute: typeof AuthenticatedGuiaRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -253,10 +272,12 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedGuiaRoute: typeof AuthenticatedGuiaRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedGuiaRoute: AuthenticatedGuiaRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
