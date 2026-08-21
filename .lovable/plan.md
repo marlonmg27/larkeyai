@@ -1,30 +1,17 @@
-# La guía de Chatwoot no apareció: qué encontré y qué haré
+# Reactivar la validación con Graph API en el formulario
 
-## Lo que verifiqué en la base de datos
+Volver a comprobar con Meta, antes de enviar al backend, que el Phone number ID pertenezca al WABA indicado y que el número coincida con el registrado.
 
-Para `jira@gmail.com`:
+## Comportamiento
 
-- Suscripción: `active`, plan Basic, activada a las 20:32:34 UTC.
-- Fila en `whatsapp_connections`: existe, `status = connected`, teléfono `+526623286156`, actualizada 20:36:59 UTC.
-- Permisos y RLS de `whatsapp_connections`: correctos (lectura propia para usuario autenticado).
-- Realtime: la tabla sí está publicada.
-
-Es decir: los datos están bien y la card de acceso a Chatwoot **debería** haberse mostrado. La condición del dashboard (`suscripción activa` + `existe fila`) se cumple hoy.
-
-Lo que sí aparece en el registro del preview a las 20:33 (mientras estabas en el dashboard) es un error de carga de módulo del framework (`createIsomorphicFn`). Ese error rompe el render de la parte del dashboard que depende de funciones de servidor, y explica que tras enviar el formulario no se refrescara la vista ni apareciera la guía. No es un cambio de lógica que haya hecho: es una carga fallida en el preview, pero el dashboard no tiene defensa contra ella y por eso lo viviste como "el bug volvió".
-
-## Qué haré (solo frontend)
-
-1. **Reproducir con tu sesión** en el preview autenticado y confirmar si la card de Chatwoot aparece hoy tras recargar; capturar el error de módulo si vuelve.
-2. **Dejar de tragarse los errores de lectura**: hoy `fetchWhatsappConnection` atrapa cualquier error y devuelve `null`, lo que hace que la guía desaparezca en silencio. Pasará a distinguir "no hay fila" de "falló la lectura", y en el segundo caso mostrará un aviso con botón de reintento en lugar de nada.
-3. **Mostrar el acceso a Chatwoot siempre que exista fila de conexión**, sin depender de que la suscripción esté activa en ese instante (una conexión ya creada nunca debe quedar sin puerta de entrada).
-4. **Refresco robusto sin depender solo de Realtime**: refetch al volver el foco a la pestaña y un sondeo suave mientras el status no sea `connected`, para que el cambio hecho por tu backend se refleje aunque el socket falle.
-5. **Blindar el render**: envolver la sección de conexión/Chatwoot en un límite de error local, para que una carga fallida de módulo o una excepción de un hijo no borre la card entera; mostrará "recargar" en su lugar.
-6. Verificación final en el preview con la cuenta `jira@gmail.com`: recargar, confirmar que la card con credenciales y el botón "Entrar a mi plataforma de conversaciones" está visible con `status = connected`.
+- Al enviar el formulario de WhatsApp, primero se valida contra la Graph API usando el valor del campo "Api Key" (si viene vacío se usa el `WABA_ACCESS_TOKEN` del servidor).
+- Si falla, no se llama al backend de Python y el error se muestra en el campo correspondiente: "Ese Phone number ID no existe en la WhatsApp Business Account indicada." (Phone number ID) o "El número no coincide con el registrado…" (teléfono). Si Meta no responde, error general en la card.
+- Si pasa, el flujo actual sigue igual: envío al backend, estado en tiempo real y guía de Chatwoot.
 
 ## Detalles técnicos
 
-- `src/routes/_authenticated/dashboard.tsx`: `fetchWhatsappConnection` devuelve `{ status } | null | { error }`; `showChatwootAccess = data?.whatsapp != null`; opciones de `useQuery` con `refetchOnWindowFocus: true` y `refetchInterval` condicional mientras el status sea distinto de `connected`.
-- `src/components/dashboard/ChatwootAccessCard.tsx`: acepta el caso "no pudimos leer tu conexión" y renderiza el aviso de reintento.
-- Nuevo límite de error ligero reutilizable para la sección (componente local, sin dependencias nuevas).
-- Sin cambios en base de datos, RLS, server functions ni contratos con el backend de Python.
+- `src/lib/whatsapp.functions.ts`: descomentar el `import()` de `@/lib/whatsapp/graph.server`, la llamada a `verifyPhoneBelongsToWaba` y el `if (!verification.ok)` con su retorno; el caso exitoso mantiene `verification: null`.
+- `src/components/dashboard/WhatsAppOnboardingCard.tsx`: restaurar el manejo en `onSuccess` (mapear `result.verification.field` a `errors`) y sustituir el `verificationError` fijo en `null` por estado real para que se muestre el mensaje general.
+- `src/lib/whatsapp/graph.server.ts` y `schema.ts` (campo `accessToken`) ya están listos: sin cambios.
+- Actualizar la nota de `src/lib/whatsapp/README.md` indicando que la validación vuelve a estar activa.
+- Sin cambios de base de datos, Stripe ni endpoints públicos.
