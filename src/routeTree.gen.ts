@@ -11,12 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PreciosRouteImport } from './routes/precios'
+import { Route as GuiaRouteImport } from './routes/guia'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContactoRouteImport } from './routes/contacto'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedGuiaRouteImport } from './routes/_authenticated/guia'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe/webhook'
 import { Route as ApiPublicWhatsappConnectionsUpsertRouteImport } from './routes/api/public/whatsapp/connections/upsert'
@@ -30,6 +30,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const PreciosRoute = PreciosRouteImport.update({
   id: '/precios',
   path: '/precios',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuiaRoute = GuiaRouteImport.update({
+  id: '/guia',
+  path: '/guia',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FaqRoute = FaqRouteImport.update({
@@ -55,11 +60,6 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedGuiaRoute = AuthenticatedGuiaRouteImport.update({
-  id: '/guia',
-  path: '/guia',
-  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
@@ -89,10 +89,10 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/contacto': typeof ContactoRoute
   '/faq': typeof FaqRoute
+  '/guia': typeof GuiaRoute
   '/precios': typeof PreciosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/guia': typeof AuthenticatedGuiaRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/whatsapp/connections/status': typeof ApiPublicWhatsappConnectionsStatusRoute
   '/api/public/whatsapp/connections/upsert': typeof ApiPublicWhatsappConnectionsUpsertRoute
@@ -102,10 +102,10 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/contacto': typeof ContactoRoute
   '/faq': typeof FaqRoute
+  '/guia': typeof GuiaRoute
   '/precios': typeof PreciosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/guia': typeof AuthenticatedGuiaRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/whatsapp/connections/status': typeof ApiPublicWhatsappConnectionsStatusRoute
   '/api/public/whatsapp/connections/upsert': typeof ApiPublicWhatsappConnectionsUpsertRoute
@@ -117,10 +117,10 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/contacto': typeof ContactoRoute
   '/faq': typeof FaqRoute
+  '/guia': typeof GuiaRoute
   '/precios': typeof PreciosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
-  '/_authenticated/guia': typeof AuthenticatedGuiaRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/whatsapp/connections/status': typeof ApiPublicWhatsappConnectionsStatusRoute
   '/api/public/whatsapp/connections/upsert': typeof ApiPublicWhatsappConnectionsUpsertRoute
@@ -132,10 +132,10 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contacto'
     | '/faq'
+    | '/guia'
     | '/precios'
     | '/sitemap.xml'
     | '/dashboard'
-    | '/guia'
     | '/api/public/stripe/webhook'
     | '/api/public/whatsapp/connections/status'
     | '/api/public/whatsapp/connections/upsert'
@@ -145,10 +145,10 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contacto'
     | '/faq'
+    | '/guia'
     | '/precios'
     | '/sitemap.xml'
     | '/dashboard'
-    | '/guia'
     | '/api/public/stripe/webhook'
     | '/api/public/whatsapp/connections/status'
     | '/api/public/whatsapp/connections/upsert'
@@ -159,10 +159,10 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contacto'
     | '/faq'
+    | '/guia'
     | '/precios'
     | '/sitemap.xml'
     | '/_authenticated/dashboard'
-    | '/_authenticated/guia'
     | '/api/public/stripe/webhook'
     | '/api/public/whatsapp/connections/status'
     | '/api/public/whatsapp/connections/upsert'
@@ -174,6 +174,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ContactoRoute: typeof ContactoRoute
   FaqRoute: typeof FaqRoute
+  GuiaRoute: typeof GuiaRoute
   PreciosRoute: typeof PreciosRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
@@ -195,6 +196,13 @@ declare module '@tanstack/react-router' {
       path: '/precios'
       fullPath: '/precios'
       preLoaderRoute: typeof PreciosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guia': {
+      id: '/guia'
+      path: '/guia'
+      fullPath: '/guia'
+      preLoaderRoute: typeof GuiaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faq': {
@@ -232,13 +240,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/guia': {
-      id: '/_authenticated/guia'
-      path: '/guia'
-      fullPath: '/guia'
-      preLoaderRoute: typeof AuthenticatedGuiaRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -272,12 +273,10 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedGuiaRoute: typeof AuthenticatedGuiaRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
-  AuthenticatedGuiaRoute: AuthenticatedGuiaRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -289,6 +288,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ContactoRoute: ContactoRoute,
   FaqRoute: FaqRoute,
+  GuiaRoute: GuiaRoute,
   PreciosRoute: PreciosRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
