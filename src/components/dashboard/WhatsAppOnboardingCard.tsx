@@ -84,23 +84,27 @@ export function WhatsAppOnboardingCard({
 
   const queryClient = useQueryClient();
   const connect = useServerFn(connectWhatsAppAccount);
+  const [verificationError, setVerificationError] = useState<{
+    field: string | null;
+    message: string;
+  } | null>(null);
 
   const mutation = useMutation({
     mutationFn: (input: FormValues) => connect({ data: input }),
     onSuccess: (result) => {
-      // Verificación con Graph API desactivada temporalmente:
-      // if (result && "verification" in result && result.verification) {
-      //   const { field, message } = result.verification;
-      //   if (field) setErrors((e) => ({ ...e, [field]: message }));
-      //   return;
-      // }
-      void result;
+      if (result && "verification" in result && result.verification) {
+        const { field, message } = result.verification;
+        setVerificationError({ field: field ?? null, message });
+        if (field) setErrors((e) => ({ ...e, [field]: message }));
+        return;
+      }
+      setVerificationError(null);
       void queryClient.invalidateQueries({ queryKey: ["dashboard", userId] });
     },
   });
 
-  const verificationError: { field: string | null; message: string } | null = null;
   const isVerified = mutation.isSuccess && !verificationError;
+
 
 
   async function handleRefresh() {
