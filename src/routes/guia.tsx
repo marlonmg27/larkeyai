@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { MetaTokenGuide } from "@/components/dashboard/MetaTokenGuide";
 
-export const Route = createFileRoute("/_authenticated/guia")({
+export const Route = createFileRoute("/guia")({
   head: () => ({
     meta: [
       { title: "Guía para conectar WhatsApp | Larkey" },
