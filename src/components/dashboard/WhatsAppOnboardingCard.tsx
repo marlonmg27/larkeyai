@@ -131,6 +131,8 @@ export function WhatsAppOnboardingCard({
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setVerificationError(null);
+
 
     const phoneError = validateNationalNumber(country, nationalNumber);
     const parsed = schema.safeParse({ ...values, phoneNumber: toE164(country, nationalNumber) });
