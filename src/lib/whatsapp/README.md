@@ -74,13 +74,13 @@ nacionales, sin espacios ni separadores). El formulario tiene un selector de có
 (`src/lib/phone/countries.ts`) y valida el largo de dígitos por país; el esquema compartido
 además rechaza cualquier valor que no cumpla `^\+[1-9]\d{7,14}$`.
 
-## Verificación con la Graph API (DESACTIVADA temporalmente)
+## Verificación con la Graph API (ACTIVA)
 
-> Estado actual: el formulario no pide `access_token` y la verificación con Meta está
-> **comentada**. Para reactivarla, descomentar: el campo `accessToken` en
-> `src/lib/whatsapp/schema.ts`, su input en `WhatsAppOnboardingCard.tsx` (incluido el bloque
-> de error de verificación) y el bloque de `verifyPhoneBelongsToWaba` en
-> `src/lib/whatsapp.functions.ts`. `graph.server.ts` se conserva intacto.
+> Estado actual: el formulario pide el token ("Api Key") y la verificación con Meta se ejecuta
+> **antes** de reenviar al backend (`verifyPhoneBelongsToWaba` en `src/lib/whatsapp.functions.ts`).
+> Si falla, no se contacta al backend y el error se pinta en el campo correspondiente
+> (`phoneNumberId` / `phoneNumber`) o como error general de la card.
+
 
 
 
@@ -162,7 +162,7 @@ loguean. Contratos completos en `src/lib/database/README.md`.
 - El formulario pide de nuevo el token, etiquetado **"Api Key"** solo en la UI. Internamente
   es `accessToken` (schema.ts) y se reenvía al backend como `access_token`. Si viniera vacío,
   `onboarding.server.ts` usa `WABA_ACCESS_TOKEN` como respaldo. Nunca se registra en logs.
-- La verificación con Graph API sigue comentada.
+- La verificación con Graph API está activa y usa ese token (o `WABA_ACCESS_TOKEN` de respaldo).
 - Tras un envío exitoso, la card muestra `ChatwootSetupGuide`: credenciales por defecto
   (email del usuario + `Default123!`), botón a `${CHATWOOT_FRONTEND_URL}/app/login`
   (`src/lib/chatwoot.ts`, sobrescribible con `VITE_CHATWOOT_FRONTEND_URL`) y la guía para
