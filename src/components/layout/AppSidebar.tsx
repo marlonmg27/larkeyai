@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Home, LayoutDashboard, Tag, Mail, HelpCircle, LogOut, LogIn } from "lucide-react";
+import { Home, LayoutDashboard, Tag, Mail, HelpCircle, LogOut, LogIn, BookOpen } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -21,6 +21,7 @@ import { supabase } from "@/integrations/supabase/client";
 const items = [
   { title: "Inicio", url: "/", icon: Home, authOnly: false },
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, authOnly: true },
+  { title: "Guía", url: "/guia", icon: BookOpen, authOnly: true },
   { title: "Precios", url: "/precios", icon: Tag, authOnly: false },
   { title: "Contacto", url: "/contacto", icon: Mail, authOnly: false },
   { title: "FAQ", url: "/faq", icon: HelpCircle, authOnly: false },
