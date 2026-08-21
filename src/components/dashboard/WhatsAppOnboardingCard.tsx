@@ -9,17 +9,25 @@ import {
   RefreshCw,
   ArrowLeft,
   ChevronRight,
+  ChevronDown,
   Eye,
   EyeOff,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { connectWhatsAppAccount } from "@/lib/whatsapp.functions";
 import { PhoneField } from "@/components/dashboard/PhoneField";
 import { EmbeddedSignupButton } from "@/components/dashboard/EmbeddedSignupButton";
+import { MetaTokenGuide } from "@/components/dashboard/MetaTokenGuide";
+
 
 
 
