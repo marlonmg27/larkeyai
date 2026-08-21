@@ -21,6 +21,7 @@ import { supabase } from "@/integrations/supabase/client";
 const items = [
   { title: "Inicio", url: "/", icon: Home, authOnly: false },
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, authOnly: true },
+  { title: "Guía", url: "/guia", icon: BookOpen, authOnly: true },
   { title: "Precios", url: "/precios", icon: Tag, authOnly: false },
   { title: "Contacto", url: "/contacto", icon: Mail, authOnly: false },
   { title: "FAQ", url: "/faq", icon: HelpCircle, authOnly: false },
