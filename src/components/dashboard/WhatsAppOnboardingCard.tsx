@@ -9,17 +9,25 @@ import {
   RefreshCw,
   ArrowLeft,
   ChevronRight,
+  ChevronDown,
   Eye,
   EyeOff,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { connectWhatsAppAccount } from "@/lib/whatsapp.functions";
 import { PhoneField } from "@/components/dashboard/PhoneField";
 import { EmbeddedSignupButton } from "@/components/dashboard/EmbeddedSignupButton";
+import { MetaTokenGuide } from "@/components/dashboard/MetaTokenGuide";
+
 
 
 
@@ -79,6 +87,9 @@ export function WhatsAppOnboardingCard({
   const [errors, setErrors] = useState<FormErrors>({});
   const [refreshing, setRefreshing] = useState(false);
   const [showApiKey, setShowApiKey] = useState(false);
+  const [guideDone, setGuideDone] = useState(false);
+  const [guideOpen, setGuideOpen] = useState(false);
+
 
   
 
@@ -126,7 +137,10 @@ export function WhatsAppOnboardingCard({
     setChannel(id);
     setValues((v) => ({ ...v, channel: id }));
     setErrors({});
+    setGuideDone(false);
+    setGuideOpen(false);
     mutation.reset();
+
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -259,6 +273,10 @@ export function WhatsAppOnboardingCard({
               Cambiar de canal
             </button>
 
+            {!guideDone ? (
+              <MetaTokenGuide onContinue={() => setGuideDone(true)} />
+            ) : (
+              <>
             <EmbeddedSignupButton />
 
             <div className="mb-6 flex items-center gap-3">
@@ -269,8 +287,20 @@ export function WhatsAppOnboardingCard({
               <span className="h-px flex-1 bg-border" />
             </div>
 
+            <Collapsible open={guideOpen} onOpenChange={setGuideOpen}>
+              <CollapsibleTrigger className="mb-4 flex w-full items-center justify-between gap-3 rounded-lg border border-border bg-muted/40 p-3 text-left text-sm font-medium transition-colors hover:bg-muted/60">
+                <span>Ver la guía otra vez</span>
+                <ChevronDown
+                  className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform ${guideOpen ? "rotate-180" : ""}`}
+                />
+              </CollapsibleTrigger>
+              <CollapsibleContent className="mb-6 pt-2">
+                <MetaTokenGuide />
+              </CollapsibleContent>
+            </Collapsible>
 
             <form onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-2">
+
               <div className="space-y-2">
                 <Label htmlFor="wa-display-name">Nombre del negocio</Label>
                 <Input
@@ -422,7 +452,10 @@ export function WhatsAppOnboardingCard({
                 </Button>
               </div>
             </form>
+              </>
+            )}
           </>
+
         )}
       </CardContent>
     </Card>
