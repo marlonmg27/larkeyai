@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { MetaTokenGuide } from "@/components/dashboard/MetaTokenGuide";
 
-export const Route = createFileRoute("/_authenticated/guia")({
+export const Route = createFileRoute("/guia")({
   head: () => ({
     meta: [
       { title: "Guía para conectar WhatsApp | Larkey" },
@@ -14,15 +14,16 @@ export const Route = createFileRoute("/_authenticated/guia")({
         content:
           "Pasos para generar tu token de acceso en Meta Business Suite y conectar tu WhatsApp Business con Larkey.",
       },
-      { name: "robots", content: "noindex, nofollow" },
       { property: "og:title", content: "Guía para conectar WhatsApp | Larkey" },
       {
         property: "og:description",
         content: "Genera tu token en Meta y conecta tu canal de WhatsApp con Larkey.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://larkeyai.lovable.app/guia" },
       { name: "twitter:card", content: "summary" },
     ],
+    links: [{ rel: "canonical", href: "https://larkeyai.lovable.app/guia" }],
   }),
   component: GuiaPage,
 });
