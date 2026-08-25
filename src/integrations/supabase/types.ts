@@ -20,6 +20,7 @@ export type Database = {
           code: string
           created_at: string
           id: string
+          id_int: number
           lookup_key: string | null
           messages: number
           name: string
@@ -32,6 +33,7 @@ export type Database = {
           code: string
           created_at?: string
           id?: string
+          id_int?: number
           lookup_key?: string | null
           messages: number
           name: string
@@ -44,6 +46,7 @@ export type Database = {
           code?: string
           created_at?: string
           id?: string
+          id_int?: number
           lookup_key?: string | null
           messages?: number
           name?: string
@@ -59,6 +62,7 @@ export type Database = {
           billing_interval: string
           created_at: string
           id: string
+          id_int: number
           lookup_key: string | null
           messages_included: number
           name: string
@@ -74,6 +78,7 @@ export type Database = {
           billing_interval?: string
           created_at?: string
           id?: string
+          id_int?: number
           lookup_key?: string | null
           messages_included: number
           name: string
@@ -89,6 +94,7 @@ export type Database = {
           billing_interval?: string
           created_at?: string
           id?: string
+          id_int?: number
           lookup_key?: string | null
           messages_included?: number
           name?: string
@@ -106,34 +112,43 @@ export type Database = {
           amount: number
           created_at: string
           id: string
+          id_int: number
           messages_purchased: number
           pack_id: string | null
+          pack_id_int: number | null
           package: string
           stripe_payment_id: string | null
           stripe_session_id: string | null
           user_id: string
+          user_id_int: number | null
         }
         Insert: {
           amount: number
           created_at?: string
           id?: string
+          id_int?: number
           messages_purchased: number
           pack_id?: string | null
+          pack_id_int?: number | null
           package: string
           stripe_payment_id?: string | null
           stripe_session_id?: string | null
           user_id: string
+          user_id_int?: number | null
         }
         Update: {
           amount?: number
           created_at?: string
           id?: string
+          id_int?: number
           messages_purchased?: number
           pack_id?: string | null
+          pack_id_int?: number | null
           package?: string
           stripe_payment_id?: string | null
           stripe_session_id?: string | null
           user_id?: string
+          user_id_int?: number | null
         }
         Relationships: [
           {
@@ -144,11 +159,25 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "purchases_pack_id_int_fkey"
+            columns: ["pack_id_int"]
+            isOneToOne: false
+            referencedRelation: "message_packs"
+            referencedColumns: ["id_int"]
+          },
+          {
             foreignKeyName: "purchases_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchases_user_id_int_fkey"
+            columns: ["user_id_int"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id_int"]
           },
         ]
       }
@@ -157,6 +186,7 @@ export type Database = {
           forward_error: string | null
           forwarded_to_backend: boolean
           id: string
+          id_int: number
           payload: Json
           processed_at: string
           type: string
@@ -165,6 +195,7 @@ export type Database = {
           forward_error?: string | null
           forwarded_to_backend?: boolean
           id: string
+          id_int?: number
           payload: Json
           processed_at?: string
           type: string
@@ -173,6 +204,7 @@ export type Database = {
           forward_error?: string | null
           forwarded_to_backend?: boolean
           id?: string
+          id_int?: number
           payload?: Json
           processed_at?: string
           type?: string
@@ -181,25 +213,31 @@ export type Database = {
       }
       usage_balance: {
         Row: {
+          id_int: number
           messages_remaining: number
           messages_used_period: number
           period_end: string
           period_start: string
           user_id: string
+          user_id_int: number | null
         }
         Insert: {
+          id_int?: number
           messages_remaining?: number
           messages_used_period?: number
           period_end?: string
           period_start?: string
           user_id: string
+          user_id_int?: number | null
         }
         Update: {
+          id_int?: number
           messages_remaining?: number
           messages_used_period?: number
           period_end?: string
           period_start?: string
           user_id?: string
+          user_id_int?: number | null
         }
         Relationships: [
           {
@@ -208,6 +246,13 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "usage_balance_user_id_int_fkey"
+            columns: ["user_id_int"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id_int"]
           },
         ]
       }
@@ -218,8 +263,10 @@ export type Database = {
           current_period_end: string | null
           email: string | null
           id: string
+          id_int: number
           phone: string | null
           plan_id: string | null
+          plan_id_int: number | null
           stripe_customer_id: string | null
           subscription_id: string | null
           subscription_status: string
@@ -231,8 +278,10 @@ export type Database = {
           current_period_end?: string | null
           email?: string | null
           id: string
+          id_int?: number
           phone?: string | null
           plan_id?: string | null
+          plan_id_int?: number | null
           stripe_customer_id?: string | null
           subscription_id?: string | null
           subscription_status?: string
@@ -244,8 +293,10 @@ export type Database = {
           current_period_end?: string | null
           email?: string | null
           id?: string
+          id_int?: number
           phone?: string | null
           plan_id?: string | null
+          plan_id_int?: number | null
           stripe_customer_id?: string | null
           subscription_id?: string | null
           subscription_status?: string
@@ -259,32 +310,45 @@ export type Database = {
             referencedRelation: "plans"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "users_plan_id_int_fkey"
+            columns: ["plan_id_int"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id_int"]
+          },
         ]
       }
       whatsapp_connections: {
         Row: {
           chatwoot_inbox_id: string | null
           id: string
+          id_int: number
           phone_display: string | null
           status: Database["public"]["Enums"]["whatsapp_connection_status"]
           updated_at: string
           user_id: string
+          user_id_int: number | null
         }
         Insert: {
           chatwoot_inbox_id?: string | null
           id?: string
+          id_int?: number
           phone_display?: string | null
           status?: Database["public"]["Enums"]["whatsapp_connection_status"]
           updated_at?: string
           user_id: string
+          user_id_int?: number | null
         }
         Update: {
           chatwoot_inbox_id?: string | null
           id?: string
+          id_int?: number
           phone_display?: string | null
           status?: Database["public"]["Enums"]["whatsapp_connection_status"]
           updated_at?: string
           user_id?: string
+          user_id_int?: number | null
         }
         Relationships: [
           {
@@ -293,6 +357,13 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_connections_user_id_int_fkey"
+            columns: ["user_id_int"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id_int"]
           },
         ]
       }
