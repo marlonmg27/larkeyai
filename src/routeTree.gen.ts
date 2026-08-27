@@ -32,6 +32,7 @@ import { Route as EnContactRouteImport } from './routes/en/contact'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as EsLegalTerminosRouteImport } from './routes/es/legal/terminos'
 import { Route as EsLegalPrivacidadRouteImport } from './routes/es/legal/privacidad'
+import { Route as EnLegalPrivacyRouteImport } from './routes/en/legal/privacy'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe/webhook'
 import { Route as ApiPublicWhatsappConnectionsUpsertRouteImport } from './routes/api/public/whatsapp/connections/upsert'
 import { Route as ApiPublicWhatsappConnectionsStatusRouteImport } from './routes/api/public/whatsapp/connections/status'
@@ -150,6 +151,11 @@ const EsLegalPrivacidadRoute = EsLegalPrivacidadRouteImport.update({
   path: '/es/legal/privacidad',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EnLegalPrivacyRoute = EnLegalPrivacyRouteImport.update({
+  id: '/en/legal/privacy',
+  path: '/en/legal/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicStripeWebhookRoute = ApiPublicStripeWebhookRouteImport.update({
   id: '/api/public/stripe/webhook',
   path: '/api/public/stripe/webhook',
@@ -189,6 +195,7 @@ export interface FileRoutesByFullPath {
   '/es/precios': typeof EsPreciosRoute
   '/en/': typeof EnIndexRoute
   '/es/': typeof EsIndexRoute
+  '/en/legal/privacy': typeof EnLegalPrivacyRoute
   '/es/legal/privacidad': typeof EsLegalPrivacidadRoute
   '/es/legal/terminos': typeof EsLegalTerminosRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
@@ -216,6 +223,7 @@ export interface FileRoutesByTo {
   '/es/precios': typeof EsPreciosRoute
   '/en': typeof EnIndexRoute
   '/es': typeof EsIndexRoute
+  '/en/legal/privacy': typeof EnLegalPrivacyRoute
   '/es/legal/privacidad': typeof EsLegalPrivacidadRoute
   '/es/legal/terminos': typeof EsLegalTerminosRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
@@ -245,6 +253,7 @@ export interface FileRoutesById {
   '/es/precios': typeof EsPreciosRoute
   '/en/': typeof EnIndexRoute
   '/es/': typeof EsIndexRoute
+  '/en/legal/privacy': typeof EnLegalPrivacyRoute
   '/es/legal/privacidad': typeof EsLegalPrivacidadRoute
   '/es/legal/terminos': typeof EsLegalTerminosRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
@@ -274,6 +283,7 @@ export interface FileRouteTypes {
     | '/es/precios'
     | '/en/'
     | '/es/'
+    | '/en/legal/privacy'
     | '/es/legal/privacidad'
     | '/es/legal/terminos'
     | '/api/public/stripe/webhook'
@@ -301,6 +311,7 @@ export interface FileRouteTypes {
     | '/es/precios'
     | '/en'
     | '/es'
+    | '/en/legal/privacy'
     | '/es/legal/privacidad'
     | '/es/legal/terminos'
     | '/api/public/stripe/webhook'
@@ -329,6 +340,7 @@ export interface FileRouteTypes {
     | '/es/precios'
     | '/en/'
     | '/es/'
+    | '/en/legal/privacy'
     | '/es/legal/privacidad'
     | '/es/legal/terminos'
     | '/api/public/stripe/webhook'
@@ -357,6 +369,7 @@ export interface RootRouteChildren {
   EsPreciosRoute: typeof EsPreciosRoute
   EnIndexRoute: typeof EnIndexRoute
   EsIndexRoute: typeof EsIndexRoute
+  EnLegalPrivacyRoute: typeof EnLegalPrivacyRoute
   EsLegalPrivacidadRoute: typeof EsLegalPrivacidadRoute
   EsLegalTerminosRoute: typeof EsLegalTerminosRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
@@ -527,6 +540,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EsLegalPrivacidadRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/en/legal/privacy': {
+      id: '/en/legal/privacy'
+      path: '/en/legal/privacy'
+      fullPath: '/en/legal/privacy'
+      preLoaderRoute: typeof EnLegalPrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/stripe/webhook': {
       id: '/api/public/stripe/webhook'
       path: '/api/public/stripe/webhook'
@@ -583,6 +603,7 @@ const rootRouteChildren: RootRouteChildren = {
   EsPreciosRoute: EsPreciosRoute,
   EnIndexRoute: EnIndexRoute,
   EsIndexRoute: EsIndexRoute,
+  EnLegalPrivacyRoute: EnLegalPrivacyRoute,
   EsLegalPrivacidadRoute: EsLegalPrivacidadRoute,
   EsLegalTerminosRoute: EsLegalTerminosRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
