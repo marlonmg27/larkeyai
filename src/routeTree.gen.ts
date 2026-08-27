@@ -17,6 +17,7 @@ import { Route as ContactoRouteImport } from './routes/contacto'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as EsIndexRouteImport } from './routes/es/index'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe/webhook'
 import { Route as ApiPublicWhatsappConnectionsUpsertRouteImport } from './routes/api/public/whatsapp/connections/upsert'
@@ -61,6 +62,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EsIndexRoute = EsIndexRouteImport.update({
+  id: '/es/',
+  path: '/es/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -93,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/precios': typeof PreciosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/es/': typeof EsIndexRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/whatsapp/connections/status': typeof ApiPublicWhatsappConnectionsStatusRoute
   '/api/public/whatsapp/connections/upsert': typeof ApiPublicWhatsappConnectionsUpsertRoute
@@ -106,6 +113,7 @@ export interface FileRoutesByTo {
   '/precios': typeof PreciosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/es': typeof EsIndexRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/whatsapp/connections/status': typeof ApiPublicWhatsappConnectionsStatusRoute
   '/api/public/whatsapp/connections/upsert': typeof ApiPublicWhatsappConnectionsUpsertRoute
@@ -121,6 +129,7 @@ export interface FileRoutesById {
   '/precios': typeof PreciosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/es/': typeof EsIndexRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/whatsapp/connections/status': typeof ApiPublicWhatsappConnectionsStatusRoute
   '/api/public/whatsapp/connections/upsert': typeof ApiPublicWhatsappConnectionsUpsertRoute
@@ -136,6 +145,7 @@ export interface FileRouteTypes {
     | '/precios'
     | '/sitemap.xml'
     | '/dashboard'
+    | '/es/'
     | '/api/public/stripe/webhook'
     | '/api/public/whatsapp/connections/status'
     | '/api/public/whatsapp/connections/upsert'
@@ -149,6 +159,7 @@ export interface FileRouteTypes {
     | '/precios'
     | '/sitemap.xml'
     | '/dashboard'
+    | '/es'
     | '/api/public/stripe/webhook'
     | '/api/public/whatsapp/connections/status'
     | '/api/public/whatsapp/connections/upsert'
@@ -163,6 +174,7 @@ export interface FileRouteTypes {
     | '/precios'
     | '/sitemap.xml'
     | '/_authenticated/dashboard'
+    | '/es/'
     | '/api/public/stripe/webhook'
     | '/api/public/whatsapp/connections/status'
     | '/api/public/whatsapp/connections/upsert'
@@ -177,6 +189,7 @@ export interface RootRouteChildren {
   GuiaRoute: typeof GuiaRoute
   PreciosRoute: typeof PreciosRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  EsIndexRoute: typeof EsIndexRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
   ApiPublicWhatsappConnectionsStatusRoute: typeof ApiPublicWhatsappConnectionsStatusRoute
   ApiPublicWhatsappConnectionsUpsertRoute: typeof ApiPublicWhatsappConnectionsUpsertRoute
@@ -240,6 +253,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/es/': {
+      id: '/es/'
+      path: '/es'
+      fullPath: '/es/'
+      preLoaderRoute: typeof EsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -291,6 +311,7 @@ const rootRouteChildren: RootRouteChildren = {
   GuiaRoute: GuiaRoute,
   PreciosRoute: PreciosRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  EsIndexRoute: EsIndexRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
   ApiPublicWhatsappConnectionsStatusRoute:
     ApiPublicWhatsappConnectionsStatusRoute,
