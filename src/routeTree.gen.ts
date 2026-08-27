@@ -32,6 +32,7 @@ import { Route as EnContactRouteImport } from './routes/en/contact'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as EsLegalTerminosRouteImport } from './routes/es/legal/terminos'
 import { Route as EsLegalPrivacidadRouteImport } from './routes/es/legal/privacidad'
+import { Route as EnLegalTermsRouteImport } from './routes/en/legal/terms'
 import { Route as EnLegalPrivacyRouteImport } from './routes/en/legal/privacy'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe/webhook'
 import { Route as ApiPublicWhatsappConnectionsUpsertRouteImport } from './routes/api/public/whatsapp/connections/upsert'
@@ -151,6 +152,11 @@ const EsLegalPrivacidadRoute = EsLegalPrivacidadRouteImport.update({
   path: '/es/legal/privacidad',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EnLegalTermsRoute = EnLegalTermsRouteImport.update({
+  id: '/en/legal/terms',
+  path: '/en/legal/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EnLegalPrivacyRoute = EnLegalPrivacyRouteImport.update({
   id: '/en/legal/privacy',
   path: '/en/legal/privacy',
@@ -196,6 +202,7 @@ export interface FileRoutesByFullPath {
   '/en/': typeof EnIndexRoute
   '/es/': typeof EsIndexRoute
   '/en/legal/privacy': typeof EnLegalPrivacyRoute
+  '/en/legal/terms': typeof EnLegalTermsRoute
   '/es/legal/privacidad': typeof EsLegalPrivacidadRoute
   '/es/legal/terminos': typeof EsLegalTerminosRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
@@ -224,6 +231,7 @@ export interface FileRoutesByTo {
   '/en': typeof EnIndexRoute
   '/es': typeof EsIndexRoute
   '/en/legal/privacy': typeof EnLegalPrivacyRoute
+  '/en/legal/terms': typeof EnLegalTermsRoute
   '/es/legal/privacidad': typeof EsLegalPrivacidadRoute
   '/es/legal/terminos': typeof EsLegalTerminosRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
@@ -254,6 +262,7 @@ export interface FileRoutesById {
   '/en/': typeof EnIndexRoute
   '/es/': typeof EsIndexRoute
   '/en/legal/privacy': typeof EnLegalPrivacyRoute
+  '/en/legal/terms': typeof EnLegalTermsRoute
   '/es/legal/privacidad': typeof EsLegalPrivacidadRoute
   '/es/legal/terminos': typeof EsLegalTerminosRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
@@ -284,6 +293,7 @@ export interface FileRouteTypes {
     | '/en/'
     | '/es/'
     | '/en/legal/privacy'
+    | '/en/legal/terms'
     | '/es/legal/privacidad'
     | '/es/legal/terminos'
     | '/api/public/stripe/webhook'
@@ -312,6 +322,7 @@ export interface FileRouteTypes {
     | '/en'
     | '/es'
     | '/en/legal/privacy'
+    | '/en/legal/terms'
     | '/es/legal/privacidad'
     | '/es/legal/terminos'
     | '/api/public/stripe/webhook'
@@ -341,6 +352,7 @@ export interface FileRouteTypes {
     | '/en/'
     | '/es/'
     | '/en/legal/privacy'
+    | '/en/legal/terms'
     | '/es/legal/privacidad'
     | '/es/legal/terminos'
     | '/api/public/stripe/webhook'
@@ -370,6 +382,7 @@ export interface RootRouteChildren {
   EnIndexRoute: typeof EnIndexRoute
   EsIndexRoute: typeof EsIndexRoute
   EnLegalPrivacyRoute: typeof EnLegalPrivacyRoute
+  EnLegalTermsRoute: typeof EnLegalTermsRoute
   EsLegalPrivacidadRoute: typeof EsLegalPrivacidadRoute
   EsLegalTerminosRoute: typeof EsLegalTerminosRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
@@ -540,6 +553,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EsLegalPrivacidadRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/en/legal/terms': {
+      id: '/en/legal/terms'
+      path: '/en/legal/terms'
+      fullPath: '/en/legal/terms'
+      preLoaderRoute: typeof EnLegalTermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/en/legal/privacy': {
       id: '/en/legal/privacy'
       path: '/en/legal/privacy'
@@ -604,6 +624,7 @@ const rootRouteChildren: RootRouteChildren = {
   EnIndexRoute: EnIndexRoute,
   EsIndexRoute: EsIndexRoute,
   EnLegalPrivacyRoute: EnLegalPrivacyRoute,
+  EnLegalTermsRoute: EnLegalTermsRoute,
   EsLegalPrivacidadRoute: EsLegalPrivacidadRoute,
   EsLegalTerminosRoute: EsLegalTerminosRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
