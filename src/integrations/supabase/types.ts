@@ -324,7 +324,7 @@ export type Database = {
           chatwoot_inbox_id: string | null
           id: string
           id_int: number
-          phone_display: string | null
+          phone_number: string | null
           status: Database["public"]["Enums"]["whatsapp_connection_status"]
           updated_at: string
           user_id: string
@@ -334,7 +334,7 @@ export type Database = {
           chatwoot_inbox_id?: string | null
           id?: string
           id_int?: number
-          phone_display?: string | null
+          phone_number?: string | null
           status?: Database["public"]["Enums"]["whatsapp_connection_status"]
           updated_at?: string
           user_id: string
@@ -344,7 +344,7 @@ export type Database = {
           chatwoot_inbox_id?: string | null
           id?: string
           id_int?: number
-          phone_display?: string | null
+          phone_number?: string | null
           status?: Database["public"]["Enums"]["whatsapp_connection_status"]
           updated_at?: string
           user_id?: string
