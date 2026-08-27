@@ -2,7 +2,6 @@ import { facebookAppId } from "@/lib/whatsapp/embedded-signup";
 import type { Dict } from "./es";
 
 export const en: Dict = {
-  locale: "es" as const, // placeholder, overwritten below
   htmlLang: "en",
   currencyLocale: "en-US",
 
