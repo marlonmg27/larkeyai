@@ -1,7 +1,6 @@
 import { facebookAppId } from "@/lib/whatsapp/embedded-signup";
 
 export const es = {
-  locale: "es" as const,
   htmlLang: "es",
   currencyLocale: "es-MX",
 
