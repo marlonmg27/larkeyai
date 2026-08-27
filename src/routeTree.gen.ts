@@ -18,6 +18,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EsIndexRouteImport } from './routes/es/index'
+import { Route as EnIndexRouteImport } from './routes/en/index'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe/webhook'
 import { Route as ApiPublicWhatsappConnectionsUpsertRouteImport } from './routes/api/public/whatsapp/connections/upsert'
@@ -67,6 +68,11 @@ const EsIndexRoute = EsIndexRouteImport.update({
   path: '/es/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EnIndexRoute = EnIndexRouteImport.update({
+  id: '/en/',
+  path: '/en/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -99,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/precios': typeof PreciosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/en/': typeof EnIndexRoute
   '/es/': typeof EsIndexRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/whatsapp/connections/status': typeof ApiPublicWhatsappConnectionsStatusRoute
@@ -113,6 +120,7 @@ export interface FileRoutesByTo {
   '/precios': typeof PreciosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/en': typeof EnIndexRoute
   '/es': typeof EsIndexRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/whatsapp/connections/status': typeof ApiPublicWhatsappConnectionsStatusRoute
@@ -129,6 +137,7 @@ export interface FileRoutesById {
   '/precios': typeof PreciosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/en/': typeof EnIndexRoute
   '/es/': typeof EsIndexRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/whatsapp/connections/status': typeof ApiPublicWhatsappConnectionsStatusRoute
@@ -145,6 +154,7 @@ export interface FileRouteTypes {
     | '/precios'
     | '/sitemap.xml'
     | '/dashboard'
+    | '/en/'
     | '/es/'
     | '/api/public/stripe/webhook'
     | '/api/public/whatsapp/connections/status'
@@ -159,6 +169,7 @@ export interface FileRouteTypes {
     | '/precios'
     | '/sitemap.xml'
     | '/dashboard'
+    | '/en'
     | '/es'
     | '/api/public/stripe/webhook'
     | '/api/public/whatsapp/connections/status'
@@ -174,6 +185,7 @@ export interface FileRouteTypes {
     | '/precios'
     | '/sitemap.xml'
     | '/_authenticated/dashboard'
+    | '/en/'
     | '/es/'
     | '/api/public/stripe/webhook'
     | '/api/public/whatsapp/connections/status'
@@ -189,6 +201,7 @@ export interface RootRouteChildren {
   GuiaRoute: typeof GuiaRoute
   PreciosRoute: typeof PreciosRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  EnIndexRoute: typeof EnIndexRoute
   EsIndexRoute: typeof EsIndexRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
   ApiPublicWhatsappConnectionsStatusRoute: typeof ApiPublicWhatsappConnectionsStatusRoute
@@ -260,6 +273,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/en/': {
+      id: '/en/'
+      path: '/en'
+      fullPath: '/en/'
+      preLoaderRoute: typeof EnIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -311,6 +331,7 @@ const rootRouteChildren: RootRouteChildren = {
   GuiaRoute: GuiaRoute,
   PreciosRoute: PreciosRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  EnIndexRoute: EnIndexRoute,
   EsIndexRoute: EsIndexRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
   ApiPublicWhatsappConnectionsStatusRoute:
