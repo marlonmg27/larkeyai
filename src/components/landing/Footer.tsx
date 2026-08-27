@@ -1,15 +1,23 @@
+import { Link } from "@tanstack/react-router";
 import { MessageCircle, Mail } from "lucide-react";
 
-const links = [
-  { label: "Inicio", href: "/" },
-  { label: "Precios", href: "/precios" },
-  { label: "FAQ", href: "/faq" },
-  { label: "Contacto", href: "/contacto" },
-  { label: "Iniciar sesión", href: "/auth" },
-];
-
+import { ENTERPRISE_EMAIL } from "@/components/pricing/PlanCards";
+import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
+import { useHref, useT, type PageKey } from "@/i18n";
 
 export function Footer() {
+  const t = useT();
+  const href = useHref();
+
+  const links: { label: string; page: PageKey }[] = [
+    { label: t.nav.home, page: "home" },
+    { label: t.nav.pricing, page: "pricing" },
+    { label: t.nav.guide, page: "guide" },
+    { label: t.nav.faq, page: "faq" },
+    { label: t.nav.contact, page: "contact" },
+    { label: t.nav.login, page: "login" },
+  ];
+
   return (
     <footer className="border-t border-border bg-card py-12">
       <div className="section-container">
@@ -21,43 +29,64 @@ export function Footer() {
               </div>
               <span className="text-lg font-semibold tracking-tight">Larkey</span>
             </div>
-            <p className="mt-3 text-sm text-muted-foreground">
-              Asistentes conversacionales afinados a tu negocio, para que respondan tus mensajes por ti — hoy en WhatsApp, mañana en Instagram, Telegram, Messenger y WebApps. Incluye integración opcional con Chatwoot para supervisar tus conversaciones.
-            </p>
+            <p className="mt-3 text-sm text-muted-foreground">{t.footer.tagline}</p>
+            <LanguageSwitcher className="mt-4" />
           </div>
 
-          <div className="grid gap-8 sm:grid-cols-2">
+          <div className="grid gap-8 sm:grid-cols-3">
             <div>
-              <h4 className="text-sm font-semibold text-foreground">Links</h4>
+              <h4 className="text-sm font-semibold text-foreground">{t.footer.links}</h4>
               <ul className="mt-3 space-y-2">
                 {links.map((link) => (
                   <li key={link.label}>
-                    <a
-                      href={link.href}
+                    <Link
+                      to={href(link.page) as never}
                       className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                     >
                       {link.label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
             </div>
+
             <div>
-              <h4 className="text-sm font-semibold text-foreground">Contacto</h4>
+              <h4 className="text-sm font-semibold text-foreground">{t.footer.legal}</h4>
+              <ul className="mt-3 space-y-2">
+                <li>
+                  <Link
+                    to={href("privacy") as never}
+                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    {t.footer.privacy}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to={href("terms") as never}
+                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    {t.footer.terms}
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="text-sm font-semibold text-foreground">{t.footer.contact}</h4>
               <a
-                href="mailto:marlonmolinag12@gmail.com"
+                href={`mailto:${ENTERPRISE_EMAIL}`}
                 className="mt-3 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
               >
                 <Mail className="h-4 w-4" />
-                marlonmolinag12@gmail.com
+                {ENTERPRISE_EMAIL}
               </a>
             </div>
-
           </div>
         </div>
 
         <div className="mt-12 border-t border-border pt-6 text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Larkey. Todos los derechos reservados.
+          © {new Date().getFullYear()} Larkey. {t.footer.rights}
         </div>
       </div>
     </footer>

@@ -1,46 +1,40 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 
-const BASE_URL = "https://larkeyai.lovable.app";
+import { LOCALES, PAGE_KEYS, PATHS, SITE_URL } from "@/i18n/config";
 
-interface SitemapEntry {
-  path: string;
-  lastmod?: string;
-  changefreq?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
-  priority?: string;
-}
+const BASE_URL = SITE_URL;
 
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
-        // /dashboard is intentionally excluded: it requires authentication and is noindex.
-        const entries: SitemapEntry[] = [
-          { path: "/", changefreq: "weekly", priority: "1.0" },
-          { path: "/precios", changefreq: "weekly", priority: "0.9" },
-          { path: "/guia", changefreq: "monthly", priority: "0.8" },
-          { path: "/faq", changefreq: "monthly", priority: "0.7" },
-          { path: "/contacto", changefreq: "monthly", priority: "0.7" },
-          { path: "/auth", changefreq: "monthly", priority: "0.5" },
-        ];
-
-
-        const urls = entries.map((e) =>
-          [
-            `  <url>`,
-            `    <loc>${BASE_URL}${e.path}</loc>`,
-            e.lastmod ? `    <lastmod>${e.lastmod}</lastmod>` : null,
-            e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>` : null,
-            e.priority ? `    <priority>${e.priority}</priority>` : null,
-            `  </url>`,
-          ]
-            .filter(Boolean)
-            .join("\n"),
+        // /dashboard is intentionally excluded: it requires authentication.
+        const urls = PAGE_KEYS.flatMap((page) =>
+          LOCALES.map((locale) => {
+            const priority = page === "home" ? "1.0" : page === "pricing" ? "0.9" : "0.7";
+            const changefreq = page === "home" || page === "pricing" ? "weekly" : "monthly";
+            const alternates = [
+              ...LOCALES.map(
+                (alt) =>
+                  `    <xhtml:link rel="alternate" hreflang="${alt}" href="${BASE_URL}${PATHS[page][alt]}" />`,
+              ),
+              `    <xhtml:link rel="alternate" hreflang="x-default" href="${BASE_URL}${PATHS[page].es}" />`,
+            ];
+            return [
+              `  <url>`,
+              `    <loc>${BASE_URL}${PATHS[page][locale]}</loc>`,
+              ...alternates,
+              `    <changefreq>${changefreq}</changefreq>`,
+              `    <priority>${priority}</priority>`,
+              `  </url>`,
+            ].join("\n");
+          }),
         );
 
         const xml = [
           `<?xml version="1.0" encoding="UTF-8"?>`,
-          `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
+          `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">`,
           ...urls,
           `</urlset>`,
         ].join("\n");

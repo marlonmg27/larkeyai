@@ -17,7 +17,23 @@ import { Route as ContactoRouteImport } from './routes/contacto'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as EsIndexRouteImport } from './routes/es/index'
+import { Route as EnIndexRouteImport } from './routes/en/index'
+import { Route as EsPreciosRouteImport } from './routes/es/precios'
+import { Route as EsGuiaRouteImport } from './routes/es/guia'
+import { Route as EsFaqRouteImport } from './routes/es/faq'
+import { Route as EsContactoRouteImport } from './routes/es/contacto'
+import { Route as EsAccesoRouteImport } from './routes/es/acceso'
+import { Route as EnWhatsappSetupGuideRouteImport } from './routes/en/whatsapp-setup-guide'
+import { Route as EnPricingRouteImport } from './routes/en/pricing'
+import { Route as EnLoginRouteImport } from './routes/en/login'
+import { Route as EnFaqRouteImport } from './routes/en/faq'
+import { Route as EnContactRouteImport } from './routes/en/contact'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as EsLegalTerminosRouteImport } from './routes/es/legal/terminos'
+import { Route as EsLegalPrivacidadRouteImport } from './routes/es/legal/privacidad'
+import { Route as EnLegalTermsRouteImport } from './routes/en/legal/terms'
+import { Route as EnLegalPrivacyRouteImport } from './routes/en/legal/privacy'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe/webhook'
 import { Route as ApiPublicWhatsappConnectionsUpsertRouteImport } from './routes/api/public/whatsapp/connections/upsert'
 import { Route as ApiPublicWhatsappConnectionsStatusRouteImport } from './routes/api/public/whatsapp/connections/status'
@@ -61,10 +77,90 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EsIndexRoute = EsIndexRouteImport.update({
+  id: '/es/',
+  path: '/es/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EnIndexRoute = EnIndexRouteImport.update({
+  id: '/en/',
+  path: '/en/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EsPreciosRoute = EsPreciosRouteImport.update({
+  id: '/es/precios',
+  path: '/es/precios',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EsGuiaRoute = EsGuiaRouteImport.update({
+  id: '/es/guia',
+  path: '/es/guia',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EsFaqRoute = EsFaqRouteImport.update({
+  id: '/es/faq',
+  path: '/es/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EsContactoRoute = EsContactoRouteImport.update({
+  id: '/es/contacto',
+  path: '/es/contacto',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EsAccesoRoute = EsAccesoRouteImport.update({
+  id: '/es/acceso',
+  path: '/es/acceso',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EnWhatsappSetupGuideRoute = EnWhatsappSetupGuideRouteImport.update({
+  id: '/en/whatsapp-setup-guide',
+  path: '/en/whatsapp-setup-guide',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EnPricingRoute = EnPricingRouteImport.update({
+  id: '/en/pricing',
+  path: '/en/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EnLoginRoute = EnLoginRouteImport.update({
+  id: '/en/login',
+  path: '/en/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EnFaqRoute = EnFaqRouteImport.update({
+  id: '/en/faq',
+  path: '/en/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EnContactRoute = EnContactRouteImport.update({
+  id: '/en/contact',
+  path: '/en/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const EsLegalTerminosRoute = EsLegalTerminosRouteImport.update({
+  id: '/es/legal/terminos',
+  path: '/es/legal/terminos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EsLegalPrivacidadRoute = EsLegalPrivacidadRouteImport.update({
+  id: '/es/legal/privacidad',
+  path: '/es/legal/privacidad',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EnLegalTermsRoute = EnLegalTermsRouteImport.update({
+  id: '/en/legal/terms',
+  path: '/en/legal/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EnLegalPrivacyRoute = EnLegalPrivacyRouteImport.update({
+  id: '/en/legal/privacy',
+  path: '/en/legal/privacy',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicStripeWebhookRoute = ApiPublicStripeWebhookRouteImport.update({
   id: '/api/public/stripe/webhook',
@@ -93,6 +189,22 @@ export interface FileRoutesByFullPath {
   '/precios': typeof PreciosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/en/contact': typeof EnContactRoute
+  '/en/faq': typeof EnFaqRoute
+  '/en/login': typeof EnLoginRoute
+  '/en/pricing': typeof EnPricingRoute
+  '/en/whatsapp-setup-guide': typeof EnWhatsappSetupGuideRoute
+  '/es/acceso': typeof EsAccesoRoute
+  '/es/contacto': typeof EsContactoRoute
+  '/es/faq': typeof EsFaqRoute
+  '/es/guia': typeof EsGuiaRoute
+  '/es/precios': typeof EsPreciosRoute
+  '/en/': typeof EnIndexRoute
+  '/es/': typeof EsIndexRoute
+  '/en/legal/privacy': typeof EnLegalPrivacyRoute
+  '/en/legal/terms': typeof EnLegalTermsRoute
+  '/es/legal/privacidad': typeof EsLegalPrivacidadRoute
+  '/es/legal/terminos': typeof EsLegalTerminosRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/whatsapp/connections/status': typeof ApiPublicWhatsappConnectionsStatusRoute
   '/api/public/whatsapp/connections/upsert': typeof ApiPublicWhatsappConnectionsUpsertRoute
@@ -106,6 +218,22 @@ export interface FileRoutesByTo {
   '/precios': typeof PreciosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/en/contact': typeof EnContactRoute
+  '/en/faq': typeof EnFaqRoute
+  '/en/login': typeof EnLoginRoute
+  '/en/pricing': typeof EnPricingRoute
+  '/en/whatsapp-setup-guide': typeof EnWhatsappSetupGuideRoute
+  '/es/acceso': typeof EsAccesoRoute
+  '/es/contacto': typeof EsContactoRoute
+  '/es/faq': typeof EsFaqRoute
+  '/es/guia': typeof EsGuiaRoute
+  '/es/precios': typeof EsPreciosRoute
+  '/en': typeof EnIndexRoute
+  '/es': typeof EsIndexRoute
+  '/en/legal/privacy': typeof EnLegalPrivacyRoute
+  '/en/legal/terms': typeof EnLegalTermsRoute
+  '/es/legal/privacidad': typeof EsLegalPrivacidadRoute
+  '/es/legal/terminos': typeof EsLegalTerminosRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/whatsapp/connections/status': typeof ApiPublicWhatsappConnectionsStatusRoute
   '/api/public/whatsapp/connections/upsert': typeof ApiPublicWhatsappConnectionsUpsertRoute
@@ -121,6 +249,22 @@ export interface FileRoutesById {
   '/precios': typeof PreciosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/en/contact': typeof EnContactRoute
+  '/en/faq': typeof EnFaqRoute
+  '/en/login': typeof EnLoginRoute
+  '/en/pricing': typeof EnPricingRoute
+  '/en/whatsapp-setup-guide': typeof EnWhatsappSetupGuideRoute
+  '/es/acceso': typeof EsAccesoRoute
+  '/es/contacto': typeof EsContactoRoute
+  '/es/faq': typeof EsFaqRoute
+  '/es/guia': typeof EsGuiaRoute
+  '/es/precios': typeof EsPreciosRoute
+  '/en/': typeof EnIndexRoute
+  '/es/': typeof EsIndexRoute
+  '/en/legal/privacy': typeof EnLegalPrivacyRoute
+  '/en/legal/terms': typeof EnLegalTermsRoute
+  '/es/legal/privacidad': typeof EsLegalPrivacidadRoute
+  '/es/legal/terminos': typeof EsLegalTerminosRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/whatsapp/connections/status': typeof ApiPublicWhatsappConnectionsStatusRoute
   '/api/public/whatsapp/connections/upsert': typeof ApiPublicWhatsappConnectionsUpsertRoute
@@ -136,6 +280,22 @@ export interface FileRouteTypes {
     | '/precios'
     | '/sitemap.xml'
     | '/dashboard'
+    | '/en/contact'
+    | '/en/faq'
+    | '/en/login'
+    | '/en/pricing'
+    | '/en/whatsapp-setup-guide'
+    | '/es/acceso'
+    | '/es/contacto'
+    | '/es/faq'
+    | '/es/guia'
+    | '/es/precios'
+    | '/en/'
+    | '/es/'
+    | '/en/legal/privacy'
+    | '/en/legal/terms'
+    | '/es/legal/privacidad'
+    | '/es/legal/terminos'
     | '/api/public/stripe/webhook'
     | '/api/public/whatsapp/connections/status'
     | '/api/public/whatsapp/connections/upsert'
@@ -149,6 +309,22 @@ export interface FileRouteTypes {
     | '/precios'
     | '/sitemap.xml'
     | '/dashboard'
+    | '/en/contact'
+    | '/en/faq'
+    | '/en/login'
+    | '/en/pricing'
+    | '/en/whatsapp-setup-guide'
+    | '/es/acceso'
+    | '/es/contacto'
+    | '/es/faq'
+    | '/es/guia'
+    | '/es/precios'
+    | '/en'
+    | '/es'
+    | '/en/legal/privacy'
+    | '/en/legal/terms'
+    | '/es/legal/privacidad'
+    | '/es/legal/terminos'
     | '/api/public/stripe/webhook'
     | '/api/public/whatsapp/connections/status'
     | '/api/public/whatsapp/connections/upsert'
@@ -163,6 +339,22 @@ export interface FileRouteTypes {
     | '/precios'
     | '/sitemap.xml'
     | '/_authenticated/dashboard'
+    | '/en/contact'
+    | '/en/faq'
+    | '/en/login'
+    | '/en/pricing'
+    | '/en/whatsapp-setup-guide'
+    | '/es/acceso'
+    | '/es/contacto'
+    | '/es/faq'
+    | '/es/guia'
+    | '/es/precios'
+    | '/en/'
+    | '/es/'
+    | '/en/legal/privacy'
+    | '/en/legal/terms'
+    | '/es/legal/privacidad'
+    | '/es/legal/terminos'
     | '/api/public/stripe/webhook'
     | '/api/public/whatsapp/connections/status'
     | '/api/public/whatsapp/connections/upsert'
@@ -177,6 +369,22 @@ export interface RootRouteChildren {
   GuiaRoute: typeof GuiaRoute
   PreciosRoute: typeof PreciosRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  EnContactRoute: typeof EnContactRoute
+  EnFaqRoute: typeof EnFaqRoute
+  EnLoginRoute: typeof EnLoginRoute
+  EnPricingRoute: typeof EnPricingRoute
+  EnWhatsappSetupGuideRoute: typeof EnWhatsappSetupGuideRoute
+  EsAccesoRoute: typeof EsAccesoRoute
+  EsContactoRoute: typeof EsContactoRoute
+  EsFaqRoute: typeof EsFaqRoute
+  EsGuiaRoute: typeof EsGuiaRoute
+  EsPreciosRoute: typeof EsPreciosRoute
+  EnIndexRoute: typeof EnIndexRoute
+  EsIndexRoute: typeof EsIndexRoute
+  EnLegalPrivacyRoute: typeof EnLegalPrivacyRoute
+  EnLegalTermsRoute: typeof EnLegalTermsRoute
+  EsLegalPrivacidadRoute: typeof EsLegalPrivacidadRoute
+  EsLegalTerminosRoute: typeof EsLegalTerminosRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
   ApiPublicWhatsappConnectionsStatusRoute: typeof ApiPublicWhatsappConnectionsStatusRoute
   ApiPublicWhatsappConnectionsUpsertRoute: typeof ApiPublicWhatsappConnectionsUpsertRoute
@@ -240,12 +448,124 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/es/': {
+      id: '/es/'
+      path: '/es'
+      fullPath: '/es/'
+      preLoaderRoute: typeof EsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/en/': {
+      id: '/en/'
+      path: '/en'
+      fullPath: '/en/'
+      preLoaderRoute: typeof EnIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/es/precios': {
+      id: '/es/precios'
+      path: '/es/precios'
+      fullPath: '/es/precios'
+      preLoaderRoute: typeof EsPreciosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/es/guia': {
+      id: '/es/guia'
+      path: '/es/guia'
+      fullPath: '/es/guia'
+      preLoaderRoute: typeof EsGuiaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/es/faq': {
+      id: '/es/faq'
+      path: '/es/faq'
+      fullPath: '/es/faq'
+      preLoaderRoute: typeof EsFaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/es/contacto': {
+      id: '/es/contacto'
+      path: '/es/contacto'
+      fullPath: '/es/contacto'
+      preLoaderRoute: typeof EsContactoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/es/acceso': {
+      id: '/es/acceso'
+      path: '/es/acceso'
+      fullPath: '/es/acceso'
+      preLoaderRoute: typeof EsAccesoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/en/whatsapp-setup-guide': {
+      id: '/en/whatsapp-setup-guide'
+      path: '/en/whatsapp-setup-guide'
+      fullPath: '/en/whatsapp-setup-guide'
+      preLoaderRoute: typeof EnWhatsappSetupGuideRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/en/pricing': {
+      id: '/en/pricing'
+      path: '/en/pricing'
+      fullPath: '/en/pricing'
+      preLoaderRoute: typeof EnPricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/en/login': {
+      id: '/en/login'
+      path: '/en/login'
+      fullPath: '/en/login'
+      preLoaderRoute: typeof EnLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/en/faq': {
+      id: '/en/faq'
+      path: '/en/faq'
+      fullPath: '/en/faq'
+      preLoaderRoute: typeof EnFaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/en/contact': {
+      id: '/en/contact'
+      path: '/en/contact'
+      fullPath: '/en/contact'
+      preLoaderRoute: typeof EnContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/es/legal/terminos': {
+      id: '/es/legal/terminos'
+      path: '/es/legal/terminos'
+      fullPath: '/es/legal/terminos'
+      preLoaderRoute: typeof EsLegalTerminosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/es/legal/privacidad': {
+      id: '/es/legal/privacidad'
+      path: '/es/legal/privacidad'
+      fullPath: '/es/legal/privacidad'
+      preLoaderRoute: typeof EsLegalPrivacidadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/en/legal/terms': {
+      id: '/en/legal/terms'
+      path: '/en/legal/terms'
+      fullPath: '/en/legal/terms'
+      preLoaderRoute: typeof EnLegalTermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/en/legal/privacy': {
+      id: '/en/legal/privacy'
+      path: '/en/legal/privacy'
+      fullPath: '/en/legal/privacy'
+      preLoaderRoute: typeof EnLegalPrivacyRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/public/stripe/webhook': {
       id: '/api/public/stripe/webhook'
@@ -291,6 +611,22 @@ const rootRouteChildren: RootRouteChildren = {
   GuiaRoute: GuiaRoute,
   PreciosRoute: PreciosRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  EnContactRoute: EnContactRoute,
+  EnFaqRoute: EnFaqRoute,
+  EnLoginRoute: EnLoginRoute,
+  EnPricingRoute: EnPricingRoute,
+  EnWhatsappSetupGuideRoute: EnWhatsappSetupGuideRoute,
+  EsAccesoRoute: EsAccesoRoute,
+  EsContactoRoute: EsContactoRoute,
+  EsFaqRoute: EsFaqRoute,
+  EsGuiaRoute: EsGuiaRoute,
+  EsPreciosRoute: EsPreciosRoute,
+  EnIndexRoute: EnIndexRoute,
+  EsIndexRoute: EsIndexRoute,
+  EnLegalPrivacyRoute: EnLegalPrivacyRoute,
+  EnLegalTermsRoute: EnLegalTermsRoute,
+  EsLegalPrivacidadRoute: EsLegalPrivacidadRoute,
+  EsLegalTerminosRoute: EsLegalTerminosRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
   ApiPublicWhatsappConnectionsStatusRoute:
     ApiPublicWhatsappConnectionsStatusRoute,

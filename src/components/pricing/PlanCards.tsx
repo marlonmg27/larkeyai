@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useLocale, useT } from "@/i18n";
 
 export const ENTERPRISE_EMAIL = "marlonmolinag12@gmail.com";
 
@@ -26,74 +27,13 @@ export type PlanRow = {
 
 export type TierKey = "basic" | "standard" | "pro";
 
-const TIER_META: Record<
-  TierKey,
-  {
-    label: string;
-    tagline: string;
-    icon: typeof Sparkles;
-    perks: string[];
-    highlight?: boolean;
-  }
-> = {
-  basic: {
-    label: "Basic",
-    tagline: "Ideal para empezar a automatizar tu WhatsApp.",
-    icon: Sparkles,
-    perks: [
-      "Asistente afinado a tu operación",
-      "Canal principal: WhatsApp",
-      "Bandeja unificada",
-      "Soporte por email",
-    ],
-  },
-  standard: {
-    label: "Standard",
-    tagline: "El equilibrio entre volumen y control.",
-    icon: Rocket,
-    perks: [
-      "Todo lo del plan Basic",
-      "Ajustes de tono y flujos personalizados",
-      "WhatsApp + Instagram + Messenger",
-      "Soporte prioritario",
-    ],
-    highlight: true,
-  },
-  pro: {
-    label: "Pro",
-    tagline: "Para negocios que reciben mensajes cada día.",
-    icon: Crown,
-    perks: [
-      "Todo lo del plan Standard",
-      "WhatsApp, Instagram, Telegram, Messenger",
-      "Integraciones a tu stack",
-      "Onboarding acompañado",
-    ],
-  },
-};
-
-const ENTERPRISE_META = {
-  label: "Enterprise",
-  tagline: "Para equipos con alto volumen y necesidades a medida.",
-  icon: Building2,
-  perks: [
-    "Mensajes a medida según tu volumen",
-    "Asistentes diseñados para tu operación",
-    "WhatsApp, Instagram, Telegram, Messenger y WebApps",
-    "Integraciones dedicadas a tu stack",
-    "Onboarding y cuenta asignada",
-  ],
+const TIER_STYLE: Record<TierKey, { label: string; icon: typeof Sparkles; highlight?: boolean }> = {
+  basic: { label: "Basic", icon: Sparkles },
+  standard: { label: "Standard", icon: Rocket, highlight: true },
+  pro: { label: "Pro", icon: Crown },
 };
 
 const TIER_ORDER: TierKey[] = ["basic", "standard", "pro"];
-
-function formatMxn(v: number) {
-  return new Intl.NumberFormat("es-MX", {
-    style: "currency",
-    currency: "MXN",
-    maximumFractionDigits: 0,
-  }).format(v);
-}
 
 export function usePlansCatalog() {
   return useQuery<PlanRow[]>({
@@ -118,22 +58,30 @@ type PlanCardsProps = {
   pendingPlanId?: string | null;
 };
 
-export function PlanCards({
-  onSelectPlan,
-  ctaLabel = "Empezar prueba gratis",
-  pendingPlanId = null,
-}: PlanCardsProps) {
+export function PlanCards({ onSelectPlan, ctaLabel, pendingPlanId = null }: PlanCardsProps) {
   const [interval, setInterval] = useState<"month" | "year">("month");
   const { data: plans, isLoading, isError, error } = usePlansCatalog();
+  const t = useT();
+  const locale = useLocale();
+  const numberLocale = locale === "es" ? "es-MX" : "en-US";
+  const cta = ctaLabel ?? t.pricing.trialCta;
+
+  function formatMxn(v: number) {
+    return new Intl.NumberFormat(numberLocale, {
+      style: "currency",
+      currency: "MXN",
+      maximumFractionDigits: 0,
+    }).format(v);
+  }
 
   const byTier = useMemo(() => {
     const m: Partial<Record<TierKey, Record<"month" | "year", PlanRow | undefined>>> = {};
     for (const p of plans ?? []) {
-      const t = (p.tier ?? "").toLowerCase() as TierKey;
-      if (!TIER_ORDER.includes(t)) continue;
-      const bucket = m[t] ?? { month: undefined, year: undefined };
+      const tier = (p.tier ?? "").toLowerCase() as TierKey;
+      if (!TIER_ORDER.includes(tier)) continue;
+      const bucket = m[tier] ?? { month: undefined, year: undefined };
       bucket[p.billing_interval as "month" | "year"] = p;
-      m[t] = bucket;
+      m[tier] = bucket;
     }
     return m;
   }, [plans]);
@@ -151,7 +99,7 @@ export function PlanCards({
               interval === "month" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
             }`}
           >
-            Mensual
+            {t.pricing.monthly}
           </button>
           <button
             type="button"
@@ -160,7 +108,7 @@ export function PlanCards({
               interval === "year" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
             }`}
           >
-            Anual
+            {t.pricing.yearly}
             <span className="ml-1.5 rounded-full bg-brand/15 px-1.5 py-0.5 text-[10px] font-semibold text-brand">
               -20%
             </span>
@@ -173,28 +121,29 @@ export function PlanCards({
           <CardContent className="flex items-start gap-3 py-6">
             <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
             <div>
-              <p className="font-medium text-destructive">No pudimos cargar los planes</p>
+              <p className="font-medium text-destructive">{t.pricing.loadError}</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                {error instanceof Error ? error.message : "Intenta recargar la página."}
+                {error instanceof Error ? error.message : t.pricing.loadErrorHint}
               </p>
             </div>
           </CardContent>
         </Card>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {!isError && !isLoading && !hasPlansForInterval && (
+          {!isLoading && !hasPlansForInterval && (
             <Card className="md:col-span-2 xl:col-span-3">
               <CardContent className="py-8 text-center text-sm text-muted-foreground">
-                No hay planes disponibles en este momento. Escríbenos si necesitas ayuda.
+                {t.pricing.noPlans}
               </CardContent>
             </Card>
           )}
 
           {hasPlansForInterval || isLoading
             ? TIER_ORDER.map((tier, idx) => {
-                const meta = TIER_META[tier];
+                const style = TIER_STYLE[tier];
+                const copy = t.pricing.tiers[tier];
                 const plan = byTier[tier]?.[interval];
-                const Icon = meta.icon;
+                const Icon = style.icon;
                 const planPrice = plan ? Number(plan.price) : 0;
                 const monthlyEq = interval === "year" && plan ? planPrice / 12 : null;
                 return (
@@ -207,37 +156,41 @@ export function PlanCards({
                   >
                     <Card
                       className={`relative flex h-full flex-col overflow-hidden ${
-                        meta.highlight ? "border-brand shadow-lg ring-1 ring-brand" : ""
+                        style.highlight ? "border-brand shadow-lg ring-1 ring-brand" : ""
                       }`}
                     >
-                      {meta.highlight && (
+                      {style.highlight && (
                         <div className="absolute right-3 top-3">
-                          <Badge className="bg-brand text-brand-foreground hover:bg-brand">Recomendado</Badge>
+                          <Badge className="bg-brand text-brand-foreground hover:bg-brand">
+                            {t.pricing.recommended}
+                          </Badge>
                         </div>
                       )}
                       <CardHeader>
                         <div className="mb-2 grid h-10 w-10 place-items-center rounded-lg bg-brand/10 text-brand">
                           <Icon className="h-5 w-5" />
                         </div>
-                        <CardTitle className="text-xl">{meta.label}</CardTitle>
-                        <CardDescription>{meta.tagline}</CardDescription>
+                        <CardTitle className="text-xl">{style.label}</CardTitle>
+                        <CardDescription>{copy.tagline}</CardDescription>
                       </CardHeader>
                       <CardContent className="flex flex-1 flex-col">
-
                         <div className="mb-4">
                           {isLoading || !plan ? (
                             <div className="h-10 w-32 animate-pulse rounded bg-muted" />
                           ) : (
                             <>
                               <div className="flex items-baseline gap-1">
-                                <span className="text-4xl font-bold tracking-tight">{formatMxn(planPrice)}</span>
+                                <span className="text-4xl font-bold tracking-tight">
+                                  {formatMxn(planPrice)}
+                                </span>
                                 <span className="text-sm text-muted-foreground">
-                                  /{interval === "month" ? "mes" : "año"}
+                                  /{interval === "month" ? t.pricing.perMonth : t.pricing.perYear}
                                 </span>
                               </div>
                               {monthlyEq && (
                                 <p className="mt-1 text-xs text-muted-foreground">
-                                  ≈ {formatMxn(monthlyEq)} / mes facturado anual
+                                  ≈ {formatMxn(monthlyEq)} / {t.pricing.perMonth}{" "}
+                                  {t.pricing.monthlyEquivalent}
                                 </p>
                               )}
                             </>
@@ -245,11 +198,12 @@ export function PlanCards({
                         </div>
 
                         <div className="mb-4 rounded-lg bg-accent/40 px-3 py-2 text-sm font-medium">
-                          {plan ? plan.messages_included.toLocaleString("es-MX") : "—"} mensajes / mes
+                          {plan ? plan.messages_included.toLocaleString(numberLocale) : "—"}{" "}
+                          {t.pricing.messagesPerMonth}
                         </div>
 
                         <ul className="mb-6 flex-1 space-y-2.5">
-                          {meta.perks.map((perk) => (
+                          {copy.perks.map((perk) => (
                             <li key={perk} className="flex items-start gap-2 text-sm">
                               <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
                               <span className="text-muted-foreground">{perk}</span>
@@ -261,18 +215,18 @@ export function PlanCards({
                           disabled={!plan || pendingPlanId === plan?.id}
                           onClick={() => plan && onSelectPlan(plan)}
                           className={
-                            meta.highlight
+                            style.highlight
                               ? "w-full bg-brand text-brand-foreground hover:bg-brand/90"
                               : "w-full"
                           }
-                          variant={meta.highlight ? "default" : "outline"}
+                          variant={style.highlight ? "default" : "outline"}
                         >
                           {pendingPlanId === plan?.id ? (
                             <>
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Redirigiendo…
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t.pricing.redirecting}
                             </>
                           ) : (
-                            ctaLabel
+                            cta
                           )}
                         </Button>
                       </CardContent>
@@ -291,26 +245,29 @@ export function PlanCards({
             <Card className="relative flex h-full flex-col overflow-hidden">
               <CardHeader>
                 <div className="mb-2 grid h-10 w-10 place-items-center rounded-lg bg-brand/10 text-brand">
-                  <ENTERPRISE_META.icon className="h-5 w-5" />
+                  <Building2 className="h-5 w-5" />
                 </div>
-                <CardTitle className="text-xl">{ENTERPRISE_META.label}</CardTitle>
-                <CardDescription>{ENTERPRISE_META.tagline}</CardDescription>
+                <CardTitle className="text-xl">Enterprise</CardTitle>
+                <CardDescription>{t.pricing.enterprise.tagline}</CardDescription>
               </CardHeader>
               <CardContent className="flex flex-1 flex-col">
-
                 <div className="mb-4">
                   <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-bold tracking-tight">Personalizado</span>
+                    <span className="text-3xl font-bold tracking-tight">
+                      {t.pricing.enterprise.price}
+                    </span>
                   </div>
-                  <p className="mt-1 text-xs text-muted-foreground">Cotización según tu operación</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {t.pricing.enterprise.priceNote}
+                  </p>
                 </div>
 
                 <div className="mb-4 rounded-lg bg-accent/40 px-3 py-2 text-sm font-medium">
-                  Mensajes a medida
+                  {t.pricing.enterprise.messages}
                 </div>
 
                 <ul className="mb-6 flex-1 space-y-2.5">
-                  {ENTERPRISE_META.perks.map((perk) => (
+                  {t.pricing.enterprise.perks.map((perk) => (
                     <li key={perk} className="flex items-start gap-2 text-sm">
                       <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
                       <span className="text-muted-foreground">{perk}</span>
@@ -320,7 +277,7 @@ export function PlanCards({
 
                 <Button asChild variant="outline" className="w-full">
                   <a href={ENTERPRISE_MAILTO}>
-                    <Mail className="mr-2 h-4 w-4" /> Contactar ventas
+                    <Mail className="mr-2 h-4 w-4" /> {t.pricing.enterprise.cta}
                   </a>
                 </Button>
               </CardContent>

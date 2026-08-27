@@ -4,9 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { WhatsAppMockup } from "./WhatsAppMockup";
 import { ArrowRight, Sparkles } from "lucide-react";
-
+import { useHref, useT } from "@/i18n";
 
 export function Hero() {
+  const t = useT();
+  const href = useHref();
+
   return (
     <section className="relative overflow-hidden pt-32 pb-20 lg:pb-28">
       <div className="hero-gradient pointer-events-none absolute inset-0" />
@@ -24,19 +27,14 @@ export function Hero() {
               className="mb-6 gap-1.5 bg-accent text-accent-foreground hover:bg-accent"
             >
               <Sparkles className="h-3.5 w-3.5" />
-              Un asistente que trabaja mientras tú descansas
+              {t.hero.badge}
             </Badge>
 
             <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-              Libérate de responder mensajes. Larkey lo hace por ti.
+              {t.hero.h1}
             </h1>
 
-            <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-              Larkey te da un asistente conversacional que atiende tus chats en
-              WhatsApp — tu canal principal — y se extiende a Instagram, Telegram,
-              Messenger y WebApps. Tú lo supervisas en tiempo real y tomas el control
-              cuando lo necesites.
-            </p>
+            <p className="mt-6 text-lg leading-relaxed text-muted-foreground">{t.hero.subtitle}</p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button
@@ -46,18 +44,15 @@ export function Hero() {
                   document.getElementById("precios")?.scrollIntoView({ behavior: "smooth" })
                 }
               >
-                Quiero mi asistente
+                {t.hero.primaryCta}
                 <ArrowRight className="h-4 w-4" />
               </Button>
               <Button asChild size="lg" variant="outline">
-                <Link to="/auth">Iniciar sesión</Link>
+                <Link to={href("login") as never}>{t.hero.secondaryCta}</Link>
               </Button>
             </div>
 
-
-            <p className="mt-4 text-xs text-muted-foreground">
-              Para empresas y profesionales independientes que viven de conversar con sus clientes.
-            </p>
+            <p className="mt-4 text-xs text-muted-foreground">{t.hero.note}</p>
           </motion.div>
 
           <motion.div
