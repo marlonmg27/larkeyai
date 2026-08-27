@@ -6,6 +6,6 @@ export const Route = createFileRoute("/")({
     const prefersEnglish =
       typeof navigator !== "undefined" &&
       (navigator.language ?? "").toLowerCase().startsWith("en");
-    throw redirect({ to: prefersEnglish ? "/en/" : "/es/", statusCode: 301 });
+    throw redirect({ to: (prefersEnglish ? "/en/" : "/es/") as never, statusCode: 301 });
   },
 });
