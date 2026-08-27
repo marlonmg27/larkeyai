@@ -17,33 +17,47 @@ import {
 import { LarkeyMark } from "@/components/brand/LarkeyMark";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
-
-const items = [
-  { title: "Inicio", url: "/", icon: Home, authOnly: false },
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, authOnly: true },
-  { title: "Guía", url: "/guia", icon: BookOpen, authOnly: false },
-  { title: "Precios", url: "/precios", icon: Tag, authOnly: false },
-  { title: "Contacto", url: "/contacto", icon: Mail, authOnly: false },
-  { title: "FAQ", url: "/faq", icon: HelpCircle, authOnly: false },
-] as const;
+import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
+import { useHref, useT, type PageKey } from "@/i18n";
 
 export function AppSidebar() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const t = useT();
+  const href = useHref();
+
+  const items: {
+    title: string;
+    url: string;
+    icon: typeof Home;
+    authOnly: boolean;
+  }[] = [
+    { title: t.nav.home, url: href("home"), icon: Home, authOnly: false },
+    { title: t.nav.dashboard, url: "/dashboard", icon: LayoutDashboard, authOnly: true },
+    { title: t.nav.guide, url: href("guide"), icon: BookOpen, authOnly: false },
+    { title: t.nav.pricing, url: href("pricing"), icon: Tag, authOnly: false },
+    { title: t.nav.contact, url: href("contact"), icon: Mail, authOnly: false },
+    { title: t.nav.faq, url: href("faq"), icon: HelpCircle, authOnly: false },
+  ];
 
   const visible = items.filter((item) => !item.authOnly || Boolean(user));
 
   async function handleLogout() {
     await supabase.auth.signOut();
-    toast.success("Sesión cerrada");
-    navigate({ to: "/", replace: true });
+    toast.success(t.nav.loggedOut);
+    navigate({ to: href("home") as never, replace: true });
   }
+
+  const loginPath = href("login" satisfies PageKey);
 
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <Link to="/" className="flex items-center gap-2 px-2 py-1 text-foreground">
+        <Link
+          to={href("home") as never}
+          className="flex items-center gap-2 px-2 py-1 text-foreground"
+        >
           <LarkeyMark className="h-7 w-7 shrink-0" />
           <span className="truncate text-base font-semibold tracking-tight group-data-[collapsible=icon]:hidden">
             Larkey
@@ -53,13 +67,13 @@ export function AppSidebar() {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navegación</SidebarGroupLabel>
+          <SidebarGroupLabel>{t.common.navigation}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {visible.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={pathname === item.url} tooltip={item.title}>
-                    <Link to={item.url} className="flex items-center gap-2">
+                    <Link to={item.url as never} className="flex items-center gap-2">
                       <item.icon className="h-4 w-4" />
                       <span>{item.title}</span>
                     </Link>
@@ -72,18 +86,21 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter>
+        <div className="px-2 pb-2 group-data-[collapsible=icon]:hidden">
+          <LanguageSwitcher />
+        </div>
         <SidebarMenu>
           <SidebarMenuItem>
             {user ? (
-              <SidebarMenuButton onClick={handleLogout} tooltip="Cerrar sesión">
+              <SidebarMenuButton onClick={handleLogout} tooltip={t.nav.logout}>
                 <LogOut className="h-4 w-4" />
-                <span>Cerrar sesión</span>
+                <span>{t.nav.logout}</span>
               </SidebarMenuButton>
             ) : (
-              <SidebarMenuButton asChild tooltip="Iniciar sesión">
-                <Link to="/auth" className="flex items-center gap-2">
+              <SidebarMenuButton asChild tooltip={t.nav.login}>
+                <Link to={loginPath as never} className="flex items-center gap-2">
                   <LogIn className="h-4 w-4" />
-                  <span>Iniciar sesión</span>
+                  <span>{t.nav.login}</span>
                 </Link>
               </SidebarMenuButton>
             )}
