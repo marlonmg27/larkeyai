@@ -30,6 +30,7 @@ import { Route as EnLoginRouteImport } from './routes/en/login'
 import { Route as EnFaqRouteImport } from './routes/en/faq'
 import { Route as EnContactRouteImport } from './routes/en/contact'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as EsLegalTerminosRouteImport } from './routes/es/legal/terminos'
 import { Route as EsLegalPrivacidadRouteImport } from './routes/es/legal/privacidad'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe/webhook'
 import { Route as ApiPublicWhatsappConnectionsUpsertRouteImport } from './routes/api/public/whatsapp/connections/upsert'
@@ -139,6 +140,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const EsLegalTerminosRoute = EsLegalTerminosRouteImport.update({
+  id: '/es/legal/terminos',
+  path: '/es/legal/terminos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EsLegalPrivacidadRoute = EsLegalPrivacidadRouteImport.update({
   id: '/es/legal/privacidad',
   path: '/es/legal/privacidad',
@@ -184,6 +190,7 @@ export interface FileRoutesByFullPath {
   '/en/': typeof EnIndexRoute
   '/es/': typeof EsIndexRoute
   '/es/legal/privacidad': typeof EsLegalPrivacidadRoute
+  '/es/legal/terminos': typeof EsLegalTerminosRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/whatsapp/connections/status': typeof ApiPublicWhatsappConnectionsStatusRoute
   '/api/public/whatsapp/connections/upsert': typeof ApiPublicWhatsappConnectionsUpsertRoute
@@ -210,6 +217,7 @@ export interface FileRoutesByTo {
   '/en': typeof EnIndexRoute
   '/es': typeof EsIndexRoute
   '/es/legal/privacidad': typeof EsLegalPrivacidadRoute
+  '/es/legal/terminos': typeof EsLegalTerminosRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/whatsapp/connections/status': typeof ApiPublicWhatsappConnectionsStatusRoute
   '/api/public/whatsapp/connections/upsert': typeof ApiPublicWhatsappConnectionsUpsertRoute
@@ -238,6 +246,7 @@ export interface FileRoutesById {
   '/en/': typeof EnIndexRoute
   '/es/': typeof EsIndexRoute
   '/es/legal/privacidad': typeof EsLegalPrivacidadRoute
+  '/es/legal/terminos': typeof EsLegalTerminosRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/whatsapp/connections/status': typeof ApiPublicWhatsappConnectionsStatusRoute
   '/api/public/whatsapp/connections/upsert': typeof ApiPublicWhatsappConnectionsUpsertRoute
@@ -266,6 +275,7 @@ export interface FileRouteTypes {
     | '/en/'
     | '/es/'
     | '/es/legal/privacidad'
+    | '/es/legal/terminos'
     | '/api/public/stripe/webhook'
     | '/api/public/whatsapp/connections/status'
     | '/api/public/whatsapp/connections/upsert'
@@ -292,6 +302,7 @@ export interface FileRouteTypes {
     | '/en'
     | '/es'
     | '/es/legal/privacidad'
+    | '/es/legal/terminos'
     | '/api/public/stripe/webhook'
     | '/api/public/whatsapp/connections/status'
     | '/api/public/whatsapp/connections/upsert'
@@ -319,6 +330,7 @@ export interface FileRouteTypes {
     | '/en/'
     | '/es/'
     | '/es/legal/privacidad'
+    | '/es/legal/terminos'
     | '/api/public/stripe/webhook'
     | '/api/public/whatsapp/connections/status'
     | '/api/public/whatsapp/connections/upsert'
@@ -346,6 +358,7 @@ export interface RootRouteChildren {
   EnIndexRoute: typeof EnIndexRoute
   EsIndexRoute: typeof EsIndexRoute
   EsLegalPrivacidadRoute: typeof EsLegalPrivacidadRoute
+  EsLegalTerminosRoute: typeof EsLegalTerminosRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
   ApiPublicWhatsappConnectionsStatusRoute: typeof ApiPublicWhatsappConnectionsStatusRoute
   ApiPublicWhatsappConnectionsUpsertRoute: typeof ApiPublicWhatsappConnectionsUpsertRoute
@@ -500,6 +513,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/es/legal/terminos': {
+      id: '/es/legal/terminos'
+      path: '/es/legal/terminos'
+      fullPath: '/es/legal/terminos'
+      preLoaderRoute: typeof EsLegalTerminosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/es/legal/privacidad': {
       id: '/es/legal/privacidad'
       path: '/es/legal/privacidad'
@@ -564,6 +584,7 @@ const rootRouteChildren: RootRouteChildren = {
   EnIndexRoute: EnIndexRoute,
   EsIndexRoute: EsIndexRoute,
   EsLegalPrivacidadRoute: EsLegalPrivacidadRoute,
+  EsLegalTerminosRoute: EsLegalTerminosRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
   ApiPublicWhatsappConnectionsStatusRoute:
     ApiPublicWhatsappConnectionsStatusRoute,
