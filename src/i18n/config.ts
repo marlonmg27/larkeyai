@@ -17,7 +17,7 @@ export type PageKey =
 
 /** Localized slug for every public page. Keys are stable; slugs are per-locale. */
 export const PATHS: Record<PageKey, Record<Locale, string>> = {
-  home: { es: "/es/", en: "/en/" },
+  home: { es: "/es", en: "/en" },
   pricing: { es: "/es/precios", en: "/en/pricing" },
   faq: { es: "/es/faq", en: "/en/faq" },
   contact: { es: "/es/contacto", en: "/en/contact" },
