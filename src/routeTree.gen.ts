@@ -26,6 +26,7 @@ import { Route as EsContactoRouteImport } from './routes/es/contacto'
 import { Route as EsAccesoRouteImport } from './routes/es/acceso'
 import { Route as EnWhatsappSetupGuideRouteImport } from './routes/en/whatsapp-setup-guide'
 import { Route as EnPricingRouteImport } from './routes/en/pricing'
+import { Route as EnLoginRouteImport } from './routes/en/login'
 import { Route as EnFaqRouteImport } from './routes/en/faq'
 import { Route as EnContactRouteImport } from './routes/en/contact'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -117,6 +118,11 @@ const EnPricingRoute = EnPricingRouteImport.update({
   path: '/en/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EnLoginRoute = EnLoginRouteImport.update({
+  id: '/en/login',
+  path: '/en/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EnFaqRoute = EnFaqRouteImport.update({
   id: '/en/faq',
   path: '/en/faq',
@@ -161,6 +167,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/en/contact': typeof EnContactRoute
   '/en/faq': typeof EnFaqRoute
+  '/en/login': typeof EnLoginRoute
   '/en/pricing': typeof EnPricingRoute
   '/en/whatsapp-setup-guide': typeof EnWhatsappSetupGuideRoute
   '/es/acceso': typeof EsAccesoRoute
@@ -185,6 +192,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/en/contact': typeof EnContactRoute
   '/en/faq': typeof EnFaqRoute
+  '/en/login': typeof EnLoginRoute
   '/en/pricing': typeof EnPricingRoute
   '/en/whatsapp-setup-guide': typeof EnWhatsappSetupGuideRoute
   '/es/acceso': typeof EsAccesoRoute
@@ -211,6 +219,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/en/contact': typeof EnContactRoute
   '/en/faq': typeof EnFaqRoute
+  '/en/login': typeof EnLoginRoute
   '/en/pricing': typeof EnPricingRoute
   '/en/whatsapp-setup-guide': typeof EnWhatsappSetupGuideRoute
   '/es/acceso': typeof EsAccesoRoute
@@ -237,6 +246,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/en/contact'
     | '/en/faq'
+    | '/en/login'
     | '/en/pricing'
     | '/en/whatsapp-setup-guide'
     | '/es/acceso'
@@ -261,6 +271,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/en/contact'
     | '/en/faq'
+    | '/en/login'
     | '/en/pricing'
     | '/en/whatsapp-setup-guide'
     | '/es/acceso'
@@ -286,6 +297,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/en/contact'
     | '/en/faq'
+    | '/en/login'
     | '/en/pricing'
     | '/en/whatsapp-setup-guide'
     | '/es/acceso'
@@ -311,6 +323,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   EnContactRoute: typeof EnContactRoute
   EnFaqRoute: typeof EnFaqRoute
+  EnLoginRoute: typeof EnLoginRoute
   EnPricingRoute: typeof EnPricingRoute
   EnWhatsappSetupGuideRoute: typeof EnWhatsappSetupGuideRoute
   EsAccesoRoute: typeof EsAccesoRoute
@@ -446,6 +459,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EnPricingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/en/login': {
+      id: '/en/login'
+      path: '/en/login'
+      fullPath: '/en/login'
+      preLoaderRoute: typeof EnLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/en/faq': {
       id: '/en/faq'
       path: '/en/faq'
@@ -513,6 +533,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   EnContactRoute: EnContactRoute,
   EnFaqRoute: EnFaqRoute,
+  EnLoginRoute: EnLoginRoute,
   EnPricingRoute: EnPricingRoute,
   EnWhatsappSetupGuideRoute: EnWhatsappSetupGuideRoute,
   EsAccesoRoute: EsAccesoRoute,
