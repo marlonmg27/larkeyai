@@ -22,6 +22,7 @@ import { Route as EnIndexRouteImport } from './routes/en/index'
 import { Route as EsPreciosRouteImport } from './routes/es/precios'
 import { Route as EsFaqRouteImport } from './routes/es/faq'
 import { Route as EnPricingRouteImport } from './routes/en/pricing'
+import { Route as EnFaqRouteImport } from './routes/en/faq'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe/webhook'
 import { Route as ApiPublicWhatsappConnectionsUpsertRouteImport } from './routes/api/public/whatsapp/connections/upsert'
@@ -91,6 +92,11 @@ const EnPricingRoute = EnPricingRouteImport.update({
   path: '/en/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EnFaqRoute = EnFaqRouteImport.update({
+  id: '/en/faq',
+  path: '/en/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -123,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/precios': typeof PreciosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/en/faq': typeof EnFaqRoute
   '/en/pricing': typeof EnPricingRoute
   '/es/faq': typeof EsFaqRoute
   '/es/precios': typeof EsPreciosRoute
@@ -141,6 +148,7 @@ export interface FileRoutesByTo {
   '/precios': typeof PreciosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/en/faq': typeof EnFaqRoute
   '/en/pricing': typeof EnPricingRoute
   '/es/faq': typeof EsFaqRoute
   '/es/precios': typeof EsPreciosRoute
@@ -161,6 +169,7 @@ export interface FileRoutesById {
   '/precios': typeof PreciosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/en/faq': typeof EnFaqRoute
   '/en/pricing': typeof EnPricingRoute
   '/es/faq': typeof EsFaqRoute
   '/es/precios': typeof EsPreciosRoute
@@ -181,6 +190,7 @@ export interface FileRouteTypes {
     | '/precios'
     | '/sitemap.xml'
     | '/dashboard'
+    | '/en/faq'
     | '/en/pricing'
     | '/es/faq'
     | '/es/precios'
@@ -199,6 +209,7 @@ export interface FileRouteTypes {
     | '/precios'
     | '/sitemap.xml'
     | '/dashboard'
+    | '/en/faq'
     | '/en/pricing'
     | '/es/faq'
     | '/es/precios'
@@ -218,6 +229,7 @@ export interface FileRouteTypes {
     | '/precios'
     | '/sitemap.xml'
     | '/_authenticated/dashboard'
+    | '/en/faq'
     | '/en/pricing'
     | '/es/faq'
     | '/es/precios'
@@ -237,6 +249,7 @@ export interface RootRouteChildren {
   GuiaRoute: typeof GuiaRoute
   PreciosRoute: typeof PreciosRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  EnFaqRoute: typeof EnFaqRoute
   EnPricingRoute: typeof EnPricingRoute
   EsFaqRoute: typeof EsFaqRoute
   EsPreciosRoute: typeof EsPreciosRoute
@@ -340,6 +353,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EnPricingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/en/faq': {
+      id: '/en/faq'
+      path: '/en/faq'
+      fullPath: '/en/faq'
+      preLoaderRoute: typeof EnFaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -391,6 +411,7 @@ const rootRouteChildren: RootRouteChildren = {
   GuiaRoute: GuiaRoute,
   PreciosRoute: PreciosRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  EnFaqRoute: EnFaqRoute,
   EnPricingRoute: EnPricingRoute,
   EsFaqRoute: EsFaqRoute,
   EsPreciosRoute: EsPreciosRoute,
