@@ -259,6 +259,7 @@ export type Database = {
       users: {
         Row: {
           cancel_at_period_end: boolean
+          chatwoot_id: number | null
           created_at: string
           current_period_end: string | null
           email: string | null
@@ -274,6 +275,7 @@ export type Database = {
         }
         Insert: {
           cancel_at_period_end?: boolean
+          chatwoot_id?: number | null
           created_at?: string
           current_period_end?: string | null
           email?: string | null
@@ -289,6 +291,7 @@ export type Database = {
         }
         Update: {
           cancel_at_period_end?: boolean
+          chatwoot_id?: number | null
           created_at?: string
           current_period_end?: string | null
           email?: string | null
@@ -321,34 +324,46 @@ export type Database = {
       }
       whatsapp_connections: {
         Row: {
+          chatwoot_account_id: number | null
           chatwoot_inbox_id: string | null
+          chatwoot_user_id: number | null
           id: string
           id_int: number
           phone_number: string | null
+          phone_number_id: string | null
           status: Database["public"]["Enums"]["whatsapp_connection_status"]
           updated_at: string
           user_id: string
           user_id_int: number | null
+          waba_id: number | null
         }
         Insert: {
+          chatwoot_account_id?: number | null
           chatwoot_inbox_id?: string | null
+          chatwoot_user_id?: number | null
           id?: string
           id_int?: number
           phone_number?: string | null
+          phone_number_id?: string | null
           status?: Database["public"]["Enums"]["whatsapp_connection_status"]
           updated_at?: string
           user_id: string
           user_id_int?: number | null
+          waba_id?: number | null
         }
         Update: {
+          chatwoot_account_id?: number | null
           chatwoot_inbox_id?: string | null
+          chatwoot_user_id?: number | null
           id?: string
           id_int?: number
           phone_number?: string | null
+          phone_number_id?: string | null
           status?: Database["public"]["Enums"]["whatsapp_connection_status"]
           updated_at?: string
           user_id?: string
           user_id_int?: number | null
+          waba_id?: number | null
         }
         Relationships: [
           {
