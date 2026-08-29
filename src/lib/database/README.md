@@ -147,7 +147,7 @@ r.raise_for_status()
 # Marcar como conectada
 r = httpx.patch(
     f"{BASE}/whatsapp_connections?user_id=eq.{user_id}",
-    json={"status": "connected", "phone_display": "+52 662 000 0000"},
+    json={"status": "connected", "phone_number": "+52 662 000 0000"},
     headers=HEADERS,
 )
 r.raise_for_status()
@@ -215,7 +215,7 @@ Base URL:
 Equivale a `save_pending`. Upsert por `user_id` (columna única).
 
 - Requeridos: `user_id` (uuid), `status` (`not_connected|pending|connected|error`).
-- Opcionales: `phone_display`, `chatwoot_inbox_id`.
+- Opcionales: `phone_number`, `chatwoot_inbox_id`.
 - `display_name`, `phone_number_id`, `waba_id`, `access_token` se aceptan para no
   romper el payload del backend, pero **se ignoran**: no se guardan ni se loguean.
 
@@ -224,7 +224,7 @@ Respuesta `200`: `{"ok":true,"user_id":"…","status":"pending","created":true}`
 ### `PATCH /api/public/whatsapp/connections/status`
 
 Equivale a `update_status`, pero es **idempotente**: si no existe fila para ese `user_id`
-la crea. Requiere `user_id` y `status`; `phone_display` y `chatwoot_inbox_id` solo se
+la crea. Requiere `user_id` y `status`; `phone_number` y `chatwoot_inbox_id` solo se
 escriben si vienen presentes (omitir ≠ borrar).
 
 Respuesta `200`: `{"ok":true,"user_id":"…","status":"connected","created":false}`
@@ -251,7 +251,7 @@ httpx.post(f"{BASE}/api/public/whatsapp/connections/upsert",
 
 httpx.patch(f"{BASE}/api/public/whatsapp/connections/status",
             json={"user_id": user_id, "status": "connected",
-                  "phone_display": "+52 662 000 0000"}, headers=H).raise_for_status()
+                  "phone_number": "+52 662 000 0000"}, headers=H).raise_for_status()
 ```
 
 Un `PATCH` a `connected` dispara el Realtime que ya escucha el dashboard, así que

@@ -16,6 +16,7 @@ export const es = {
   nav: {
     home: "Inicio",
     dashboard: "Dashboard",
+    instructions: "Instrucciones",
     guide: "Guía",
     pricing: "Precios",
     contact: "Contacto",

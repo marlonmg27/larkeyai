@@ -15,7 +15,7 @@ export type ConnectionStatus = (typeof connectionStatuses)[number];
 const persistedShape = {
   user_id: z.string().uuid(),
   status: z.enum(connectionStatuses),
-  phone_display: z.string().trim().max(40).nullish(),
+  phone_number: z.string().trim().max(40).nullish(),
   chatwoot_inbox_id: z.string().trim().max(64).nullish(),
 };
 
@@ -77,14 +77,14 @@ export async function parseBody<T>(
 type PersistedFields = {
   user_id: string;
   status: ConnectionStatus;
-  phone_display?: string | null;
+  phone_number?: string | null;
   chatwoot_inbox_id?: string | null;
 };
 
 /** Solo los campos presentes; omitir un opcional no lo borra. */
 function pickPresent(data: Record<string, unknown> & PersistedFields) {
   const row: Record<string, unknown> = { status: data.status };
-  if (data.phone_display !== undefined) row["phone_display"] = data.phone_display;
+  if (data.phone_number !== undefined) row["phone_number"] = data.phone_number;
   if (data.chatwoot_inbox_id !== undefined) row["chatwoot_inbox_id"] = data.chatwoot_inbox_id;
   return row;
 }
