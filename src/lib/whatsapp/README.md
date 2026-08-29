@@ -151,7 +151,7 @@ este proyecto (`X-Internal-Secret: {BACKEND_INTERNAL_SECRET}`):
 
 Lógica compartida en `src/lib/whatsapp/connections.server.ts`. Ambos son idempotentes
 (upsert por `user_id`): el `PATCH` crea la fila si no existe y devuelve `created`, así que
-no responde `connection_not_found`. Solo persisten `user_id`, `status`, `phone_display` y
+no responde `connection_not_found`. Solo persisten `user_id`, `status`, `phone_number` y
 `chatwoot_inbox_id`; las credenciales que vengan en el body (`display_name`,
 `phone_number_id`, `waba_id`, `access_token`) se aceptan pero se ignoran y nunca se
 loguean. Contratos completos en `src/lib/database/README.md`.
