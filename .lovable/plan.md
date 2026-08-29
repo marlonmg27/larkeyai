@@ -7,7 +7,7 @@ La base de datos ya usa `phone_number` en `whatsapp_connections` (confirmado en 
 - `src/lib/whatsapp/connections.server.ts` — el esquema de validación y la construcción de la fila de los endpoints puente (`upsert` y `status`) siguen escribiendo `phone_display`, así que hoy fallarían al escribir en la tabla.
 - `src/lib/whatsapp/README.md` y `src/lib/database/README.md` — documentación del contrato para el backend de Python.
 
-Cambio: usar `phone_number` como campo persistido. Para no romper el payload actual del backend, se aceptará `phone_number` y, si no viene, se leerá `phone_display` como alias de compatibilidad, mapeándolo siempre a la columna `phone_number`. La documentación se actualiza indicando `phone_number` como nombre oficial.
+Cambio: `phone_number` es el único nombre aceptado y persistido. Se elimina por completo `phone_display` del esquema de validación, del código y de la documentación (el backend ya usa el contrato nuevo).
 
 ## 2. Nueva ruta privada `/instrucciones`
 
