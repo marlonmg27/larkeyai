@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Home, LayoutDashboard, Tag, Mail, HelpCircle, LogOut, LogIn, BookOpen } from "lucide-react";
+import { Home, LayoutDashboard, Tag, Mail, HelpCircle, LogOut, LogIn, BookOpen, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -35,6 +35,7 @@ export function AppSidebar() {
   }[] = [
     { title: t.nav.home, url: href("home"), icon: Home, authOnly: false },
     { title: t.nav.dashboard, url: "/dashboard", icon: LayoutDashboard, authOnly: true },
+    { title: t.nav.instructions, url: "/instrucciones", icon: Sparkles, authOnly: true },
     { title: t.nav.guide, url: href("guide"), icon: BookOpen, authOnly: false },
     { title: t.nav.pricing, url: href("pricing"), icon: Tag, authOnly: false },
     { title: t.nav.contact, url: href("contact"), icon: Mail, authOnly: false },

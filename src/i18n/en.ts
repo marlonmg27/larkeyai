@@ -17,6 +17,7 @@ export const en: Dict = {
   nav: {
     home: "Home",
     dashboard: "Dashboard",
+    instructions: "Instructions",
     guide: "Setup guide",
     pricing: "Pricing",
     contact: "Contact",

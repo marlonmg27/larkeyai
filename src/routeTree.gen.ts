@@ -29,6 +29,7 @@ import { Route as EnPricingRouteImport } from './routes/en/pricing'
 import { Route as EnLoginRouteImport } from './routes/en/login'
 import { Route as EnFaqRouteImport } from './routes/en/faq'
 import { Route as EnContactRouteImport } from './routes/en/contact'
+import { Route as AuthenticatedInstruccionesRouteImport } from './routes/_authenticated/instrucciones'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as EsLegalTerminosRouteImport } from './routes/es/legal/terminos'
 import { Route as EsLegalPrivacidadRouteImport } from './routes/es/legal/privacidad'
@@ -137,6 +138,12 @@ const EnContactRoute = EnContactRouteImport.update({
   path: '/en/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedInstruccionesRoute =
+  AuthenticatedInstruccionesRouteImport.update({
+    id: '/instrucciones',
+    path: '/instrucciones',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -189,6 +196,7 @@ export interface FileRoutesByFullPath {
   '/precios': typeof PreciosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/instrucciones': typeof AuthenticatedInstruccionesRoute
   '/en/contact': typeof EnContactRoute
   '/en/faq': typeof EnFaqRoute
   '/en/login': typeof EnLoginRoute
@@ -218,6 +226,7 @@ export interface FileRoutesByTo {
   '/precios': typeof PreciosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/instrucciones': typeof AuthenticatedInstruccionesRoute
   '/en/contact': typeof EnContactRoute
   '/en/faq': typeof EnFaqRoute
   '/en/login': typeof EnLoginRoute
@@ -249,6 +258,7 @@ export interface FileRoutesById {
   '/precios': typeof PreciosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/instrucciones': typeof AuthenticatedInstruccionesRoute
   '/en/contact': typeof EnContactRoute
   '/en/faq': typeof EnFaqRoute
   '/en/login': typeof EnLoginRoute
@@ -280,6 +290,7 @@ export interface FileRouteTypes {
     | '/precios'
     | '/sitemap.xml'
     | '/dashboard'
+    | '/instrucciones'
     | '/en/contact'
     | '/en/faq'
     | '/en/login'
@@ -309,6 +320,7 @@ export interface FileRouteTypes {
     | '/precios'
     | '/sitemap.xml'
     | '/dashboard'
+    | '/instrucciones'
     | '/en/contact'
     | '/en/faq'
     | '/en/login'
@@ -339,6 +351,7 @@ export interface FileRouteTypes {
     | '/precios'
     | '/sitemap.xml'
     | '/_authenticated/dashboard'
+    | '/_authenticated/instrucciones'
     | '/en/contact'
     | '/en/faq'
     | '/en/login'
@@ -532,6 +545,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EnContactRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/instrucciones': {
+      id: '/_authenticated/instrucciones'
+      path: '/instrucciones'
+      fullPath: '/instrucciones'
+      preLoaderRoute: typeof AuthenticatedInstruccionesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -593,10 +613,12 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedInstruccionesRoute: typeof AuthenticatedInstruccionesRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedInstruccionesRoute: AuthenticatedInstruccionesRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
