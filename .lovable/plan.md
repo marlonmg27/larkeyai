@@ -6,7 +6,7 @@ El paso 1 del onboarding deja de pedir contraseña. La cuenta se crea siempre co
 
 - Un solo campo: **Correo electrónico**, y un botón **Enviar**.
 - Se eliminan los campos de contraseña y confirmación, junto con el ojo de mostrar/ocultar.
-- El servidor sigue enviando `POST /onboarding` con `user_id`, `email` y `password`, donde la contraseña es la constante `Default123!` definida en el frontend/servidor. El navegador nunca la captura.
+- El servidor envía `POST /onboarding` con solo `user_id` y `email`. La contraseña ya no viaja del frontend al backend: `Default123!` está definida en el backend. En el frontend la constante se conserva únicamente como texto informativo para mostrarle al usuario cómo entrar.
 
 ## Texto del paso 1 (antes de enviar)
 
