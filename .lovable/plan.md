@@ -6,7 +6,7 @@ El paso 1 del onboarding deja de pedir contraseña. La cuenta se crea siempre co
 
 - Un solo campo: **Correo electrónico**, y un botón **Enviar**.
 - Se eliminan los campos de contraseña y confirmación, junto con el ojo de mostrar/ocultar.
-- El servidor sigue enviando `POST /onboarding` con `user_id`, `email` y `password`, donde la contraseña es la constante `Default123!` definida en el frontend/servidor. El navegador nunca la captura.
+- El servidor envía `POST /onboarding` con solo `user_id` y `email`. La contraseña ya no viaja del frontend al backend: `Default123!` está definida en el backend. En el frontend la constante se conserva únicamente como texto informativo para mostrarle al usuario cómo entrar.
 
 ## Texto del paso 1 (antes de enviar)
 
@@ -27,7 +27,7 @@ Cuando `users.chatwoot_user_id` ya existe, la tarjeta muestra el paso como compl
 ## Detalles técnicos
 
 - `src/lib/chatwoot/schema.ts`: el esquema queda solo con `email`; se quitan `password` y `confirmPassword`.
-- `src/lib/chatwoot/account.functions.ts`: pasa `password: CHATWOOT_DEFAULT_PASSWORD` (desde `src/lib/chatwoot.ts`) al server bridge; el body del cliente ya no lleva contraseña.
-- `src/lib/chatwoot/account.server.ts`: sin cambios de contrato (sigue enviando `password` al backend).
+- `src/lib/chatwoot/account.functions.ts`: solo pasa `userId` y `email`; no hay contraseña en ningún punto de la cadena.
+- `src/lib/chatwoot/account.server.ts`: se quita `password` del tipo de entrada y del body enviado al backend.
 - `src/components/dashboard/ChatwootAccountCard.tsx`: formulario de un solo campo, textos nuevos, y en el estado `hasAccount` se muestran correo + contraseña temporal con nota de cambiarla.
 - Sin cambios en base de datos ni en el paso 2.
