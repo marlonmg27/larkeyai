@@ -5,8 +5,8 @@
  *   POST ${BACKEND_URL}/onboarding
  *   header: X-Internal-Secret: ${BACKEND_INTERNAL_SECRET}
  *
- * El backend es quien escribe users.chatwoot_user_id y users.chatwoot_account_id.
- * La contraseña nunca se registra en logs ni se guarda en la base de datos.
+ * El backend es quien escribe users.chatwoot_user_id y users.chatwoot_account_id,
+ * y quien define la contraseña inicial. El frontend nunca envía contraseñas.
  */
 import { resolveBackendBaseUrl } from "@/lib/backend-url.server";
 
@@ -15,7 +15,6 @@ const TIMEOUT_MS = 15_000;
 export type CreateChatwootAccountInput = {
   userId: string;
   email: string;
-  password: string;
 };
 
 export type CreateChatwootAccountResult = {
@@ -57,7 +56,6 @@ export async function createChatwootAccount(
       body: JSON.stringify({
         user_id: input.userId,
         email: input.email,
-        password: input.password,
       }),
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
