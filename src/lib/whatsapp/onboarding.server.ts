@@ -64,7 +64,7 @@ export async function connectWhatsApp(
     });
     throw new Error("La conexión con el servicio de WhatsApp no está configurada todavía.");
   }
-  const target = new URL(`${resolved.base}/onboarding/whatsapp`);
+  const target = new URL(`${resolved.base}/onboarding/connection`);
 
   // El canal se fija a un valor permitido del servidor, no se confía en texto libre.
   const channel: MessagingChannel = messagingChannels.includes(input.channel)
@@ -86,10 +86,11 @@ export async function connectWhatsApp(
         user_id: input.userId,
         display_name: input.displayName,
         user_name: input.userName,
-        email: input.email,
         phone_number: input.phoneNumber,
         phone_number_id: input.phoneNumberId,
         waba_id: input.wabaId,
+        chatwoot_user_id: input.chatwootUserId,
+        chatwoot_account_id: input.chatwootAccountId,
         access_token: accessToken,
       }),
       signal: AbortSignal.timeout(TIMEOUT_MS),
