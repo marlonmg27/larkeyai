@@ -180,6 +180,30 @@ export function WhatsAppOnboardingCard({
     mutation.mutate(parsed.data);
   }
 
+  // Paso 1 pendiente: sin cuenta en la plataforma no se puede conectar WhatsApp.
+  if (!hasChatwootAccount) {
+    return (
+      <Card className="border-border">
+        <CardHeader>
+          <Badge variant="secondary" className="mb-2 w-fit">
+            <MessageSquare className="mr-1.5 h-3.5 w-3.5" /> Paso 2
+          </Badge>
+          <CardTitle>Conecta tu canal de mensajería</CardTitle>
+          <CardDescription>
+            Este paso se habilita cuando tu cuenta de la plataforma de conversaciones esté
+            creada. Completa el paso 1 de arriba para continuar.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button variant="outline" onClick={handleRefresh} disabled={refreshing}>
+            <RefreshCw className={`mr-2 h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
+            Actualizar estado
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
   // Verificación en curso: no mostramos el formulario para que no se reenvíen los mismos datos.
   if (status === "pending") {
     return (
