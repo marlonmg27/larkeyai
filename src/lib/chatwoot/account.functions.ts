@@ -15,5 +15,7 @@ export const createChatwootAccountForUser = createServerFn({ method: "POST" })
     return createChatwootAccount({
       userId: context.userId,
       email: data.email,
+      name: data.name,
+      companyName: data.companyName,
     });
   });
