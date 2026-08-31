@@ -26,6 +26,7 @@ import { SubscriptionActions } from "@/components/dashboard/SubscriptionActions"
 import { SubscriptionOverview } from "@/components/dashboard/SubscriptionOverview";
 import { WhatsAppOnboardingCard } from "@/components/dashboard/WhatsAppOnboardingCard";
 import { ChatwootAccessCard } from "@/components/dashboard/ChatwootAccessCard";
+import { ChatwootAccountCard } from "@/components/dashboard/ChatwootAccountCard";
 import { useWhatsappConnectionRealtime } from "@/hooks/use-whatsapp-connection-realtime";
 
 
@@ -73,6 +74,7 @@ type DashboardData = {
     amount: number;
   }>;
   whatsapp: { status: string } | null;
+  chatwoot: { userId: number | null; accountId: number | null };
 };
 
 async function fetchWhatsappConnection(userId: string): Promise<{ status: string } | null> {
@@ -98,7 +100,7 @@ async function fetchDashboard(userId: string): Promise<DashboardData> {
     supabase
       .from("users")
       .select(
-        "plan_id, subscription_status, cancel_at_period_end, trial_ends_at, current_period_end, plans:plan_id(name, price, messages_included, billing_interval)",
+        "plan_id, subscription_status, cancel_at_period_end, trial_ends_at, current_period_end, chatwoot_user_id, chatwoot_account_id, plans:plan_id(name, price, messages_included, billing_interval)",
       )
       .eq("id", userId)
       .maybeSingle(),
@@ -147,6 +149,10 @@ async function fetchDashboard(userId: string): Promise<DashboardData> {
       : null,
     purchases: purchasesRes.data ?? [],
     whatsapp,
+    chatwoot: {
+      userId: profileRes.data?.chatwoot_user_id ?? null,
+      accountId: profileRes.data?.chatwoot_account_id ?? null,
+    },
   };
 }
 
@@ -190,6 +196,8 @@ function Dashboard() {
   const hasActiveSubscription =
     data?.subscription.status === "active" || data?.subscription.status === "trialing";
   const whatsappStatus = data?.whatsapp?.status ?? null;
+  const hasChatwootAccount =
+    data?.chatwoot.userId != null && data?.chatwoot.accountId != null;
   const showWhatsappOnboarding = hasActiveSubscription && whatsappStatus !== "connected";
   const showChatwootAccess = hasActiveSubscription && data?.whatsapp != null;
 
@@ -393,9 +401,22 @@ function Dashboard() {
             </Card>
 
             {showWhatsappOnboarding && (
-              <div className="mt-6">
-                <WhatsAppOnboardingCard userId={user.id} status={whatsappStatus} />
-              </div>
+              <>
+                <div className="mt-6">
+                  <ChatwootAccountCard
+                    userId={user.id}
+                    hasAccount={hasChatwootAccount}
+                    defaultEmail={user?.email ?? ""}
+                  />
+                </div>
+                <div className="mt-6">
+                  <WhatsAppOnboardingCard
+                    userId={user.id}
+                    status={whatsappStatus}
+                    hasChatwootAccount={hasChatwootAccount}
+                  />
+                </div>
+              </>
             )}
 
             {showChatwootAccess && (

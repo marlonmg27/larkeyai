@@ -52,7 +52,7 @@ const EMPTY: FormValues = {
   channel: "whatsapp",
   displayName: "",
   userName: "",
-  email: "",
+  
   phoneNumber: "",
   phoneNumberId: "",
   wabaId: "",
@@ -76,9 +76,12 @@ const CHANNELS: {
 export function WhatsAppOnboardingCard({
   userId,
   status,
+  hasChatwootAccount = true,
 }: {
   userId: string;
   status?: string | null;
+  /** Paso 1 completado: el backend ya creó la cuenta en la plataforma. */
+  hasChatwootAccount?: boolean;
 }) {
   const [channel, setChannel] = useState<MessagingChannel | null>(null);
   const [values, setValues] = useState<FormValues>(EMPTY);
@@ -100,9 +103,20 @@ export function WhatsAppOnboardingCard({
     message: string;
   } | null>(null);
 
+  const [accountError, setAccountError] = useState<string | null>(null);
+
   const mutation = useMutation({
     mutationFn: (input: FormValues) => connect({ data: input }),
     onSuccess: (result) => {
+      if (result && result.accountMissing) {
+        setAccountError(
+          result.message ??
+            "Primero crea tu cuenta de la plataforma de conversaciones para poder conectar WhatsApp.",
+        );
+        void queryClient.invalidateQueries({ queryKey: ["dashboard", userId] });
+        return;
+      }
+      setAccountError(null);
       if (result && "verification" in result && result.verification) {
         const { field, message } = result.verification;
         setVerificationError({ field: field ?? null, message });
@@ -114,7 +128,7 @@ export function WhatsAppOnboardingCard({
     },
   });
 
-  const isVerified = mutation.isSuccess && !verificationError;
+  const isVerified = mutation.isSuccess && !verificationError && !accountError;
 
 
 
@@ -164,6 +178,30 @@ export function WhatsAppOnboardingCard({
       return;
     }
     mutation.mutate(parsed.data);
+  }
+
+  // Paso 1 pendiente: sin cuenta en la plataforma no se puede conectar WhatsApp.
+  if (!hasChatwootAccount) {
+    return (
+      <Card className="border-border">
+        <CardHeader>
+          <Badge variant="secondary" className="mb-2 w-fit">
+            <MessageSquare className="mr-1.5 h-3.5 w-3.5" /> Paso 2
+          </Badge>
+          <CardTitle>Conecta tu canal de mensajería</CardTitle>
+          <CardDescription>
+            Este paso se habilita cuando tu cuenta de la plataforma de conversaciones esté
+            creada. Completa el paso 1 de arriba para continuar.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button variant="outline" onClick={handleRefresh} disabled={refreshing}>
+            <RefreshCw className={`mr-2 h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
+            Actualizar estado
+          </Button>
+        </CardContent>
+      </Card>
+    );
   }
 
   // Verificación en curso: no mostramos el formulario para que no se reenvíen los mismos datos.
@@ -329,19 +367,6 @@ export function WhatsAppOnboardingCard({
                 {errors.userName && <p className="text-xs text-destructive">{errors.userName}</p>}
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="wa-email">Email</Label>
-                <Input
-                  id="wa-email"
-                  type="email"
-                  value={values.email}
-                  onChange={(e) => setField("email", e.target.value)}
-                  placeholder="contacto@tunegocio.com"
-                  maxLength={160}
-                  autoComplete="email"
-                />
-                {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
-              </div>
 
               <PhoneField
                 country={country}
