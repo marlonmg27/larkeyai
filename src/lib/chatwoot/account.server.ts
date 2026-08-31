@@ -56,7 +56,6 @@ export async function createChatwootAccount(
       body: JSON.stringify({
         user_id: input.userId,
         email: input.email,
-        password: input.password,
       }),
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
