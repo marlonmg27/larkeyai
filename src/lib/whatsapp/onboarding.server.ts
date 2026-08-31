@@ -17,10 +17,12 @@ export type ConnectWhatsAppInput = {
   channel: MessagingChannel;
   displayName: string;
   userName: string;
-  email: string;
   phoneNumber: string;
   phoneNumberId: string;
   wabaId: string;
+  /** Resueltos en el servidor desde public.users, nunca capturados por el usuario. */
+  chatwootUserId: number;
+  chatwootAccountId: number;
   /** Se muestra como "Api Key" en el formulario. Nunca se registra en logs. */
   accessToken?: string;
 };

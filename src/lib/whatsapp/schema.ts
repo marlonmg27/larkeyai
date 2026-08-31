@@ -17,12 +17,7 @@ export const whatsappOnboardingSchema = z.object({
     .trim()
     .nonempty({ message: "Ingresa el nombre del usuario" })
     .max(80, { message: "Máximo 80 caracteres" }),
-  email: z
-    .string()
-    .trim()
-    .nonempty({ message: "Ingresa el email" })
-    .max(160, { message: "Máximo 160 caracteres" })
-    .email({ message: "Ingresa un email válido" }),
+  // El email se captura en el paso 1 (cuenta de la plataforma de conversaciones).
   // Siempre normalizado en E.164 por el formulario (+<prefijo><nacional>).
   phoneNumber: z
     .string()
