@@ -259,6 +259,7 @@ export type Database = {
       users: {
         Row: {
           cancel_at_period_end: boolean
+          chatwoot_account_id: number | null
           chatwoot_id: number | null
           created_at: string
           current_period_end: string | null
@@ -275,6 +276,7 @@ export type Database = {
         }
         Insert: {
           cancel_at_period_end?: boolean
+          chatwoot_account_id?: number | null
           chatwoot_id?: number | null
           created_at?: string
           current_period_end?: string | null
@@ -291,6 +293,7 @@ export type Database = {
         }
         Update: {
           cancel_at_period_end?: boolean
+          chatwoot_account_id?: number | null
           chatwoot_id?: number | null
           created_at?: string
           current_period_end?: string | null
