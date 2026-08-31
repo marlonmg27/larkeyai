@@ -73,6 +73,7 @@ type DashboardData = {
     amount: number;
   }>;
   whatsapp: { status: string } | null;
+  chatwoot: { userId: number | null; accountId: number | null };
 };
 
 async function fetchWhatsappConnection(userId: string): Promise<{ status: string } | null> {
@@ -98,7 +99,7 @@ async function fetchDashboard(userId: string): Promise<DashboardData> {
     supabase
       .from("users")
       .select(
-        "plan_id, subscription_status, cancel_at_period_end, trial_ends_at, current_period_end, plans:plan_id(name, price, messages_included, billing_interval)",
+        "plan_id, subscription_status, cancel_at_period_end, trial_ends_at, current_period_end, chatwoot_user_id, chatwoot_account_id, plans:plan_id(name, price, messages_included, billing_interval)",
       )
       .eq("id", userId)
       .maybeSingle(),
@@ -147,6 +148,10 @@ async function fetchDashboard(userId: string): Promise<DashboardData> {
       : null,
     purchases: purchasesRes.data ?? [],
     whatsapp,
+    chatwoot: {
+      userId: profileRes.data?.chatwoot_user_id ?? null,
+      accountId: profileRes.data?.chatwoot_account_id ?? null,
+    },
   };
 }
 
