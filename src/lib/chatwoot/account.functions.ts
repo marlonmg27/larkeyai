@@ -1,6 +1,7 @@
 /**
  * Server functions del paso 1 del onboarding.
  * El user_id SIEMPRE viene del JWT verificado, nunca del body.
+ * La contraseña no se envía: la define el backend.
  */
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -14,6 +15,5 @@ export const createChatwootAccountForUser = createServerFn({ method: "POST" })
     return createChatwootAccount({
       userId: context.userId,
       email: data.email,
-      password: data.password,
     });
   });
