@@ -2,7 +2,7 @@
  * Envía el onboarding del canal de mensajería al backend de Python (FastAPI).
  *
  * FastAPI mapping:
- *   POST ${BACKEND_URL}/onboarding/whatsapp
+ *   POST ${BACKEND_URL}/onboarding/connection
  *   header: X-Internal-Secret: ${BACKEND_INTERNAL_SECRET}
  *
  * Nunca registra el access token en logs.

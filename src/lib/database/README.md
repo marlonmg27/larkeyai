@@ -193,8 +193,13 @@ Además de leer/escribir, este proyecto ya empuja eventos a FastAPI:
 
 - `POST {BACKEND_URL}/webhooks/subscription` con
   `X-Internal-Secret: {BACKEND_INTERNAL_SECRET}` — eventos de Stripe normalizados.
-- `POST {BACKEND_URL}/onboarding/whatsapp` — credenciales de WhatsApp enviadas
-  por el cliente desde el dashboard.
+- `POST {BACKEND_URL}/onboarding` — paso 1: email y contraseña para crear la cuenta
+  y el usuario en la plataforma de conversaciones. El backend escribe
+  `users.chatwoot_user_id` y `users.chatwoot_account_id` con service role.
+  (`users.chatwoot_id` queda como columna heredada, sin uso en el frontend.)
+- `POST {BACKEND_URL}/onboarding/connection` — paso 2: credenciales de WhatsApp
+  enviadas por el cliente desde el dashboard, más `chatwoot_user_id` y
+  `chatwoot_account_id` resueltos en el servidor.
 
 Detalles en `src/lib/stripe/README.md` y `src/lib/whatsapp/README.md`.
 
