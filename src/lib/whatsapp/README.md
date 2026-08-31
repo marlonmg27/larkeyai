@@ -58,9 +58,7 @@ nunca se loguea ni viaja directo del navegador al backend.
 {
   "channel": "whatsapp",
   "user_id": "<uuid del JWT verificado>",
-  "display_name": "Nombre del negocio",
-  "user_name": "Nombre del usuario",
-  "email": "contacto@negocio.com",
+  "waba_name": "Nombre de la cuenta de WhatsApp",
   "phone_number": "+526621234567",
   "phone_number_id": "123456789012345",
   "waba_id": "..."
