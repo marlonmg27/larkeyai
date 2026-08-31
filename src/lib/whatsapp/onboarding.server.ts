@@ -83,8 +83,7 @@ export async function connectWhatsApp(
       body: JSON.stringify({
         channel,
         user_id: input.userId,
-        display_name: input.displayName,
-        user_name: input.userName,
+        waba_name: input.wabaName,
         phone_number: input.phoneNumber,
         phone_number_id: input.phoneNumberId,
         waba_id: input.wabaId,
