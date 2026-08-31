@@ -331,7 +331,7 @@ export type Database = {
       whatsapp_connections: {
         Row: {
           chatwoot_account_id: number | null
-          chatwoot_inbox_id: string | null
+          chatwoot_inbox_id: number | null
           chatwoot_user_id: number | null
           id: string
           id_int: number
@@ -345,7 +345,7 @@ export type Database = {
         }
         Insert: {
           chatwoot_account_id?: number | null
-          chatwoot_inbox_id?: string | null
+          chatwoot_inbox_id?: number | null
           chatwoot_user_id?: number | null
           id?: string
           id_int?: number
@@ -359,7 +359,7 @@ export type Database = {
         }
         Update: {
           chatwoot_account_id?: number | null
-          chatwoot_inbox_id?: string | null
+          chatwoot_inbox_id?: number | null
           chatwoot_user_id?: number | null
           id?: string
           id_int?: number
