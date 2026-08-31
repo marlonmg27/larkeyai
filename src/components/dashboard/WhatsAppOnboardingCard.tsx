@@ -50,8 +50,8 @@ type FormErrors = Partial<Record<keyof FormValues, string>>;
 
 const EMPTY: FormValues = {
   channel: "whatsapp",
-  displayName: "",
-  userName: "",
+  wabaName: "",
+  
   
   phoneNumber: "",
   phoneNumberId: "",
