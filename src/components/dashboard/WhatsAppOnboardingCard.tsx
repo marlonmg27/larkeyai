@@ -103,9 +103,20 @@ export function WhatsAppOnboardingCard({
     message: string;
   } | null>(null);
 
+  const [accountError, setAccountError] = useState<string | null>(null);
+
   const mutation = useMutation({
     mutationFn: (input: FormValues) => connect({ data: input }),
     onSuccess: (result) => {
+      if (result && result.accountMissing) {
+        setAccountError(
+          result.message ??
+            "Primero crea tu cuenta de la plataforma de conversaciones para poder conectar WhatsApp.",
+        );
+        void queryClient.invalidateQueries({ queryKey: ["dashboard", userId] });
+        return;
+      }
+      setAccountError(null);
       if (result && "verification" in result && result.verification) {
         const { field, message } = result.verification;
         setVerificationError({ field: field ?? null, message });
@@ -117,7 +128,7 @@ export function WhatsAppOnboardingCard({
     },
   });
 
-  const isVerified = mutation.isSuccess && !verificationError;
+  const isVerified = mutation.isSuccess && !verificationError && !accountError;
 
 
 
