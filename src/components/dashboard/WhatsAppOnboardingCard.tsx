@@ -52,7 +52,7 @@ const EMPTY: FormValues = {
   channel: "whatsapp",
   displayName: "",
   userName: "",
-  email: "",
+  
   phoneNumber: "",
   phoneNumberId: "",
   wabaId: "",
@@ -76,9 +76,12 @@ const CHANNELS: {
 export function WhatsAppOnboardingCard({
   userId,
   status,
+  hasChatwootAccount = true,
 }: {
   userId: string;
   status?: string | null;
+  /** Paso 1 completado: el backend ya creó la cuenta en la plataforma. */
+  hasChatwootAccount?: boolean;
 }) {
   const [channel, setChannel] = useState<MessagingChannel | null>(null);
   const [values, setValues] = useState<FormValues>(EMPTY);
@@ -329,19 +332,6 @@ export function WhatsAppOnboardingCard({
                 {errors.userName && <p className="text-xs text-destructive">{errors.userName}</p>}
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="wa-email">Email</Label>
-                <Input
-                  id="wa-email"
-                  type="email"
-                  value={values.email}
-                  onChange={(e) => setField("email", e.target.value)}
-                  placeholder="contacto@tunegocio.com"
-                  maxLength={160}
-                  autoComplete="email"
-                />
-                {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
-              </div>
 
               <PhoneField
                 country={country}
