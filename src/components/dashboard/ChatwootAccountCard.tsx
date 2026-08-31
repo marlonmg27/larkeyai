@@ -51,7 +51,11 @@ export function ChatwootAccountCard({
   hasAccount: boolean;
   defaultEmail?: string;
 }) {
-  const [values, setValues] = useState<ChatwootAccountValues>({ email: defaultEmail ?? "" });
+  const [values, setValues] = useState<ChatwootAccountValues>({
+    email: defaultEmail ?? "",
+    name: "",
+    companyName: "",
+  });
   const [errors, setErrors] = useState<FormErrors>({});
   const [refreshing, setRefreshing] = useState(false);
 
