@@ -7,15 +7,10 @@ export type MessagingChannel = (typeof messagingChannels)[number];
 /** Validación compartida entre el formulario y la server function. */
 export const whatsappOnboardingSchema = z.object({
   channel: z.enum(messagingChannels),
-  displayName: z
+  wabaName: z
     .string()
     .trim()
-    .nonempty({ message: "Ingresa el nombre de tu negocio" })
-    .max(80, { message: "Máximo 80 caracteres" }),
-  userName: z
-    .string()
-    .trim()
-    .nonempty({ message: "Ingresa el nombre del usuario" })
+    .nonempty({ message: "Ingresa el nombre de la cuenta de WhatsApp" })
     .max(80, { message: "Máximo 80 caracteres" }),
   // El email se captura en el paso 1 (cuenta de la plataforma de conversaciones).
   // Siempre normalizado en E.164 por el formulario (+<prefijo><nacional>).

@@ -50,8 +50,8 @@ type FormErrors = Partial<Record<keyof FormValues, string>>;
 
 const EMPTY: FormValues = {
   channel: "whatsapp",
-  displayName: "",
-  userName: "",
+  wabaName: "",
+  
   
   phoneNumber: "",
   phoneNumberId: "",
@@ -340,31 +340,18 @@ export function WhatsAppOnboardingCard({
             <form onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-2">
 
               <div className="space-y-2">
-                <Label htmlFor="wa-display-name">Nombre del negocio</Label>
+                <Label htmlFor="wa-waba-name">Nombre de la cuenta de WhatsApp</Label>
                 <Input
-                  id="wa-display-name"
-                  value={values.displayName}
-                  onChange={(e) => setField("displayName", e.target.value)}
+                  id="wa-waba-name"
+                  value={values.wabaName}
+                  onChange={(e) => setField("wabaName", e.target.value)}
                   placeholder="Inmobiliaria Sonora"
                   maxLength={80}
                   autoComplete="organization"
                 />
-                {errors.displayName && (
-                  <p className="text-xs text-destructive">{errors.displayName}</p>
+                {errors.wabaName && (
+                  <p className="text-xs text-destructive">{errors.wabaName}</p>
                 )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="wa-user-name">Nombre del usuario</Label>
-                <Input
-                  id="wa-user-name"
-                  value={values.userName}
-                  onChange={(e) => setField("userName", e.target.value)}
-                  placeholder="Marlon Molina"
-                  maxLength={80}
-                  autoComplete="name"
-                />
-                {errors.userName && <p className="text-xs text-destructive">{errors.userName}</p>}
               </div>
 
 

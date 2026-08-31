@@ -51,7 +51,11 @@ export function ChatwootAccountCard({
   hasAccount: boolean;
   defaultEmail?: string;
 }) {
-  const [values, setValues] = useState<ChatwootAccountValues>({ email: defaultEmail ?? "" });
+  const [values, setValues] = useState<ChatwootAccountValues>({
+    email: defaultEmail ?? "",
+    name: "",
+    companyName: "",
+  });
   const [errors, setErrors] = useState<FormErrors>({});
   const [refreshing, setRefreshing] = useState(false);
 
@@ -177,11 +181,43 @@ export function ChatwootAccountCard({
                 autoComplete="email"
               />
               {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
-              <p className="text-xs text-muted-foreground">
-                Ingresa tu correo y da clic en enviar; en cuanto tu cuenta esté lista te
-                mostramos aquí mismo con qué contraseña entrar.
-              </p>
             </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="cw-name">Nombre del usuario</Label>
+                <Input
+                  id="cw-name"
+                  value={values.name}
+                  onChange={(e) => setField("name", e.target.value)}
+                  placeholder="Marlon Molina"
+                  maxLength={80}
+                  autoComplete="name"
+                />
+                {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="cw-company-name">Nombre del negocio</Label>
+                <Input
+                  id="cw-company-name"
+                  value={values.companyName}
+                  onChange={(e) => setField("companyName", e.target.value)}
+                  placeholder="Inmobiliaria Sonora"
+                  maxLength={80}
+                  autoComplete="organization"
+                />
+                {errors.companyName && (
+                  <p className="text-xs text-destructive">{errors.companyName}</p>
+                )}
+              </div>
+            </div>
+
+            <p className="text-xs text-muted-foreground">
+              Completa tus datos y da clic en enviar; en cuanto tu cuenta esté lista te
+              mostramos aquí mismo con qué contraseña entrar.
+            </p>
+
 
             {mutation.isError && (
               <p className="flex items-start gap-2 text-sm text-destructive">

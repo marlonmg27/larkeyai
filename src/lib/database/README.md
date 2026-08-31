@@ -193,7 +193,7 @@ Además de leer/escribir, este proyecto ya empuja eventos a FastAPI:
 
 - `POST {BACKEND_URL}/webhooks/subscription` con
   `X-Internal-Secret: {BACKEND_INTERNAL_SECRET}` — eventos de Stripe normalizados.
-- `POST {BACKEND_URL}/onboarding` — paso 1: email y contraseña para crear la cuenta
+- `POST {BACKEND_URL}/onboarding` — paso 1: `email`, `name` y `company_name` para crear la cuenta
   y el usuario en la plataforma de conversaciones. El backend escribe
   `users.chatwoot_user_id` y `users.chatwoot_account_id` con service role.
   (`users.chatwoot_id` queda como columna heredada, sin uso en el frontend.)

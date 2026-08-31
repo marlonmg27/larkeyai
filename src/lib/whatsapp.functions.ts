@@ -61,8 +61,7 @@ export const connectWhatsAppAccount = createServerFn({ method: "POST" })
     const result = await connectWhatsApp({
       userId: context.userId,
       channel: data.channel,
-      displayName: data.displayName,
-      userName: data.userName,
+      wabaName: data.wabaName,
       phoneNumber: data.phoneNumber,
       phoneNumberId: data.phoneNumberId,
       wabaId: data.wabaId,

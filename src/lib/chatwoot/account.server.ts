@@ -15,6 +15,8 @@ const TIMEOUT_MS = 15_000;
 export type CreateChatwootAccountInput = {
   userId: string;
   email: string;
+  name: string;
+  companyName: string;
 };
 
 export type CreateChatwootAccountResult = {
@@ -56,6 +58,8 @@ export async function createChatwootAccount(
       body: JSON.stringify({
         user_id: input.userId,
         email: input.email,
+        name: input.name,
+        company_name: input.companyName,
       }),
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
