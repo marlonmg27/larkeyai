@@ -261,6 +261,7 @@ export type Database = {
           cancel_at_period_end: boolean
           chatwoot_account_id: number | null
           chatwoot_id: number | null
+          chatwoot_user_id: number | null
           created_at: string
           current_period_end: string | null
           email: string | null
@@ -278,6 +279,7 @@ export type Database = {
           cancel_at_period_end?: boolean
           chatwoot_account_id?: number | null
           chatwoot_id?: number | null
+          chatwoot_user_id?: number | null
           created_at?: string
           current_period_end?: string | null
           email?: string | null
@@ -295,6 +297,7 @@ export type Database = {
           cancel_at_period_end?: boolean
           chatwoot_account_id?: number | null
           chatwoot_id?: number | null
+          chatwoot_user_id?: number | null
           created_at?: string
           current_period_end?: string | null
           email?: string | null
