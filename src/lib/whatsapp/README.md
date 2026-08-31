@@ -47,7 +47,7 @@ nunca se loguea ni viaja directo del navegador al backend.
 | --- | --- |
 | `src/lib/whatsapp/schema.ts` | Validación Zod compartida entre el formulario y el servidor + lista de canales (`messagingChannels`) |
 | `src/lib/whatsapp.functions.ts` | `connectWhatsAppAccount`: server function con `requireSupabaseAuth` (el `user_id` sale del JWT verificado, nunca del body) |
-| `src/lib/chatwoot/account.functions.ts` + `account.server.ts` | Paso 1: `POST ${BACKEND_URL}/onboarding` (email + contraseña). El backend escribe `users.chatwoot_user_id` y `users.chatwoot_account_id` |
+| `src/lib/chatwoot/account.functions.ts` + `account.server.ts` | Paso 1: `POST ${BACKEND_URL}/onboarding` (`email`, `name`, `company_name`; la contraseña la define el backend). El backend escribe `users.chatwoot_user_id` y `users.chatwoot_account_id` |
 | `src/lib/whatsapp/onboarding.server.ts` | Paso 2: `POST ${BACKEND_URL}/onboarding/connection` con `X-Internal-Secret: ${BACKEND_INTERNAL_SECRET}`; incluye `chatwoot_user_id` y `chatwoot_account_id` |
 | `src/components/dashboard/WhatsAppOnboardingCard.tsx` | Selector de canal + formulario y estados de carga/éxito/error y vista de "verificando" |
 | `src/hooks/use-whatsapp-connection-realtime.ts` | Suscripción Realtime a la fila del usuario; invalida `["dashboard", userId]` |
