@@ -26,6 +26,7 @@ import { SubscriptionActions } from "@/components/dashboard/SubscriptionActions"
 import { SubscriptionOverview } from "@/components/dashboard/SubscriptionOverview";
 import { WhatsAppOnboardingCard } from "@/components/dashboard/WhatsAppOnboardingCard";
 import { ChatwootAccessCard } from "@/components/dashboard/ChatwootAccessCard";
+import { ChatwootAccountCard } from "@/components/dashboard/ChatwootAccountCard";
 import { useWhatsappConnectionRealtime } from "@/hooks/use-whatsapp-connection-realtime";
 
 
@@ -195,6 +196,8 @@ function Dashboard() {
   const hasActiveSubscription =
     data?.subscription.status === "active" || data?.subscription.status === "trialing";
   const whatsappStatus = data?.whatsapp?.status ?? null;
+  const hasChatwootAccount =
+    data?.chatwoot.userId != null && data?.chatwoot.accountId != null;
   const showWhatsappOnboarding = hasActiveSubscription && whatsappStatus !== "connected";
   const showChatwootAccess = hasActiveSubscription && data?.whatsapp != null;
 
@@ -398,9 +401,22 @@ function Dashboard() {
             </Card>
 
             {showWhatsappOnboarding && (
-              <div className="mt-6">
-                <WhatsAppOnboardingCard userId={user.id} status={whatsappStatus} />
-              </div>
+              <>
+                <div className="mt-6">
+                  <ChatwootAccountCard
+                    userId={user.id}
+                    hasAccount={hasChatwootAccount}
+                    defaultEmail={user?.email ?? ""}
+                  />
+                </div>
+                <div className="mt-6">
+                  <WhatsAppOnboardingCard
+                    userId={user.id}
+                    status={whatsappStatus}
+                    hasChatwootAccount={hasChatwootAccount}
+                  />
+                </div>
+              </>
             )}
 
             {showChatwootAccess && (
