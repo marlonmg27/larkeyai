@@ -27,7 +27,7 @@ Cuando `users.chatwoot_user_id` ya existe, la tarjeta muestra el paso como compl
 ## Detalles técnicos
 
 - `src/lib/chatwoot/schema.ts`: el esquema queda solo con `email`; se quitan `password` y `confirmPassword`.
-- `src/lib/chatwoot/account.functions.ts`: pasa `password: CHATWOOT_DEFAULT_PASSWORD` (desde `src/lib/chatwoot.ts`) al server bridge; el body del cliente ya no lleva contraseña.
-- `src/lib/chatwoot/account.server.ts`: sin cambios de contrato (sigue enviando `password` al backend).
+- `src/lib/chatwoot/account.functions.ts`: solo pasa `userId` y `email`; no hay contraseña en ningún punto de la cadena.
+- `src/lib/chatwoot/account.server.ts`: se quita `password` del tipo de entrada y del body enviado al backend.
 - `src/components/dashboard/ChatwootAccountCard.tsx`: formulario de un solo campo, textos nuevos, y en el estado `hasAccount` se muestran correo + contraseña temporal con nota de cambiarla.
 - Sin cambios en base de datos ni en el paso 2.
