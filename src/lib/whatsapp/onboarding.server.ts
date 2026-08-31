@@ -15,8 +15,7 @@ const TIMEOUT_MS = 15_000;
 export type ConnectWhatsAppInput = {
   userId: string;
   channel: MessagingChannel;
-  displayName: string;
-  userName: string;
+  wabaName: string;
   phoneNumber: string;
   phoneNumberId: string;
   wabaId: string;
