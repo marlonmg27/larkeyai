@@ -12,7 +12,7 @@ export const canSendSchema = z.object({ user_id: z.string().uuid() }).passthroug
 export const decrementSchema = z
   .object({
     user_id: z.string().uuid(),
-    count: z.number().int().min(1).max(1000).default(1),
+    count: z.number().int().min(1).max(1000).optional(),
   })
   .passthrough();
 
@@ -36,6 +36,7 @@ export async function canSendMessage(data: CanSendInput): Promise<Response> {
 
 export async function decrementMessages(data: DecrementInput): Promise<Response> {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const count = data.count ?? 1;
 
   const balance = await supabaseAdmin
     .from("usage_balance")
@@ -53,7 +54,7 @@ export async function decrementMessages(data: DecrementInput): Promise<Response>
 
   const { error } = await supabaseAdmin.rpc("decrement_messages", {
     p_user_id: data.user_id,
-    p_count: data.count,
+    p_count: count,
   });
 
   if (error) {
@@ -71,7 +72,7 @@ export async function decrementMessages(data: DecrementInput): Promise<Response>
     {
       ok: true,
       user_id: data.user_id,
-      count: data.count,
+      count,
       messages_remaining: after.data?.messages_remaining ?? null,
       messages_used_period: after.data?.messages_used_period ?? null,
     },
