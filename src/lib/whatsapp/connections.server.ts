@@ -35,7 +35,7 @@ type PersistedFields = {
   user_id: string;
   status: ConnectionStatus;
   phone_number?: string | null;
-  chatwoot_inbox_id?: string | null;
+  chatwoot_inbox_id?: number | null;
 };
 
 /** Solo los campos presentes; omitir un opcional no lo borra. */
@@ -62,20 +62,14 @@ export async function upsertConnection(data: Record<string, unknown> & Persisted
 
   const { error } = await supabaseAdmin
     .from("whatsapp_connections")
-    .upsert(
-      { user_id: data.user_id, ...pickPresent(data) } as never,
-      { onConflict: "user_id" },
-    );
+    .upsert({ user_id: data.user_id, ...pickPresent(data) } as never, { onConflict: "user_id" });
 
   if (error) {
     console.error("[whatsapp-connections] upsert falló", { code: error.code });
     return json({ ok: false, error: "database_error" }, 500);
   }
 
-  return json(
-    { ok: true, user_id: data.user_id, status: data.status, created: existing.data === null },
-    200,
-  );
+  return json({ ok: true, user_id: data.user_id, status: data.status, created: existing.data === null }, 200);
 }
 
 /**
@@ -132,9 +126,7 @@ export async function findConnectionByPhone(phoneNumber: string): Promise<Respon
     return json({ ok: false, error: "database_error" }, 500);
   }
 
-  const match = (all.data ?? []).find(
-    (row) => digitsOnly(row.phone_number ?? "") === digits,
-  );
+  const match = (all.data ?? []).find((row) => digitsOnly(row.phone_number ?? "") === digits);
 
   if (!match) {
     return json({ ok: false, error: "connection_not_found" }, 404);
