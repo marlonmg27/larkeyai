@@ -39,6 +39,7 @@ import { Route as ApiPublicUsersChatwootRouteImport } from './routes/api/public/
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe/webhook'
 import { Route as ApiPublicMessagesDecrementRouteImport } from './routes/api/public/messages/decrement'
 import { Route as ApiPublicMessagesCanSendRouteImport } from './routes/api/public/messages/can-send'
+import { Route as ApiPublicWhatsappConnectionsSplatRouteImport } from './routes/api/public/whatsapp/connections/$'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -192,6 +193,12 @@ const ApiPublicMessagesCanSendRoute =
     path: '/api/public/messages/can-send',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicWhatsappConnectionsSplatRoute =
+  ApiPublicWhatsappConnectionsSplatRouteImport.update({
+    id: '/api/public/whatsapp/connections/$',
+    path: '/api/public/whatsapp/connections/$',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -223,6 +230,7 @@ export interface FileRoutesByFullPath {
   '/api/public/messages/decrement': typeof ApiPublicMessagesDecrementRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/users/chatwoot': typeof ApiPublicUsersChatwootRoute
+  '/api/public/whatsapp/connections/$': typeof ApiPublicWhatsappConnectionsSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -254,6 +262,7 @@ export interface FileRoutesByTo {
   '/api/public/messages/decrement': typeof ApiPublicMessagesDecrementRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/users/chatwoot': typeof ApiPublicUsersChatwootRoute
+  '/api/public/whatsapp/connections/$': typeof ApiPublicWhatsappConnectionsSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -287,6 +296,7 @@ export interface FileRoutesById {
   '/api/public/messages/decrement': typeof ApiPublicMessagesDecrementRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
   '/api/public/users/chatwoot': typeof ApiPublicUsersChatwootRoute
+  '/api/public/whatsapp/connections/$': typeof ApiPublicWhatsappConnectionsSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -320,6 +330,7 @@ export interface FileRouteTypes {
     | '/api/public/messages/decrement'
     | '/api/public/stripe/webhook'
     | '/api/public/users/chatwoot'
+    | '/api/public/whatsapp/connections/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -351,6 +362,7 @@ export interface FileRouteTypes {
     | '/api/public/messages/decrement'
     | '/api/public/stripe/webhook'
     | '/api/public/users/chatwoot'
+    | '/api/public/whatsapp/connections/$'
   id:
     | '__root__'
     | '/'
@@ -383,6 +395,7 @@ export interface FileRouteTypes {
     | '/api/public/messages/decrement'
     | '/api/public/stripe/webhook'
     | '/api/public/users/chatwoot'
+    | '/api/public/whatsapp/connections/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -414,6 +427,7 @@ export interface RootRouteChildren {
   ApiPublicMessagesDecrementRoute: typeof ApiPublicMessagesDecrementRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
   ApiPublicUsersChatwootRoute: typeof ApiPublicUsersChatwootRoute
+  ApiPublicWhatsappConnectionsSplatRoute: typeof ApiPublicWhatsappConnectionsSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -628,6 +642,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicMessagesCanSendRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/whatsapp/connections/$': {
+      id: '/api/public/whatsapp/connections/$'
+      path: '/api/public/whatsapp/connections/$'
+      fullPath: '/api/public/whatsapp/connections/$'
+      preLoaderRoute: typeof ApiPublicWhatsappConnectionsSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -673,6 +694,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicMessagesDecrementRoute: ApiPublicMessagesDecrementRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
   ApiPublicUsersChatwootRoute: ApiPublicUsersChatwootRoute,
+  ApiPublicWhatsappConnectionsSplatRoute:
+    ApiPublicWhatsappConnectionsSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
