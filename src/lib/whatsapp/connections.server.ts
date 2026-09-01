@@ -7,6 +7,11 @@
  * el payload actual del backend, pero NUNCA se guardan ni se loguean.
  */
 import { z } from "zod";
+import { json, parseBody, verifyInternalSecret } from "@/lib/api/internal.server";
+
+// Re-exportados para no romper imports existentes.
+export { json, parseBody, verifyInternalSecret };
+export type { ParsedBody } from "@/lib/api/internal.server";
 
 export const connectionStatuses = ["not_connected", "pending", "connected", "error"] as const;
 export type ConnectionStatus = (typeof connectionStatuses)[number];
@@ -22,57 +27,9 @@ const persistedShape = {
 export const upsertConnectionSchema = z.object(persistedShape).passthrough();
 export const patchConnectionSchema = z.object(persistedShape).passthrough();
 
-function timingSafeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  let diff = 0;
-  for (let i = 0; i < a.length; i += 1) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return diff === 0;
-}
-
-export function json(body: unknown, status: number): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { "content-type": "application/json; charset=utf-8" },
-  });
-}
-
-/** Devuelve una Response cuando la autenticación falla, o null si es válida. */
-export function verifyInternalSecret(request: Request): Response | null {
-  const expected = process.env["BACKEND_INTERNAL_SECRET"];
-  if (!expected) {
-    console.error("[whatsapp-connections] BACKEND_INTERNAL_SECRET sin configurar");
-    return json({ ok: false, error: "server_not_configured" }, 500);
-  }
-  const provided = request.headers.get("x-internal-secret") ?? "";
-  if (!timingSafeEqual(provided, expected)) {
-    return json({ ok: false, error: "unauthorized" }, 401);
-  }
-  return null;
-}
-
-export type ParsedBody<T> = { data: T } | { response: Response };
-
-export async function parseBody<T>(
-  request: Request,
-  schema: z.ZodType<T>,
-): Promise<ParsedBody<T>> {
-  let raw: unknown;
-  try {
-    raw = await request.json();
-  } catch {
-    return { response: json({ ok: false, error: "invalid_json" }, 400) };
-  }
-  const parsed = schema.safeParse(raw);
-  if (!parsed.success) {
-    return {
-      response: json(
-        { ok: false, error: "validation_error", issues: parsed.error.issues.map((i) => ({ path: i.path, message: i.message })) },
-        400,
-      ),
-    };
-  }
-  return { data: parsed.data };
-}
+export const findByPhoneSchema = z.object({
+  phone_number: z.string().trim().min(5).max(40),
+});
 
 type PersistedFields = {
   user_id: string;
@@ -129,3 +86,59 @@ export async function patchConnectionStatus(data: Record<string, unknown> & Pers
   return upsertConnection(data);
 }
 
+const CONNECTION_COLUMNS =
+  "id, id_int, user_id, user_id_int, status, phone_number, chatwoot_inbox_id, chatwoot_account_id, chatwoot_user_id, waba_id, waba_name, updated_at";
+
+/** Solo dígitos, para tolerar formatos con espacios, guiones o paréntesis. */
+function digitsOnly(value: string): string {
+  return value.replace(/\D/g, "");
+}
+
+/**
+ * Busca la conexión por `phone_number`: primero match exacto, luego comparando
+ * solo dígitos (así `+52 662 000 0000` encuentra `+526620000000`).
+ */
+export async function findConnectionByPhone(phoneNumber: string): Promise<Response> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+  const exact = await supabaseAdmin
+    .from("whatsapp_connections")
+    .select(CONNECTION_COLUMNS)
+    .eq("phone_number", phoneNumber)
+    .limit(1)
+    .maybeSingle();
+
+  if (exact.error) {
+    console.error("[whatsapp-connections] búsqueda exacta falló", { code: exact.error.code });
+    return json({ ok: false, error: "database_error" }, 500);
+  }
+  if (exact.data) {
+    return json({ ok: true, connection: exact.data }, 200);
+  }
+
+  const digits = digitsOnly(phoneNumber);
+  if (digits.length === 0) {
+    return json({ ok: false, error: "connection_not_found" }, 404);
+  }
+
+  // Fallback normalizado: se filtra en memoria sobre las filas con teléfono.
+  const all = await supabaseAdmin
+    .from("whatsapp_connections")
+    .select(CONNECTION_COLUMNS)
+    .not("phone_number", "is", null);
+
+  if (all.error) {
+    console.error("[whatsapp-connections] búsqueda normalizada falló", { code: all.error.code });
+    return json({ ok: false, error: "database_error" }, 500);
+  }
+
+  const match = (all.data ?? []).find(
+    (row) => digitsOnly(row.phone_number ?? "") === digits,
+  );
+
+  if (!match) {
+    return json({ ok: false, error: "connection_not_found" }, 404);
+  }
+
+  return json({ ok: true, connection: match }, 200);
+}

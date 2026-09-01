@@ -35,9 +35,11 @@ import { Route as EsLegalTerminosRouteImport } from './routes/es/legal/terminos'
 import { Route as EsLegalPrivacidadRouteImport } from './routes/es/legal/privacidad'
 import { Route as EnLegalTermsRouteImport } from './routes/en/legal/terms'
 import { Route as EnLegalPrivacyRouteImport } from './routes/en/legal/privacy'
+import { Route as ApiPublicUsersChatwootRouteImport } from './routes/api/public/users/chatwoot'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe/webhook'
-import { Route as ApiPublicWhatsappConnectionsUpsertRouteImport } from './routes/api/public/whatsapp/connections/upsert'
-import { Route as ApiPublicWhatsappConnectionsStatusRouteImport } from './routes/api/public/whatsapp/connections/status'
+import { Route as ApiPublicMessagesDecrementRouteImport } from './routes/api/public/messages/decrement'
+import { Route as ApiPublicMessagesCanSendRouteImport } from './routes/api/public/messages/can-send'
+import { Route as ApiPublicWhatsappConnectionsSplatRouteImport } from './routes/api/public/whatsapp/connections/$'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -169,21 +171,32 @@ const EnLegalPrivacyRoute = EnLegalPrivacyRouteImport.update({
   path: '/en/legal/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicUsersChatwootRoute = ApiPublicUsersChatwootRouteImport.update({
+  id: '/api/public/users/chatwoot',
+  path: '/api/public/users/chatwoot',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicStripeWebhookRoute = ApiPublicStripeWebhookRouteImport.update({
   id: '/api/public/stripe/webhook',
   path: '/api/public/stripe/webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicWhatsappConnectionsUpsertRoute =
-  ApiPublicWhatsappConnectionsUpsertRouteImport.update({
-    id: '/api/public/whatsapp/connections/upsert',
-    path: '/api/public/whatsapp/connections/upsert',
+const ApiPublicMessagesDecrementRoute =
+  ApiPublicMessagesDecrementRouteImport.update({
+    id: '/api/public/messages/decrement',
+    path: '/api/public/messages/decrement',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicWhatsappConnectionsStatusRoute =
-  ApiPublicWhatsappConnectionsStatusRouteImport.update({
-    id: '/api/public/whatsapp/connections/status',
-    path: '/api/public/whatsapp/connections/status',
+const ApiPublicMessagesCanSendRoute =
+  ApiPublicMessagesCanSendRouteImport.update({
+    id: '/api/public/messages/can-send',
+    path: '/api/public/messages/can-send',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicWhatsappConnectionsSplatRoute =
+  ApiPublicWhatsappConnectionsSplatRouteImport.update({
+    id: '/api/public/whatsapp/connections/$',
+    path: '/api/public/whatsapp/connections/$',
     getParentRoute: () => rootRouteImport,
   } as any)
 
@@ -213,9 +226,11 @@ export interface FileRoutesByFullPath {
   '/en/legal/terms': typeof EnLegalTermsRoute
   '/es/legal/privacidad': typeof EsLegalPrivacidadRoute
   '/es/legal/terminos': typeof EsLegalTerminosRoute
+  '/api/public/messages/can-send': typeof ApiPublicMessagesCanSendRoute
+  '/api/public/messages/decrement': typeof ApiPublicMessagesDecrementRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
-  '/api/public/whatsapp/connections/status': typeof ApiPublicWhatsappConnectionsStatusRoute
-  '/api/public/whatsapp/connections/upsert': typeof ApiPublicWhatsappConnectionsUpsertRoute
+  '/api/public/users/chatwoot': typeof ApiPublicUsersChatwootRoute
+  '/api/public/whatsapp/connections/$': typeof ApiPublicWhatsappConnectionsSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -243,9 +258,11 @@ export interface FileRoutesByTo {
   '/en/legal/terms': typeof EnLegalTermsRoute
   '/es/legal/privacidad': typeof EsLegalPrivacidadRoute
   '/es/legal/terminos': typeof EsLegalTerminosRoute
+  '/api/public/messages/can-send': typeof ApiPublicMessagesCanSendRoute
+  '/api/public/messages/decrement': typeof ApiPublicMessagesDecrementRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
-  '/api/public/whatsapp/connections/status': typeof ApiPublicWhatsappConnectionsStatusRoute
-  '/api/public/whatsapp/connections/upsert': typeof ApiPublicWhatsappConnectionsUpsertRoute
+  '/api/public/users/chatwoot': typeof ApiPublicUsersChatwootRoute
+  '/api/public/whatsapp/connections/$': typeof ApiPublicWhatsappConnectionsSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -275,9 +292,11 @@ export interface FileRoutesById {
   '/en/legal/terms': typeof EnLegalTermsRoute
   '/es/legal/privacidad': typeof EsLegalPrivacidadRoute
   '/es/legal/terminos': typeof EsLegalTerminosRoute
+  '/api/public/messages/can-send': typeof ApiPublicMessagesCanSendRoute
+  '/api/public/messages/decrement': typeof ApiPublicMessagesDecrementRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
-  '/api/public/whatsapp/connections/status': typeof ApiPublicWhatsappConnectionsStatusRoute
-  '/api/public/whatsapp/connections/upsert': typeof ApiPublicWhatsappConnectionsUpsertRoute
+  '/api/public/users/chatwoot': typeof ApiPublicUsersChatwootRoute
+  '/api/public/whatsapp/connections/$': typeof ApiPublicWhatsappConnectionsSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -307,9 +326,11 @@ export interface FileRouteTypes {
     | '/en/legal/terms'
     | '/es/legal/privacidad'
     | '/es/legal/terminos'
+    | '/api/public/messages/can-send'
+    | '/api/public/messages/decrement'
     | '/api/public/stripe/webhook'
-    | '/api/public/whatsapp/connections/status'
-    | '/api/public/whatsapp/connections/upsert'
+    | '/api/public/users/chatwoot'
+    | '/api/public/whatsapp/connections/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -337,9 +358,11 @@ export interface FileRouteTypes {
     | '/en/legal/terms'
     | '/es/legal/privacidad'
     | '/es/legal/terminos'
+    | '/api/public/messages/can-send'
+    | '/api/public/messages/decrement'
     | '/api/public/stripe/webhook'
-    | '/api/public/whatsapp/connections/status'
-    | '/api/public/whatsapp/connections/upsert'
+    | '/api/public/users/chatwoot'
+    | '/api/public/whatsapp/connections/$'
   id:
     | '__root__'
     | '/'
@@ -368,9 +391,11 @@ export interface FileRouteTypes {
     | '/en/legal/terms'
     | '/es/legal/privacidad'
     | '/es/legal/terminos'
+    | '/api/public/messages/can-send'
+    | '/api/public/messages/decrement'
     | '/api/public/stripe/webhook'
-    | '/api/public/whatsapp/connections/status'
-    | '/api/public/whatsapp/connections/upsert'
+    | '/api/public/users/chatwoot'
+    | '/api/public/whatsapp/connections/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -398,9 +423,11 @@ export interface RootRouteChildren {
   EnLegalTermsRoute: typeof EnLegalTermsRoute
   EsLegalPrivacidadRoute: typeof EsLegalPrivacidadRoute
   EsLegalTerminosRoute: typeof EsLegalTerminosRoute
+  ApiPublicMessagesCanSendRoute: typeof ApiPublicMessagesCanSendRoute
+  ApiPublicMessagesDecrementRoute: typeof ApiPublicMessagesDecrementRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
-  ApiPublicWhatsappConnectionsStatusRoute: typeof ApiPublicWhatsappConnectionsStatusRoute
-  ApiPublicWhatsappConnectionsUpsertRoute: typeof ApiPublicWhatsappConnectionsUpsertRoute
+  ApiPublicUsersChatwootRoute: typeof ApiPublicUsersChatwootRoute
+  ApiPublicWhatsappConnectionsSplatRoute: typeof ApiPublicWhatsappConnectionsSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -587,6 +614,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EnLegalPrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/users/chatwoot': {
+      id: '/api/public/users/chatwoot'
+      path: '/api/public/users/chatwoot'
+      fullPath: '/api/public/users/chatwoot'
+      preLoaderRoute: typeof ApiPublicUsersChatwootRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/stripe/webhook': {
       id: '/api/public/stripe/webhook'
       path: '/api/public/stripe/webhook'
@@ -594,18 +628,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicStripeWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/whatsapp/connections/upsert': {
-      id: '/api/public/whatsapp/connections/upsert'
-      path: '/api/public/whatsapp/connections/upsert'
-      fullPath: '/api/public/whatsapp/connections/upsert'
-      preLoaderRoute: typeof ApiPublicWhatsappConnectionsUpsertRouteImport
+    '/api/public/messages/decrement': {
+      id: '/api/public/messages/decrement'
+      path: '/api/public/messages/decrement'
+      fullPath: '/api/public/messages/decrement'
+      preLoaderRoute: typeof ApiPublicMessagesDecrementRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/whatsapp/connections/status': {
-      id: '/api/public/whatsapp/connections/status'
-      path: '/api/public/whatsapp/connections/status'
-      fullPath: '/api/public/whatsapp/connections/status'
-      preLoaderRoute: typeof ApiPublicWhatsappConnectionsStatusRouteImport
+    '/api/public/messages/can-send': {
+      id: '/api/public/messages/can-send'
+      path: '/api/public/messages/can-send'
+      fullPath: '/api/public/messages/can-send'
+      preLoaderRoute: typeof ApiPublicMessagesCanSendRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/whatsapp/connections/$': {
+      id: '/api/public/whatsapp/connections/$'
+      path: '/api/public/whatsapp/connections/$'
+      fullPath: '/api/public/whatsapp/connections/$'
+      preLoaderRoute: typeof ApiPublicWhatsappConnectionsSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -649,11 +690,12 @@ const rootRouteChildren: RootRouteChildren = {
   EnLegalTermsRoute: EnLegalTermsRoute,
   EsLegalPrivacidadRoute: EsLegalPrivacidadRoute,
   EsLegalTerminosRoute: EsLegalTerminosRoute,
+  ApiPublicMessagesCanSendRoute: ApiPublicMessagesCanSendRoute,
+  ApiPublicMessagesDecrementRoute: ApiPublicMessagesDecrementRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
-  ApiPublicWhatsappConnectionsStatusRoute:
-    ApiPublicWhatsappConnectionsStatusRoute,
-  ApiPublicWhatsappConnectionsUpsertRoute:
-    ApiPublicWhatsappConnectionsUpsertRoute,
+  ApiPublicUsersChatwootRoute: ApiPublicUsersChatwootRoute,
+  ApiPublicWhatsappConnectionsSplatRoute:
+    ApiPublicWhatsappConnectionsSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

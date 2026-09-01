@@ -203,11 +203,11 @@ Además de leer/escribir, este proyecto ya empuja eventos a FastAPI:
 
 Detalles en `src/lib/stripe/README.md` y `src/lib/whatsapp/README.md`.
 
-## Endpoints puente para `whatsapp_connections` (sin service role key)
+## Endpoints puente internos (sin service role key)
 
-Alternativa recomendada cuando el backend no puede manejar la service role key:
-este proyecto expone dos endpoints que escriben la fila con privilegios de
-servidor. Autenticación: header `X-Internal-Secret: {BACKEND_INTERNAL_SECRET}`
+Alternativa recomendada cuando el backend no puede manejar la service role key: este
+proyecto expone endpoints que hacen la operación con privilegios de servidor.
+Autenticación en todos: header `X-Internal-Secret: {BACKEND_INTERNAL_SECRET}`
 (comparación timing-safe; sin él → `401`).
 
 Base URL:
@@ -215,35 +215,68 @@ Base URL:
 - Producción: `https://larkeyai.lovable.app`
 - Preview estable: `https://project--c2d08889-ea0a-462f-bee4-3d95a3ea2d73-dev.lovable.app`
 
-### `POST /api/public/whatsapp/connections/upsert`
+### `whatsapp_connections`
 
-Equivale a `save_pending`. Upsert por `user_id` (columna única).
+Los tres los sirve un solo archivo de ruta (`.../whatsapp/connections/$.ts`).
+
+**`POST /api/public/whatsapp/connections/upsert`** — equivale a `save_pending`.
+Upsert por `user_id` (columna única).
 
 - Requeridos: `user_id` (uuid), `status` (`not_connected|pending|connected|error`).
 - Opcionales: `phone_number`, `chatwoot_inbox_id`.
 - `display_name`, `phone_number_id`, `waba_id`, `access_token` se aceptan para no
   romper el payload del backend, pero **se ignoran**: no se guardan ni se loguean.
+- `200`: `{"ok":true,"user_id":"…","status":"pending","created":true}`
 
-Respuesta `200`: `{"ok":true,"user_id":"…","status":"pending","created":true}`
+**`PATCH /api/public/whatsapp/connections/status`** — equivale a `update_status`, pero es
+**idempotente**: si no existe fila para ese `user_id` la crea. Requiere `user_id` y
+`status`; `phone_number` y `chatwoot_inbox_id` solo se escriben si vienen presentes
+(omitir ≠ borrar).
 
-### `PATCH /api/public/whatsapp/connections/status`
+- `200`: `{"ok":true,"user_id":"…","status":"connected","created":false}`
 
-Equivale a `update_status`, pero es **idempotente**: si no existe fila para ese `user_id`
-la crea. Requiere `user_id` y `status`; `phone_number` y `chatwoot_inbox_id` solo se
-escriben si vienen presentes (omitir ≠ borrar).
+**`GET /api/public/whatsapp/connections/by-phone?phone_number=%2B526620000000`** — obtiene
+el registro por teléfono. Match exacto y, si no hay, comparación normalizada a solo
+dígitos (tolera espacios, guiones y paréntesis).
 
-Respuesta `200`: `{"ok":true,"user_id":"…","status":"connected","created":false}`
-(`created: true` cuando la fila se acaba de crear).
+- `200`: `{"ok":true,"connection":{ id, id_int, user_id, user_id_int, status, phone_number,
+  chatwoot_inbox_id, chatwoot_account_id, chatwoot_user_id, waba_id, waba_name, updated_at }}`
+- `404 connection_not_found` si no hay fila.
 
-### Errores
+Un `PATCH` a `connected` dispara el Realtime que ya escucha el dashboard, así que la card
+del cliente se actualiza sola.
+
+### `users` — IDs de Chatwoot
+
+**`PATCH /api/public/users/chatwoot`**
+
+- Requerido: `user_id` (uuid). Debe venir al menos uno de `chatwoot_user_id` /
+  `chatwoot_account_id` (enteros o `null`); solo se escriben los presentes.
+- `200`: `{"ok":true,"user_id":"…","chatwoot_user_id":123,"chatwoot_account_id":45}`
+- `404 user_not_found` si el `user_id` no existe.
+
+### `messages` — saldo y consumo
+
+**`POST /api/public/messages/can-send`** — ejecuta la RPC `can_send_message`.
+
+- Body: `{"user_id":"uuid"}`
+- `200`: `{"ok":true,"user_id":"…","can_send":true}`
+
+**`POST /api/public/messages/decrement`** — ejecuta la RPC `decrement_messages`.
+
+- Body: `{"user_id":"uuid","count":1}` (`count` entero 1–1000, default `1`).
+- `200`: `{"ok":true,"user_id":"…","count":1,"messages_remaining":6999,"messages_used_period":1}`
+- `404 usage_balance_not_found` si el usuario no tiene fila de saldo.
+
+### Errores (todos los endpoints)
 
 | Código | Caso |
 | --- | --- |
-| 400 | `invalid_json` o `validation_error` (uuid mal formado, status fuera del enum) |
+| 400 | `invalid_json` o `validation_error` (uuid mal formado, status fuera del enum, count inválido) |
 | 401 | `unauthorized`: falta o no coincide `X-Internal-Secret` |
-| 405 | Método incorrecto |
+| 404 | `connection_not_found` / `user_not_found` / `usage_balance_not_found` |
+| 405 | `method_not_allowed` |
 | 500 | `database_error` (detalle solo en logs del servidor) |
-
 
 ### Ejemplo (httpx)
 
@@ -251,13 +284,28 @@ Respuesta `200`: `{"ok":true,"user_id":"…","status":"connected","created":fals
 BASE = "https://larkeyai.lovable.app"
 H = {"X-Internal-Secret": BACKEND_INTERNAL_SECRET, "Content-Type": "application/json"}
 
+# WhatsApp: upsert, patch de estado y búsqueda por teléfono
 httpx.post(f"{BASE}/api/public/whatsapp/connections/upsert",
            json={"user_id": user_id, "status": "pending"}, headers=H).raise_for_status()
 
 httpx.patch(f"{BASE}/api/public/whatsapp/connections/status",
             json={"user_id": user_id, "status": "connected",
                   "phone_number": "+52 662 000 0000"}, headers=H).raise_for_status()
-```
 
-Un `PATCH` a `connected` dispara el Realtime que ya escucha el dashboard, así que
-la card del cliente se actualiza sola.
+r = httpx.get(f"{BASE}/api/public/whatsapp/connections/by-phone",
+              params={"phone_number": "+526620000000"}, headers=H)
+connection = r.json()["connection"] if r.status_code == 200 else None
+
+# users: IDs de Chatwoot
+httpx.patch(f"{BASE}/api/public/users/chatwoot",
+            json={"user_id": user_id, "chatwoot_user_id": 123,
+                  "chatwoot_account_id": 45}, headers=H).raise_for_status()
+
+# messages: saldo y consumo
+can_send = httpx.post(f"{BASE}/api/public/messages/can-send",
+                      json={"user_id": user_id}, headers=H).json()["can_send"]
+
+if can_send:
+    httpx.post(f"{BASE}/api/public/messages/decrement",
+               json={"user_id": user_id, "count": 1}, headers=H).raise_for_status()
+```
