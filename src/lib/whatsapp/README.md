@@ -140,20 +140,25 @@ bloquean WebSockets, la card ofrece un botón "Actualizar estado" mientras el st
 
 ## Endpoints puente que escribe el backend
 
-El backend FastAPI puede escribir la fila sin service role key, vía dos endpoints de
-este proyecto (`X-Internal-Secret: {BACKEND_INTERNAL_SECRET}`):
+El backend FastAPI puede escribir y leer la fila sin service role key, vía tres endpoints
+de este proyecto (`X-Internal-Secret: {BACKEND_INTERNAL_SECRET}`), todos servidos por un
+único archivo de ruta `src/routes/api/public/whatsapp/connections/$.ts`:
 
-| Endpoint | Archivo | Equivalente en el backend |
-| --- | --- | --- |
-| `POST /api/public/whatsapp/connections/upsert` | `src/routes/api/public/whatsapp/connections/upsert.ts` | `save_pending` |
-| `PATCH /api/public/whatsapp/connections/status` | `src/routes/api/public/whatsapp/connections/status.ts` | `update_status` |
+| Endpoint | Equivalente en el backend |
+| --- | --- |
+| `POST /api/public/whatsapp/connections/upsert` | `save_pending` |
+| `PATCH /api/public/whatsapp/connections/status` | `update_status` |
+| `GET /api/public/whatsapp/connections/by-phone?phone_number=…` | buscar por teléfono |
 
-Lógica compartida en `src/lib/whatsapp/connections.server.ts`. Ambos son idempotentes
+Lógica compartida en `src/lib/whatsapp/connections.server.ts` (helpers de autenticación y
+validación en `src/lib/api/internal.server.ts`). Los dos de escritura son idempotentes
 (upsert por `user_id`): el `PATCH` crea la fila si no existe y devuelve `created`, así que
 no responde `connection_not_found`. Solo persisten `user_id`, `status`, `phone_number` y
 `chatwoot_inbox_id`; las credenciales que vengan en el body (`display_name`,
 `phone_number_id`, `waba_id`, `access_token`) se aceptan pero se ignoran y nunca se
-loguean. Contratos completos en `src/lib/database/README.md`.
+loguean. El `GET` busca por `phone_number` (match exacto y también comparando solo
+dígitos) y devuelve la fila completa o `404 connection_not_found`. Contratos completos en
+`src/lib/database/README.md`.
 
 
 ## Api Key (access token) y guía de Chatwoot
