@@ -21,7 +21,7 @@ const persistedShape = {
   user_id: z.string().uuid(),
   status: z.enum(connectionStatuses),
   phone_number: z.string().trim().max(40).nullish(),
-  chatwoot_inbox_id: z.string().trim().max(64).nullish(),
+  chatwoot_inbox_id: z.number().trim().max(64).nullish(),
 };
 
 export const upsertConnectionSchema = z.object(persistedShape).passthrough();
