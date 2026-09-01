@@ -342,6 +342,7 @@ export type Database = {
           user_id: string
           user_id_int: number | null
           waba_id: number | null
+          waba_name: string | null
         }
         Insert: {
           chatwoot_account_id?: number | null
@@ -356,6 +357,7 @@ export type Database = {
           user_id: string
           user_id_int?: number | null
           waba_id?: number | null
+          waba_name?: string | null
         }
         Update: {
           chatwoot_account_id?: number | null
@@ -370,6 +372,7 @@ export type Database = {
           user_id?: string
           user_id_int?: number | null
           waba_id?: number | null
+          waba_name?: string | null
         }
         Relationships: [
           {
