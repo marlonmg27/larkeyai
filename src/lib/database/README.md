@@ -228,12 +228,17 @@ Upsert por `user_id` (columna única).
   romper el payload del backend, pero **se ignoran**: no se guardan ni se loguean.
 - `200`: `{"ok":true,"user_id":"…","status":"pending","created":true}`
 
-**`PATCH /api/public/whatsapp/connections/status`** — equivale a `update_status`, pero es
-**idempotente**: si no existe fila para ese `user_id` la crea. Requiere `user_id` y
-`status`; `phone_number` y `chatwoot_inbox_id` solo se escriben si vienen presentes
-(omitir ≠ borrar).
+**`PATCH /api/public/whatsapp/connections/status`** — update **parcial** e
+**idempotente**: si no existe fila para ese `user_id` la crea.
 
-- `200`: `{"ok":true,"user_id":"…","status":"connected","created":false}`
+- Requerido: solo `user_id` (uuid).
+- Opcionales: `status`, `phone_number`, `chatwoot_inbox_id`. Solo se escriben los
+  campos presentes (omitir ≠ borrar), así que puedes mandar únicamente
+  `{"user_id": "...", "chatwoot_inbox_id": 29}`.
+- Si hay que crear la fila y no viene `status`, se usa `pending`.
+- `200`: `{"ok":true,"user_id":"…","status":"connected","created":false}` (`status` es
+  el valor resultante en la base).
+
 
 **`GET /api/public/whatsapp/connections/by-phone?phone_number=%2B526620000000`** — obtiene
 el registro por teléfono. Match exacto y, si no hay, comparación normalizada a solo
