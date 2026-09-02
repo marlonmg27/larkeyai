@@ -25,7 +25,11 @@ const persistedShape = {
 };
 
 export const upsertConnectionSchema = z.object(persistedShape).passthrough();
-export const patchConnectionSchema = z.object(persistedShape).passthrough();
+
+/** PATCH = update parcial: lo único requerido es `user_id`. */
+export const patchConnectionSchema = z
+  .object({ ...persistedShape, status: z.enum(connectionStatuses).optional() })
+  .passthrough();
 
 export const findByPhoneSchema = z.object({
   phone_number: z.string().trim().min(5).max(40),
@@ -38,9 +42,12 @@ type PersistedFields = {
   chatwoot_inbox_id?: number | null;
 };
 
+type PatchFields = Omit<PersistedFields, "status"> & { status?: ConnectionStatus };
+
 /** Solo los campos presentes; omitir un opcional no lo borra. */
-function pickPresent(data: Record<string, unknown> & PersistedFields) {
-  const row: Record<string, unknown> = { status: data.status };
+function pickPresent(data: Record<string, unknown> & PatchFields) {
+  const row: Record<string, unknown> = {};
+  if (data.status !== undefined) row["status"] = data.status;
   if (data.phone_number !== undefined) row["phone_number"] = data.phone_number;
   if (data.chatwoot_inbox_id !== undefined) row["chatwoot_inbox_id"] = data.chatwoot_inbox_id;
   return row;
@@ -73,12 +80,51 @@ export async function upsertConnection(data: Record<string, unknown> & Persisted
 }
 
 /**
- * Idempotente: actualiza la fila si existe, la crea si no.
- * Ya no devuelve `connection_not_found`.
+ * Update parcial e idempotente: actualiza la fila si existe, la crea si no.
+ * `status` es opcional; si falta y hay que crear la fila, se usa `pending`.
  */
-export async function patchConnectionStatus(data: Record<string, unknown> & PersistedFields) {
-  return upsertConnection(data);
+export async function patchConnectionStatus(data: Record<string, unknown> & PatchFields) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+  const existing = await supabaseAdmin
+    .from("whatsapp_connections")
+    .select("id")
+    .eq("user_id", data.user_id)
+    .maybeSingle();
+
+  if (existing.error) {
+    console.error("[whatsapp-connections] select falló", { code: existing.error.code });
+    return json({ ok: false, error: "database_error" }, 500);
+  }
+
+  const created = existing.data === null;
+  const changes = pickPresent(data);
+
+  const row = created ? { user_id: data.user_id, status: data.status ?? "pending", ...changes } : changes;
+
+  const query = created
+    ? supabaseAdmin.from("whatsapp_connections").insert(row as never)
+    : supabaseAdmin.from("whatsapp_connections").update(row as never).eq("user_id", data.user_id);
+
+  const { error } = await query;
+
+  if (error) {
+    console.error("[whatsapp-connections] patch falló", { code: error.code });
+    return json({ ok: false, error: "database_error" }, 500);
+  }
+
+  const after = await supabaseAdmin
+    .from("whatsapp_connections")
+    .select("status")
+    .eq("user_id", data.user_id)
+    .maybeSingle();
+
+  return json(
+    { ok: true, user_id: data.user_id, status: after.data?.status ?? data.status ?? null, created },
+    200,
+  );
 }
+
 
 const CONNECTION_COLUMNS =
   "id, id_int, user_id, user_id_int, status, phone_number, chatwoot_inbox_id, chatwoot_account_id, chatwoot_user_id, waba_id, waba_name, updated_at";
