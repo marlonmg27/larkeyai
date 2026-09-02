@@ -153,7 +153,10 @@ de este proyecto (`X-Internal-Secret: {BACKEND_INTERNAL_SECRET}`), todos servido
 Lógica compartida en `src/lib/whatsapp/connections.server.ts` (helpers de autenticación y
 validación en `src/lib/api/internal.server.ts`). Los dos de escritura son idempotentes
 (upsert por `user_id`): el `PATCH` crea la fila si no existe y devuelve `created`, así que
-no responde `connection_not_found`. Solo persisten `user_id`, `status`, `phone_number` y
+no responde `connection_not_found`. En el `PATCH` el único campo requerido es `user_id`:
+`status`, `phone_number` y `chatwoot_inbox_id` son opcionales y solo se escriben si vienen
+presentes (si hay que crear la fila sin `status`, se usa `pending`). En el `POST` de upsert
+`status` sí es obligatorio. Solo persisten `user_id`, `status`, `phone_number` y
 `chatwoot_inbox_id`; las credenciales que vengan en el body (`display_name`,
 `phone_number_id`, `waba_id`, `access_token`) se aceptan pero se ignoran y nunca se
 loguean. El `GET` busca por `phone_number` (match exacto y también comparando solo
