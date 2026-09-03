@@ -234,7 +234,7 @@ export const es = {
 
   footer: {
     tagline:
-      "Asistentes conversacionales afinados a tu negocio, para que respondan tus mensajes por ti — hoy en WhatsApp, mañana en Instagram, Telegram, Messenger y WebApps. Incluye integración opcional con Chatwoot para supervisar tus conversaciones.",
+      "Asistentes afinados a tu negocio, para que respondan tus mensajes o hagan cualquier tipo de operación por ti. Compatibilidad con WhatsApp, Instagram, Telegram, Messenger y WebApps. Incluye integración con Chatwoot para supervisar tus conversaciones.",
     links: "Links",
     contact: "Contacto",
     legal: "Legal",
