@@ -100,7 +100,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "twitter:description",
         content:
-          "Larkey te da un asistente conversacional que atiende WhatsApp, Instagram, Telegram, Messenger y WebApps. Tú lo supervisas, él responde.",
+          "Larkey es un asistente con todas las herramientas necesarias para brindarle la mejor experiencia de usuario a tus clientes. Tú lo defines las reglas, él responde cualquier canal de mensajería.",
       },
       {
         property: "og:image",
