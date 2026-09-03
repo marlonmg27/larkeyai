@@ -154,7 +154,7 @@ Lógica compartida en `src/lib/whatsapp/connections.server.ts` (helpers de auten
 validación en `src/lib/api/internal.server.ts`). Los dos de escritura son idempotentes
 (upsert por `user_id`): el `PATCH` crea la fila si no existe y devuelve `created`, así que
 no responde `connection_not_found`. En el `PATCH` el único campo requerido es `user_id`:
-`status`, `phone_number` y `chatwoot_inbox_id` son opcionales y solo se escriben si vienen
+todos los demás campos persistibles son opcionales y solo se escriben si vienen
 presentes (si hay que crear la fila sin `status`, se usa `pending`). En el `POST` de upsert
 `status` sí es obligatorio. Solo persisten `user_id`, `status`, `phone_number` y
 `chatwoot_inbox_id`; las credenciales que vengan en el body (`display_name`,
