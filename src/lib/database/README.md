@@ -223,16 +223,18 @@ Los tres los sirve un solo archivo de ruta (`.../whatsapp/connections/$.ts`).
 Upsert por `user_id` (columna única).
 
 - Requeridos: `user_id` (uuid), `status` (`not_connected|pending|connected|error`).
-- Opcionales: `phone_number`, `chatwoot_inbox_id`.
-- `display_name`, `phone_number_id`, `waba_id`, `access_token` se aceptan para no
-  romper el payload del backend, pero **se ignoran**: no se guardan ni se loguean.
+- Opcionales (se persisten solo si vienen): `phone_number`, `chatwoot_inbox_id`,
+  `waba_id`, `phone_number_id`, `chatwoot_user_id`, `chatwoot_account_id`, `waba_name`.
+- `display_name` y `access_token` se aceptan para no romper el payload del backend,
+  pero **se ignoran**: no se guardan ni se loguean.
 - `200`: `{"ok":true,"user_id":"…","status":"pending","created":true}`
 
 **`PATCH /api/public/whatsapp/connections/status`** — update **parcial** e
 **idempotente**: si no existe fila para ese `user_id` la crea.
 
 - Requerido: solo `user_id` (uuid).
-- Opcionales: `status`, `phone_number`, `chatwoot_inbox_id`. Solo se escriben los
+- Opcionales: `status`, `phone_number`, `chatwoot_inbox_id`, `waba_id`,
+  `phone_number_id`, `chatwoot_user_id`, `chatwoot_account_id`, `waba_name`. Solo se escriben los
   campos presentes (omitir ≠ borrar), así que puedes mandar únicamente
   `{"user_id": "...", "chatwoot_inbox_id": 29}`.
 - Si hay que crear la fila y no viene `status`, se usa `pending`.
