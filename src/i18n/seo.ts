@@ -40,7 +40,7 @@ export function organizationJsonLd(locale: Locale) {
         name: "Larkey",
         url: SITE_URL,
         description: dictionary.seo.home.description,
-        email: "marlonmolinag12@gmail.com",
+        email: "larkeyai@gmail.com",
       },
       {
         "@type": "WebSite",
