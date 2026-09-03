@@ -2,9 +2,11 @@
  * Lógica compartida de los endpoints puente de `whatsapp_connections`.
  *
  * El backend FastAPI llama estos endpoints con `X-Internal-Secret` en vez de
- * manejar la service role key. Las credenciales de WhatsApp (display_name,
- * phone_number_id, waba_id, access_token) se aceptan en el body para no romper
- * el payload actual del backend, pero NUNCA se guardan ni se loguean.
+ * manejar la service role key. Se persisten status, phone_number,
+ * chatwoot_inbox_id, waba_id, phone_number_id, chatwoot_user_id,
+ * chatwoot_account_id y waba_name — todos opcionales salvo user_id/status.
+ * `display_name` y `access_token` se aceptan para no romper el payload actual
+ * del backend, pero NUNCA se guardan ni se loguean.
  */
 import { z } from "zod";
 import { json, parseBody, verifyInternalSecret } from "@/lib/api/internal.server";
@@ -22,6 +24,11 @@ const persistedShape = {
   status: z.enum(connectionStatuses),
   phone_number: z.string().trim().max(40).nullish(),
   chatwoot_inbox_id: z.coerce.number().int().nullish(),
+  waba_id: z.coerce.number().int().nullish(),
+  phone_number_id: z.string().trim().max(64).nullish(),
+  chatwoot_user_id: z.coerce.number().int().nullish(),
+  chatwoot_account_id: z.coerce.number().int().nullish(),
+  waba_name: z.string().trim().max(200).nullish(),
 };
 
 export const upsertConnectionSchema = z.object(persistedShape).passthrough();
@@ -40,6 +47,11 @@ type PersistedFields = {
   status: ConnectionStatus;
   phone_number?: string | null;
   chatwoot_inbox_id?: number | null;
+  waba_id?: number | null;
+  phone_number_id?: string | null;
+  chatwoot_user_id?: number | null;
+  chatwoot_account_id?: number | null;
+  waba_name?: string | null;
 };
 
 type PatchFields = Omit<PersistedFields, "status"> & { status?: ConnectionStatus };
@@ -50,6 +62,11 @@ function pickPresent(data: Record<string, unknown> & PatchFields) {
   if (data.status !== undefined) row["status"] = data.status;
   if (data.phone_number !== undefined) row["phone_number"] = data.phone_number;
   if (data.chatwoot_inbox_id !== undefined) row["chatwoot_inbox_id"] = data.chatwoot_inbox_id;
+  if (data.waba_id !== undefined) row["waba_id"] = data.waba_id;
+  if (data.phone_number_id !== undefined) row["phone_number_id"] = data.phone_number_id;
+  if (data.chatwoot_user_id !== undefined) row["chatwoot_user_id"] = data.chatwoot_user_id;
+  if (data.chatwoot_account_id !== undefined) row["chatwoot_account_id"] = data.chatwoot_account_id;
+  if (data.waba_name !== undefined) row["waba_name"] = data.waba_name;
   return row;
 }
 
