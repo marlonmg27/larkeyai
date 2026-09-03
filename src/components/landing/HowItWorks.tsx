@@ -11,9 +11,7 @@ export function HowItWorks() {
     <section id="como-funciona" className="py-20 lg:py-28">
       <div className="section-container">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-            {t.how.title}
-          </h2>
+          <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{t.how.title}</h2>
           <p className="mt-4 text-lg text-muted-foreground">{t.how.subtitle}</p>
         </div>
 
@@ -32,15 +30,9 @@ export function HowItWorks() {
                 <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-brand text-brand-foreground shadow-sm">
                   <Icon className="h-6 w-6" />
                 </div>
-                <h3 className="text-xl font-semibold tracking-tight text-foreground">
-                  {step.title}
-                </h3>
-                <p className="mt-3 text-base leading-relaxed text-muted-foreground">
-                  {step.description}
-                </p>
-                <span className="absolute right-6 top-6 text-5xl font-bold text-foreground/5">
-                  0{index + 1}
-                </span>
+                <h3 className="text-xl font-semibold tracking-tight text-foreground">{step.title}</h3>
+                <p className="mt-3 text-base leading-relaxed text-muted-foreground">{step.description}</p>
+                <span className="absolute right-6 top-6 text-5xl font-bold text-foreground/5">0{index + 1}</span>
               </motion.div>
             );
           })}

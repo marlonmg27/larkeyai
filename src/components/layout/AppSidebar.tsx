@@ -55,10 +55,7 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <Link
-          to={href("home") as never}
-          className="flex items-center gap-2 px-2 py-1 text-foreground"
-        >
+        <Link to={href("home") as never} className="flex items-center gap-2 px-2 py-1 text-foreground">
           <LarkeyMark className="h-7 w-7 shrink-0" />
           <span className="truncate text-base font-semibold tracking-tight group-data-[collapsible=icon]:hidden">
             Larkey

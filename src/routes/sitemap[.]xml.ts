@@ -16,8 +16,7 @@ export const Route = createFileRoute("/sitemap.xml")({
             const changefreq = page === "home" || page === "pricing" ? "weekly" : "monthly";
             const alternates = [
               ...LOCALES.map(
-                (alt) =>
-                  `    <xhtml:link rel="alternate" hreflang="${alt}" href="${BASE_URL}${PATHS[page][alt]}" />`,
+                (alt) => `    <xhtml:link rel="alternate" hreflang="${alt}" href="${BASE_URL}${PATHS[page][alt]}" />`,
               ),
               `    <xhtml:link rel="alternate" hreflang="x-default" href="${BASE_URL}${PATHS[page].es}" />`,
             ];

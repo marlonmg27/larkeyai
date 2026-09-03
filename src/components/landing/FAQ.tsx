@@ -1,9 +1,4 @@
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useT } from "@/i18n";
 
 export function FAQ({ hideHeading = false }: { hideHeading?: boolean }) {
@@ -15,9 +10,7 @@ export function FAQ({ hideHeading = false }: { hideHeading?: boolean }) {
         <div className="mx-auto max-w-3xl">
           {!hideHeading && (
             <div className="mb-12 text-center">
-              <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-                {t.faq.h1}
-              </h2>
+              <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">{t.faq.h1}</h2>
               <p className="mt-4 text-lg text-muted-foreground">{t.faq.subtitle}</p>
             </div>
           )}

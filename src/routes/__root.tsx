@@ -17,7 +17,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { localeFromPathname } from "@/i18n/config";
 
-
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -50,9 +49,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
-        </h1>
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">This page didn't load</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Something went wrong on our end. You can try refreshing or head back home.
         </p>
@@ -83,18 +80,38 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Larkey — Asistentes que responden por ti" },
-      { name: "description", content: "Larkey te da un asistente conversacional que atiende WhatsApp, Instagram, Telegram, Messenger y WebApps. Tú lo supervisas, él responde." },
+      { title: "Larkey — Agente de IA para atención al cliente" },
+      {
+        name: "description",
+        content:
+          "Larkey es un asistente con todas las herramientas necesarias para brindarle la mejor experiencia de usuario a tus clientes. Tú lo defines las reglas, él responde cualquier canal de mensajería.",
+      },
       { name: "author", content: "Larkey" },
-      { property: "og:title", content: "Larkey — Asistentes que responden por ti" },
-      { property: "og:description", content: "Larkey te da un asistente conversacional que atiende WhatsApp, Instagram, Telegram, Messenger y WebApps. Tú lo supervisas, él responde." },
+      { property: "og:title", content: "Larkey — Agente de IA para tus clientes" },
+      {
+        property: "og:description",
+        content:
+          "Larkey es un asistente con todas las herramientas necesarias para brindarle la mejor experiencia de usuario a tus clientes. Tú lo defines las reglas, él responde cualquier canal de mensajería.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@larkey" },
-      { name: "twitter:title", content: "Larkey — Asistentes que responden por ti" },
-      { name: "twitter:description", content: "Larkey te da un asistente conversacional que atiende WhatsApp, Instagram, Telegram, Messenger y WebApps. Tú lo supervisas, él responde." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ca5ccabc-d63f-4c78-9e8d-6c8a432f0e5c/id-preview-50495209--c2d08889-ea0a-462f-bee4-3d95a3ea2d73.lovable.app-1784156369589.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ca5ccabc-d63f-4c78-9e8d-6c8a432f0e5c/id-preview-50495209--c2d08889-ea0a-462f-bee4-3d95a3ea2d73.lovable.app-1784156369589.png" },
+      { name: "twitter:title", content: "Larkey — Agente de IA para atención al cliente" },
+      {
+        name: "twitter:description",
+        content:
+          "Larkey te da un asistente conversacional que atiende WhatsApp, Instagram, Telegram, Messenger y WebApps. Tú lo supervisas, él responde.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ca5ccabc-d63f-4c78-9e8d-6c8a432f0e5c/id-preview-50495209--c2d08889-ea0a-462f-bee4-3d95a3ea2d73.lovable.app-1784156369589.png",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ca5ccabc-d63f-4c78-9e8d-6c8a432f0e5c/id-preview-50495209--c2d08889-ea0a-462f-bee4-3d95a3ea2d73.lovable.app-1784156369589.png",
+      },
       { name: "facebook-domain-verification", content: "oxjjuezvnft5kx4ik14pizs7lprv9a" },
       { name: "google-site-verification", content: "ILEmUV07akKmLvw9M_wt51fhQg9MhhXSFb9OPhb67lA" },
     ],
@@ -150,4 +167,3 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
-
