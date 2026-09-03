@@ -175,11 +175,15 @@ export function ChatwootAccountCard({
                 id="cw-email"
                 type="email"
                 value={values.email}
-                onChange={(e) => setField("email", e.target.value)}
-                placeholder="contacto@tunegocio.com"
-                maxLength={160}
+                readOnly
+                aria-readonly="true"
+                className="bg-muted/40 font-mono"
                 autoComplete="email"
               />
+              <p className="text-xs text-muted-foreground">
+                Usamos el mismo correo con el que entras a Larkey, así tus accesos siempre
+                coinciden.
+              </p>
               {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
             </div>
 
