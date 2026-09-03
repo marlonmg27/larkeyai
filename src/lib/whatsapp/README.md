@@ -157,8 +157,8 @@ no responde `connection_not_found`. En el `PATCH` el único campo requerido es `
 todos los demás campos persistibles son opcionales y solo se escriben si vienen
 presentes (si hay que crear la fila sin `status`, se usa `pending`). En el `POST` de upsert
 `status` sí es obligatorio. Solo persisten `user_id`, `status`, `phone_number` y
-`chatwoot_inbox_id`; las credenciales que vengan en el body (`display_name`,
-`phone_number_id`, `waba_id`, `access_token`) se aceptan pero se ignoran y nunca se
+`chatwoot_inbox_id`, `waba_id`, `phone_number_id`, `chatwoot_user_id`, `chatwoot_account_id` y `waba_name`; las credenciales que vengan en el body (`display_name`,
+`access_token`) se aceptan pero se ignoran y nunca se
 loguean. El `GET` busca por `phone_number` (match exacto y también comparando solo
 dígitos) y devuelve la fila completa o `404 connection_not_found`. Contratos completos en
 `src/lib/database/README.md`.
