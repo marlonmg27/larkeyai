@@ -101,19 +101,15 @@ export const es = {
       },
       standard: {
         tagline: "Para un mayor volumen de clientes.",
-        perks: [
-          "Asistente afinado a tus instrucciones"
-          "Cuenta de Chatwoot",
-          "Canal de mensajería: WhatsApp"
-        ],
+        perks: ["Asistente afinado a tus instrucciones", "Cuenta de Chatwoot", "Canal de mensajería: WhatsApp"],
       },
       pro: {
         tagline: "Para negocios que reciben mensajes cada día.",
         perks: [
-          "Asistente afinado a tus instrucciones"
+          "Asistente afinado a tus instrucciones",
           "Cuenta de Chatwoot",
           "Soporte prioritario",
-          "Canal de mensajería: WhatsApp + uno adicional"
+          "Canal de mensajería: WhatsApp + uno adicional",
         ],
       },
     },
@@ -127,7 +123,7 @@ export const es = {
         "Asistentes diseñados para tu operación",
         "Integraciones dedicadas a tu stack",
         "Acompañamiento personal",
-        "Cuenta de Chatwoot"
+        "Cuenta de Chatwoot",
         "Cualquier canal de mensajería: WhatsApp, Instagram, Messenger, WebApps y más",
       ],
       cta: "Contactar ventas",
