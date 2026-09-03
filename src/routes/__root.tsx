@@ -80,18 +80,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Larkey — Agente de IA para atención al cliente" },
+      { title: "Larkey — Asistentes especializados en tu atención al cliente" },
       {
         name: "description",
         content:
-          "Larkey es un asistente con todas las herramientas necesarias para brindarle la mejor experiencia de usuario a tus clientes. Tú lo defines las reglas, él responde cualquier canal de mensajería.",
+          "Larkey te da un asistente inteligente para manejar a tus clientes, las herramientas necesarias para realizar cualquier función adicional que desees y una plataforma para conectar múltiples canales de mensajería",
       },
       { name: "author", content: "Larkey" },
       { property: "og:title", content: "Larkey — Agente de IA para tus clientes" },
       {
         property: "og:description",
         content:
-          "Larkey es un asistente con todas las herramientas necesarias para brindarle la mejor experiencia de usuario a tus clientes. Tú lo defines las reglas, él responde cualquier canal de mensajería.",
+          "Larkey es un asistente con todas las herramientas necesarias para brindarle la mejor experiencia de usuario a tus clientes. Tú defines las reglas y él responde.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -100,7 +100,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "twitter:description",
         content:
-          "Larkey es un asistente con todas las herramientas necesarias para brindarle la mejor experiencia de usuario a tus clientes. Tú lo defines las reglas, él responde cualquier canal de mensajería.",
+          "Larkey es un asistente con todas las herramientas necesarias para brindarle la mejor experiencia de usuario a tus clientes. Tú defines las reglas y él responde.",
       },
       {
         property: "og:image",

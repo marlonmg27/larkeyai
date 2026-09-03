@@ -29,8 +29,8 @@ export const es = {
   },
 
   hero: {
-    badge: "Asistentes especializados en tu atención al cliente",
-    h1: "Ahora puedes conectar WhatsApp como canal de mensajería",
+    badge: "Ahora puedes conectar WhatsApp como canal de mensajería",
+    h1: "Asistentes especializados en tu atención al cliente",
     subtitle:
       "Larkey te da un asistente inteligente para manejar a tus clientes, las herramientas necesarias para realizar cualquier función adicional que desees y una plataforma para conectar múltiples canales de mensajería",
     primaryCta: "Quiero mi asistente",
