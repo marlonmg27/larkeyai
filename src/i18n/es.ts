@@ -29,13 +29,13 @@ export const es = {
   },
 
   hero: {
-    badge: "Un asistente que trabaja mientras tú descansas",
-    h1: "Libérate de responder mensajes. Larkey lo hace por ti.",
+    badge: "Atención al cliente potenciada con IA",
+    h1: "Ahora puedes conectar WhatsApp como canal de mensajería",
     subtitle:
-      "Larkey te da un asistente conversacional que atiende tus chats en WhatsApp — tu canal principal — y se extiende a Instagram, Telegram, Messenger y WebApps. Tú lo supervisas en tiempo real y tomas el control cuando lo necesites.",
+      "Larkey te da un asistente inteligente para manejar a tus clientes, las herramientas necesarias para realizar cualquier función adicional que desees y una plataforma para conectar múltiples canales de mensajería",
     primaryCta: "Quiero mi asistente",
     secondaryCta: "Iniciar sesión",
-    note: "Para empresas y profesionales independientes que viven de conversar con sus clientes.",
+    note: "Para empresas y profesionales independientes.",
   },
 
   mockup: {
@@ -51,23 +51,21 @@ export const es = {
 
   how: {
     title: "Cómo trabajamos contigo",
-    subtitle:
-      "Tú te enfocas en vender y hacer crecer tu negocio. Nosotros construimos y mantenemos el asistente que responde por ti.",
+    subtitle: "Ponte en contacto y adaptamos de manera precisa un asistente a tus necesidades.",
     steps: [
       {
-        title: "Nos cuentas tu negocio",
+        title: "Ya tengo todo listo",
         description:
-          "Conversamos contigo para entender tu producto, tu tono y las preguntas que recibes cada día. Sin formularios kilométricos ni tecnicismos.",
+          "Si ya tienes tus instrucciones e ideas definidas para empezar de forma inmediata, solo necesitas una cuenta de WhatsApp Business. Sigue la guía para conectar tu cuenta e indícale tus reglas a tu asistente",
       },
       {
         title: "Afinamos tu asistente",
         description:
-          "Nuestro equipo configura y entrena un asistente al contexto exacto de tu operación. Tú no tocas una línea de código.",
+          "Si quieres que tu agente haga mas cosas que simplemente conversar, ponte en contacto conmigo y haré un asistente especializado en tu negocio y capaz de realizar cualquier tarea.",
       },
       {
         title: "Empieza a responder por ti",
-        description:
-          "Tu asistente atiende WhatsApp — tu canal principal — y puede extenderse a Instagram, Telegram, Messenger y WebApps. Responde prospectos, resuelve dudas y agenda citas 24/7.",
+        description: "Tu asistente atiende, responde prospectos, resuelve dudas y agenda citas 24/7.",
       },
     ],
   },
@@ -93,19 +91,13 @@ export const es = {
     loadErrorHint: "Intenta recargar la página.",
     noPlans: "No hay planes disponibles en este momento. Escríbenos si necesitas ayuda.",
     packsTitle: "Paquetes de mensajes adicionales",
-    packsSubtitle:
-      "Si te quedas corto de mensajes en el mes, compra un paquete extra sin cambiar de plan.",
+    packsSubtitle: "Si te quedas corto de mensajes en el mes, compra un paquete extra sin cambiar de plan.",
     packsLoggedOut:
       "Los paquetes de mensajes se compran desde tu panel. Crea tu cuenta o inicia sesión para ver los paquetes disponibles y sus precios.",
     tiers: {
       basic: {
         tagline: "Ideal para empezar a automatizar tu WhatsApp.",
-        perks: [
-          "Asistente afinado a tu operación",
-          "Canal principal: WhatsApp",
-          "Bandeja unificada",
-          "Soporte por email",
-        ],
+        perks: ["Asistente afinado a tus instrucciones", "Canal de mensajería: WhatsApp"],
       },
       standard: {
         tagline: "El equilibrio entre volumen y control.",
@@ -195,8 +187,7 @@ export const es = {
     intro:
       "Antes de conectar tu canal necesitas generar un token de acceso en Meta y otorgarle permisos a Larkey. Sigue estos pasos una sola vez.",
     cardTitle: "Generar tu token en Meta",
-    cardDescription:
-      "Necesitas acceso de administrador a tu Meta Business Suite y una WhatsApp Business Account.",
+    cardDescription: "Necesitas acceso de administrador a tu Meta Business Suite y una WhatsApp Business Account.",
     dashboardCta: "Ir al Dashboard",
     intro2:
       "Antes de conectar tu WhatsApp necesitas generar un token de acceso en Meta y darle permisos a Larkey. Sigue estos pasos una sola vez.",
