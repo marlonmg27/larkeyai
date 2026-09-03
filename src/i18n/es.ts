@@ -97,24 +97,23 @@ export const es = {
     tiers: {
       basic: {
         tagline: "Ideal para empezar a automatizar tu WhatsApp.",
-        perks: ["Asistente afinado a tus instrucciones", "Canal de mensajería: WhatsApp"],
+        perks: ["Asistente afinado a tus instrucciones", "Cuenta de Chatwoot", "Canal de mensajería: WhatsApp"],
       },
       standard: {
-        tagline: "El equilibrio entre volumen y control.",
+        tagline: "Para un mayor volumen de clientes.",
         perks: [
-          "Todo lo del plan Basic",
-          "Ajustes de tono y flujos personalizados",
-          "WhatsApp + Instagram + Messenger",
-          "Soporte prioritario",
+          "Asistente afinado a tus instrucciones"
+          "Cuenta de Chatwoot",
+          "Canal de mensajería: WhatsApp"
         ],
       },
       pro: {
         tagline: "Para negocios que reciben mensajes cada día.",
         perks: [
-          "Todo lo del plan Standard",
-          "WhatsApp, Instagram, Telegram, Messenger",
-          "Integraciones a tu stack",
-          "Onboarding acompañado",
+          "Asistente afinado a tus instrucciones"
+          "Cuenta de Chatwoot",
+          "Soporte prioritario",
+          "Canal de mensajería: WhatsApp + uno adicional"
         ],
       },
     },
@@ -122,13 +121,14 @@ export const es = {
       tagline: "Para equipos con alto volumen y necesidades a medida.",
       price: "Personalizado",
       priceNote: "Cotización según tu operación",
-      messages: "Mensajes a medida",
+      messages: "Mensajes a ilimitados",
       perks: [
-        "Mensajes a medida según tu volumen",
+        "Mensajes ilimitados",
         "Asistentes diseñados para tu operación",
-        "WhatsApp, Instagram, Telegram, Messenger y WebApps",
         "Integraciones dedicadas a tu stack",
-        "Onboarding y cuenta asignada",
+        "Acompañamiento personal",
+        "Cuenta de Chatwoot"
+        "Cualquier canal de mensajería: WhatsApp, Instagram, Messenger, WebApps y más",
       ],
       cta: "Contactar ventas",
     },
@@ -141,22 +141,22 @@ export const es = {
       {
         question: "¿Qué es Larkey?",
         answer:
-          "Larkey es una plataforma de asistentes conversacionales. Diseñamos y ponemos en marcha un asistente afinado al contexto de tu negocio para que responda tus mensajes — con WhatsApp como canal principal — sin que el dueño del negocio tenga que estar pendiente del celular.",
+          "Larkey es un servicio de asistentes de IA orientados a tu negocio y hecho en base a tus necesidades. Diseñamos y ponemos en marcha un asistente afinado al contexto de tu negocio para que realize cualquier tipo de trabajo por ti, como responder mensajes, evaluar criterios, enviar correos, agendar citas, etc.",
       },
       {
         question: "¿Tengo que saber de tecnología para usar Larkey?",
         answer:
-          "No. Larkey está pensado para cualquier persona, con conocimientos técnicos avanzados o cero. Nosotros nos encargamos de la parte técnica y del entrenamiento; tú solo nos cuentas cómo funciona tu negocio.",
+          "No. Larkey está pensado para cualquier persona, con conocimientos técnicos avanzados o cero. Nosotros nos encargamos de la parte técnica; tú solo nos cuentas cómo funciona tu negocio o indicas tus instrucciones.",
       },
       {
-        question: "¿En qué canales responde el asistente?",
+        question: "¿En qué plataformas responde el asistente?",
         answer:
-          "WhatsApp es nuestro producto estrella, porque es donde la mayoría de nuestros clientes recibe mensajes. También podemos extenderlo a Instagram, Telegram, Messenger y WebApps según lo que necesites.",
+          "WhatsApp para los planes basic y standard, WhatsApp + úna plataforma adicional en el plan pro y para un plan enterprise podemos extenderlo a Instagram, Telegram, Messenger, WebApps y cualquier otra plataforma de mensajería según lo que necesites.",
       },
       {
         question: "¿Puedo ver las conversaciones del asistente con mis clientes?",
         answer:
-          "Sí. Desde tu bandeja unificada puedes leer en tiempo real cada interacción entre tu asistente y tus clientes. Si lo necesitas, tomas el control de la conversación con un solo clic.",
+          "Sí. Desde tu bandeja unificada en tu cuenta de Chatwoot puedes leer en tiempo real cada interacción entre tu asistente y tus clientes. Si lo necesitas, tomas el control de la conversación con un solo clic.",
       },
       {
         question: "¿El asistente está entrenado exclusivamente para mi negocio?",
