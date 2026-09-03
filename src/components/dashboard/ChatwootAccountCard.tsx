@@ -108,8 +108,7 @@ export function ChatwootAccountCard({
           </Badge>
           <CardTitle>Tu cuenta de la plataforma está lista</CardTitle>
           <CardDescription>
-            Estos son tus datos de acceso. Ya puedes continuar con el paso 2 y conectar tu canal
-            de WhatsApp.
+            Estos son tus datos de acceso. Ya puedes continuar con el paso 2 y conectar tu canal de WhatsApp.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -124,9 +123,8 @@ export function ChatwootAccountCard({
             </div>
           </div>
           <p className="text-xs text-muted-foreground">
-            Por seguridad, cambia la contraseña{" "}
-            <span className="font-mono">{CHATWOOT_DEFAULT_PASSWORD}</span> la primera vez que
-            entres a la plataforma.
+            Por seguridad, cambia la contraseña <span className="font-mono">{CHATWOOT_DEFAULT_PASSWORD}</span> la
+            primera vez que entres a la plataforma.
           </p>
         </CardContent>
       </Card>
@@ -141,8 +139,8 @@ export function ChatwootAccountCard({
         </Badge>
         <CardTitle>Antes de continuar, creemos tu cuenta</CardTitle>
         <CardDescription>
-          Con tu correo te abrimos tu cuenta en la plataforma de conversaciones: el lugar desde
-          donde vas a hacer magia con los chats de tu asistente.
+          Con tu correo te abrimos tu cuenta en la plataforma de conversaciones: el lugar desde donde vas a hacer magia
+          con los chats de tu asistente.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -181,8 +179,7 @@ export function ChatwootAccountCard({
                 autoComplete="email"
               />
               <p className="text-xs text-muted-foreground">
-                Usamos el mismo correo con el que entras a Larkey, así tus accesos siempre
-                coinciden.
+                Usamos el mismo correo con el que entras a Larkey, así tus accesos siempre coinciden.
               </p>
               {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
             </div>
@@ -211,17 +208,14 @@ export function ChatwootAccountCard({
                   maxLength={80}
                   autoComplete="organization"
                 />
-                {errors.companyName && (
-                  <p className="text-xs text-destructive">{errors.companyName}</p>
-                )}
+                {errors.companyName && <p className="text-xs text-destructive">{errors.companyName}</p>}
               </div>
             </div>
 
             <p className="text-xs text-muted-foreground">
-              Completa tus datos y da clic en enviar; en cuanto tu cuenta esté lista te
-              mostramos aquí mismo con qué contraseña entrar.
+              Completa tus datos y da clic en enviar; en cuanto tu cuenta esté lista te mostramos aquí mismo con qué
+              contraseña entrar.
             </p>
-
 
             {mutation.isError && (
               <p className="flex items-start gap-2 text-sm text-destructive">

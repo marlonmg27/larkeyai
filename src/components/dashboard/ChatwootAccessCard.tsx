@@ -12,8 +12,7 @@ function heading(status: string | null) {
         </Badge>
       ),
       title: "Tu WhatsApp está conectado",
-      description:
-        "Entra a tu plataforma de conversaciones para ver y responder los chats de tu asistente.",
+      description: "Entra a tu plataforma de conversaciones para ver y responder los chats de tu asistente.",
     };
   if (status === "error")
     return {
@@ -36,13 +35,7 @@ function heading(status: string | null) {
   };
 }
 
-export function ChatwootAccessCard({
-  email,
-  status,
-}: {
-  email: string;
-  status: string | null;
-}) {
+export function ChatwootAccessCard({ email, status }: { email: string; status: string | null }) {
   const h = heading(status);
 
   return (

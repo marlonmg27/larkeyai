@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { useLocale, useT } from "@/i18n";
 
-export const ENTERPRISE_EMAIL = "marlonmolinag12@gmail.com";
+export const ENTERPRISE_EMAIL = "larkeyai@gmail.com";
 
 export const ENTERPRISE_MAILTO = `mailto:${ENTERPRISE_EMAIL}?subject=${encodeURIComponent(
   "Quiero un plan Enterprise de Larkey",
@@ -132,9 +132,7 @@ export function PlanCards({ onSelectPlan, ctaLabel, pendingPlanId = null }: Plan
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           {!isLoading && !hasPlansForInterval && (
             <Card className="md:col-span-2 xl:col-span-3">
-              <CardContent className="py-8 text-center text-sm text-muted-foreground">
-                {t.pricing.noPlans}
-              </CardContent>
+              <CardContent className="py-8 text-center text-sm text-muted-foreground">{t.pricing.noPlans}</CardContent>
             </Card>
           )}
 
@@ -180,17 +178,14 @@ export function PlanCards({ onSelectPlan, ctaLabel, pendingPlanId = null }: Plan
                           ) : (
                             <>
                               <div className="flex items-baseline gap-1">
-                                <span className="text-4xl font-bold tracking-tight">
-                                  {formatMxn(planPrice)}
-                                </span>
+                                <span className="text-4xl font-bold tracking-tight">{formatMxn(planPrice)}</span>
                                 <span className="text-sm text-muted-foreground">
                                   /{interval === "month" ? t.pricing.perMonth : t.pricing.perYear}
                                 </span>
                               </div>
                               {monthlyEq && (
                                 <p className="mt-1 text-xs text-muted-foreground">
-                                  ≈ {formatMxn(monthlyEq)} / {t.pricing.perMonth}{" "}
-                                  {t.pricing.monthlyEquivalent}
+                                  ≈ {formatMxn(monthlyEq)} / {t.pricing.perMonth} {t.pricing.monthlyEquivalent}
                                 </p>
                               )}
                             </>
@@ -215,9 +210,7 @@ export function PlanCards({ onSelectPlan, ctaLabel, pendingPlanId = null }: Plan
                           disabled={!plan || pendingPlanId === plan?.id}
                           onClick={() => plan && onSelectPlan(plan)}
                           className={
-                            style.highlight
-                              ? "w-full bg-brand text-brand-foreground hover:bg-brand/90"
-                              : "w-full"
+                            style.highlight ? "w-full bg-brand text-brand-foreground hover:bg-brand/90" : "w-full"
                           }
                           variant={style.highlight ? "default" : "outline"}
                         >
@@ -253,13 +246,9 @@ export function PlanCards({ onSelectPlan, ctaLabel, pendingPlanId = null }: Plan
               <CardContent className="flex flex-1 flex-col">
                 <div className="mb-4">
                   <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-bold tracking-tight">
-                      {t.pricing.enterprise.price}
-                    </span>
+                    <span className="text-3xl font-bold tracking-tight">{t.pricing.enterprise.price}</span>
                   </div>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {t.pricing.enterprise.priceNote}
-                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">{t.pricing.enterprise.priceNote}</p>
                 </div>
 
                 <div className="mb-4 rounded-lg bg-accent/40 px-3 py-2 text-sm font-medium">
