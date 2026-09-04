@@ -316,6 +316,17 @@ export const en: Dict = {
     },
   },
 
+  breadcrumb: {
+    home: "Home",
+    pricing: "Pricing and plans",
+    faq: "Frequently asked questions",
+    contact: "Contact",
+    guide: "WhatsApp setup guide",
+    login: "Client login",
+    privacy: "Privacy policy",
+    terms: "Terms of service",
+  },
+
   seo: {
     home: {
       title: "Larkey — AI WhatsApp Agents for Business",

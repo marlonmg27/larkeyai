@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { FaqView } from "@/views/FaqView";
-import { faqJsonLd, pageHead } from "@/i18n/seo";
+import { breadcrumbJsonLd, faqJsonLd, pageHead } from "@/i18n/seo";
 
 export const Route = createFileRoute("/en/faq")({
   component: FaqView,
@@ -10,7 +10,10 @@ export const Route = createFileRoute("/en/faq")({
     return {
       meta,
       links,
-      scripts: [{ type: "application/ld+json", children: JSON.stringify(faqJsonLd("en")) }],
+      scripts: [
+        { type: "application/ld+json", children: JSON.stringify(faqJsonLd("en")) },
+        { type: "application/ld+json", children: JSON.stringify(breadcrumbJsonLd("faq", "en")) },
+      ],
     };
   },
 });
