@@ -150,3 +150,15 @@ export function faqJsonLd(locale: Locale) {
     })),
   };
 }
+
+/** pageHead plus the BreadcrumbList script, for second-level pages. */
+export function pageHeadWithBreadcrumb(page: PageKey, locale: Locale) {
+  const { meta, links } = pageHead(page, locale);
+  return {
+    meta,
+    links,
+    scripts: [
+      { type: "application/ld+json", children: JSON.stringify(breadcrumbJsonLd(page, locale)) },
+    ],
+  };
+}
