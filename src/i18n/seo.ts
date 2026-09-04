@@ -30,6 +30,10 @@ export function pageHead(page: PageKey, locale: Locale) {
   return { meta, links };
 }
 
+function langTag(locale: Locale) {
+  return locale === "es" ? "es-MX" : "en-US";
+}
+
 export function organizationJsonLd(locale: Locale) {
   const dictionary = dictionaries[locale];
   return {
@@ -37,6 +41,7 @@ export function organizationJsonLd(locale: Locale) {
     "@graph": [
       {
         "@type": "Organization",
+        "@id": `${SITE_URL}/#organization`,
         name: "Larkey",
         url: SITE_URL,
         description: dictionary.seo.home.description,
@@ -44,21 +49,91 @@ export function organizationJsonLd(locale: Locale) {
       },
       {
         "@type": "WebSite",
+        "@id": `${SITE_URL}/#website-${locale}`,
         name: "Larkey",
         url: SITE_URL + pathFor("home", locale),
-        inLanguage: locale === "es" ? "es-MX" : "en-US",
-        publisher: { "@type": "Organization", name: "Larkey", url: SITE_URL },
-      },
-      {
-        "@type": "FAQPage",
-        inLanguage: locale === "es" ? "es-MX" : "en-US",
-        mainEntity: dictionary.faq.items.map((faq) => ({
-          "@type": "Question",
-          name: faq.question,
-          acceptedAnswer: { "@type": "Answer", text: faq.answer },
-        })),
+        inLanguage: langTag(locale),
+        publisher: { "@id": `${SITE_URL}/#organization` },
       },
     ],
+  };
+}
+
+/** Breadcrumb trail: home -> current page. */
+export function breadcrumbJsonLd(page: PageKey, locale: Locale) {
+  const dictionary = dictionaries[locale];
+  const name = dictionary.breadcrumb[page];
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: dictionary.nav.home,
+        item: SITE_URL + pathFor("home", locale),
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name,
+        item: SITE_URL + pathFor(page, locale),
+      },
+    ],
+  };
+}
+
+type PlanOffer = {
+  name: string;
+  price: number;
+  messages: number;
+  interval: "month" | "year";
+};
+
+/** Public subscription catalog (mirrors the active rows of the plans table). */
+const PLAN_OFFERS: PlanOffer[] = [
+  { name: "Basic", price: 2000, messages: 7000, interval: "month" },
+  { name: "Basic", price: 19200, messages: 7000, interval: "year" },
+  { name: "Standard", price: 3200, messages: 12000, interval: "month" },
+  { name: "Standard", price: 30720, messages: 12000, interval: "year" },
+  { name: "Pro", price: 5000, messages: 20000, interval: "month" },
+  { name: "Pro", price: 48000, messages: 20000, interval: "year" },
+];
+
+export function productJsonLd(locale: Locale) {
+  const dictionary = dictionaries[locale];
+  const url = SITE_URL + pathFor("pricing", locale);
+  const per = locale === "es" ? { month: "al mes", year: "al año" } : { month: "per month", year: "per year" };
+  const msgs = locale === "es" ? "mensajes incluidos" : "messages included";
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: "Larkey",
+    description: dictionary.seo.pricing.description,
+    brand: { "@type": "Brand", name: "Larkey" },
+    url,
+    offers: {
+      "@type": "OfferCatalog",
+      name: dictionary.seo.pricing.title,
+      inLanguage: langTag(locale),
+      itemListElement: PLAN_OFFERS.map((plan) => ({
+        "@type": "Offer",
+        name: `Larkey ${plan.name} — ${plan.messages.toLocaleString(langTag(locale))} ${msgs} (${per[plan.interval]})`,
+        price: plan.price,
+        priceCurrency: "MXN",
+        availability: "https://schema.org/InStock",
+        url,
+        priceSpecification: {
+          "@type": "UnitPriceSpecification",
+          price: plan.price,
+          priceCurrency: "MXN",
+          billingDuration: 1,
+          billingIncrement: 1,
+          unitCode: plan.interval === "month" ? "MON" : "ANN",
+        },
+      })),
+    },
   };
 }
 
