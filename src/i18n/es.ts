@@ -302,6 +302,17 @@ export const es = {
     },
   },
 
+  breadcrumb: {
+    home: "Inicio",
+    pricing: "Precios y planes",
+    faq: "Preguntas frecuentes",
+    contact: "Contacto",
+    guide: "Guía de WhatsApp",
+    login: "Acceso de clientes",
+    privacy: "Aviso de privacidad",
+    terms: "Términos y condiciones",
+  },
+
   seo: {
     home: {
       title: "Larkey — Asistentes de IA que responden tu WhatsApp",
