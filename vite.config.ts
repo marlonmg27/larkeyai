@@ -11,5 +11,28 @@ export default defineConfig({
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
     server: { entry: "server" },
+    // Public pages rendered to static HTML at build time. Private routes
+    // (/dashboard, /instrucciones) are never listed and auto-discovery is off.
+    pages: [
+      { path: "/" },
+      { path: "/es" },
+      { path: "/es/precios" },
+      { path: "/es/faq" },
+      { path: "/es/contacto" },
+      { path: "/es/guia" },
+      { path: "/es/acceso" },
+      { path: "/es/legal/privacidad" },
+      { path: "/es/legal/terminos" },
+      { path: "/en" },
+      { path: "/en/pricing" },
+      { path: "/en/faq" },
+      { path: "/en/contact" },
+      { path: "/en/whatsapp-setup-guide" },
+      { path: "/en/login" },
+      { path: "/en/legal/privacy" },
+      { path: "/en/legal/terms" },
+    ],
+    prerender: { enabled: true, autoStaticPathsDiscovery: false },
   },
 });
+
