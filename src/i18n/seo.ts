@@ -114,10 +114,14 @@ export function productJsonLd(locale: Locale) {
     brand: { "@type": "Brand", name: "Larkey" },
     url,
     offers: {
-      "@type": "OfferCatalog",
-      name: dictionary.seo.pricing.title,
-      inLanguage: langTag(locale),
-      itemListElement: PLAN_OFFERS.map((plan) => ({
+      "@type": "AggregateOffer",
+      priceCurrency: "MXN",
+      lowPrice: Math.min(...PLAN_OFFERS.map((plan) => plan.price)),
+      highPrice: Math.max(...PLAN_OFFERS.map((plan) => plan.price)),
+      offerCount: PLAN_OFFERS.length,
+      availability: "https://schema.org/InStock",
+      url,
+      offers: PLAN_OFFERS.map((plan) => ({
         "@type": "Offer",
         name: `Larkey ${plan.name} — ${plan.messages.toLocaleString(langTag(locale))} ${msgs} (${per[plan.interval]})`,
         price: plan.price,
@@ -136,6 +140,7 @@ export function productJsonLd(locale: Locale) {
     },
   };
 }
+
 
 export function faqJsonLd(locale: Locale) {
   const dictionary = dictionaries[locale];
