@@ -37,16 +37,13 @@ export function Hero() {
             <p className="mt-6 text-lg leading-relaxed text-muted-foreground">{t.hero.subtitle}</p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Button
-                size="lg"
-                className="bg-brand text-brand-foreground hover:bg-brand/90"
-                onClick={() =>
-                  document.getElementById("precios")?.scrollIntoView({ behavior: "smooth" })
-                }
-              >
-                {t.hero.primaryCta}
-                <ArrowRight className="h-4 w-4" />
+              <Button asChild size="lg" className="bg-brand text-brand-foreground hover:bg-brand/90">
+                <Link to={href("pricing") as never}>
+                  {t.hero.primaryCta}
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
               </Button>
+
               <Button asChild size="lg" variant="outline">
                 <Link to={href("login") as never}>{t.hero.secondaryCta}</Link>
               </Button>
