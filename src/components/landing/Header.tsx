@@ -32,12 +32,13 @@ export function Header() {
           <a href="#como-funciona" className="transition-colors hover:text-foreground">
             {t.nav.howItWorks}
           </a>
-          <a href="#precios" className="transition-colors hover:text-foreground">
+          <Link to={href("pricing") as never} className="transition-colors hover:text-foreground">
             {t.nav.pricing}
-          </a>
-          <a href="#faq" className="transition-colors hover:text-foreground">
+          </Link>
+          <Link to={href("faq") as never} className="transition-colors hover:text-foreground">
             {t.nav.faq}
-          </a>
+          </Link>
+
         </nav>
 
         <div className="flex items-center gap-2">
