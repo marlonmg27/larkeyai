@@ -1,11 +1,12 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-/** Language gateway: sends visitors to the Spanish or English version of the home page. */
+/**
+ * Language gateway: permanent redirect to the Spanish version (x-default).
+ * Deterministic on server and client so there is no HTML mismatch, and the
+ * redirect is a real 301 that crawlers can follow to a page with a lang attribute.
+ */
 export const Route = createFileRoute("/")({
   beforeLoad: () => {
-    const prefersEnglish =
-      typeof navigator !== "undefined" &&
-      (navigator.language ?? "").toLowerCase().startsWith("en");
-    throw redirect({ to: (prefersEnglish ? "/en" : "/es") as never, statusCode: 301 });
+    throw redirect({ to: "/es" as never, statusCode: 301 });
   },
 });

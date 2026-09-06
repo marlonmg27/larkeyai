@@ -14,8 +14,8 @@ export default defineConfig({
     // Public pages rendered to static HTML at build time. Private routes
     // (/dashboard, /instrucciones) are never listed and auto-discovery is off.
     pages: [
-      { path: "/" },
       { path: "/es" },
+
       { path: "/es/precios" },
       { path: "/es/faq" },
       { path: "/es/contacto" },
