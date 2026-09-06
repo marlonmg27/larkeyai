@@ -7,29 +7,52 @@ Nothing outside `src/lib/stripe/*`, `src/lib/billing.functions.ts` and
 The layout mirrors the future FastAPI microservice one-for-one so migration
 is a copy/translate exercise, not a redesign.
 
+## Single entry point
+
+`index.server.ts` is the module facade — the **only** file outside this
+directory that may be imported:
+
+```
+src/lib/billing.functions.ts            -> @/lib/stripe/index.server
+src/routes/api/public/stripe/webhook.ts -> @/lib/stripe/index.server
+```
+
+Everything else here is internal. Nothing outside the module knows the
+internal file layout, so files can be split, renamed, or replaced by HTTP
+calls without touching callers.
+
 ## Files
 
 | File | Responsibility | FastAPI equivalent |
 |------|----------------|--------------------|
-| `client.server.ts`      | Stripe SDK singleton, reads `STRIPE_TEST_API_KEY` | `stripe.api_key = ...` in `deps.py` |
+| `index.server.ts`       | module facade: the only public surface           | the microservice's router |
+| `config.server.ts`      | every runtime config read (`SITE_URL`, Stripe key, webhook secret, backend forward creds) — always read at call time | `settings.py` / `os.environ` |
+| `client.server.ts`      | Stripe SDK singleton                              | `stripe.api_key = ...` in `deps.py` |
 | `contracts.ts`          | DTOs + event allow-list (no runtime deps)         | `schemas.py` (Pydantic models) |
+| `time.ts`               | pure date helpers (`iso`, `subscriptionPeriodEndIso`) | `utils.py` |
 | `customers.server.ts`   | `getOrCreateCustomer(user_id)`                    | `POST /internal/customers/ensure` |
 | `checkout.server.ts`    | `createSubscriptionCheckout`, `createPackCheckout` | `POST /internal/checkout/{subscription,pack}` |
 | `subscriptions.server.ts` | `cancelAtPeriodEnd`, `resumeSubscription`, `changePlan` | `POST /internal/subscriptions/{cancel,resume,change}` |
-| `webhook.server.ts`     | `verifyAndDispatch(rawBody, signature)`           | `POST /webhooks/stripe` |
+| `invoices.server.ts`    | `listInvoices(user_id)` — billing history          | `GET /internal/invoices` |
+| `webhook.server.ts`     | `verifyAndDispatch`: signature check + idempotent persist + orchestration | `POST /webhooks/stripe` |
+| `apply-state.server.ts` | **TEMPORARY** local state bridge (`applyEventLocally`) | to be deleted; FastAPI owns state |
+| `backend-forward.server.ts` | hand-off of verified events to the Python backend | n/a (internal to FastAPI) |
 
 `src/lib/billing.functions.ts` is the only entrypoint the React app touches
-(via `useServerFn`). To migrate to FastAPI, replace each `createServerFn`
-in that file with an HTTP call to the microservice — every function has a
-matching endpoint above.
+(via `useServerFn`); it authenticates, validates input and delegates to the
+facade — it holds no Stripe logic. To migrate to FastAPI, replace each
+`createServerFn` body in that file with an HTTP call to the microservice —
+every function has a matching endpoint above.
 
 ## Environment
 
-Required server secrets (already provisioned in Lovable Cloud):
+Required server secrets (already provisioned in Lovable Cloud) — all read
+through `config.server.ts`:
 
-- `STRIPE_TEST_API_KEY` — restricted or secret key. Test mode today; swap to `sk_live_...` for production.
-- `STRIPE_WEBHOOK_SECRET` — used by `verifyAndDispatch` to check `x-stripe-signature`.
-- `SITE_URL` (optional) — success/cancel redirect base. Falls back to `http://localhost:8080`.
+- `STRIPE_SECRET_KEY` or legacy `STRIPE_TEST_API_KEY` — restricted or secret key. Test mode today; swap to `sk_live_...` for production.
+- `STRIPE_WEBHOOK_SECRET` — used by `verifyAndDispatch` to check `stripe-signature`.
+- `SITE_URL` — success/cancel redirect base; required for Checkout.
+- `BACKEND_URL` + `BACKEND_INTERNAL_SECRET` — forwarding of verified events.
 
 ## Product setup in Stripe
 
@@ -176,12 +199,14 @@ Then the normal webhook flow keeps them in sync.
 ## Migrating to FastAPI later
 
 1. Copy `contracts.ts` → `schemas.py` (Pydantic).
-2. Reimplement `client.server.ts`, `customers.server.ts`, `checkout.server.ts`,
-   `subscriptions.server.ts`, `webhook.server.ts` on FastAPI. Each function
-   maps to an endpoint listed in the table above.
+2. Reimplement `client.server.ts`, `config.server.ts`, `customers.server.ts`,
+   `checkout.server.ts`, `subscriptions.server.ts`, `invoices.server.ts` and
+   `webhook.server.ts` on FastAPI. Each function maps to an endpoint listed in
+   the table above; `apply-state.server.ts` is dropped, not ported.
 3. Point the Stripe webhook at the FastAPI URL.
 4. Replace the body of every server fn in `src/lib/billing.functions.ts`
    with `fetch("<microservice>/…")` (keep the same input/output shapes).
+   Only `index.server.ts` is referenced there, so this is a one-file change.
 5. Delete `src/lib/stripe/*` and the `/api/public/stripe/webhook` route.
 
 The React app never changes because it only touches

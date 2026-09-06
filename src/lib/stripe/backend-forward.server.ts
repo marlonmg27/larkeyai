@@ -11,8 +11,9 @@
 import type Stripe from "stripe";
 import type { BackendSubscriptionPayload } from "./contracts";
 import { getStripe } from "./client.server";
-import { iso, subscriptionPeriodEndIso } from "./webhook.server";
+import { iso, subscriptionPeriodEndIso } from "./time";
 import { resolveBackendBaseUrl } from "@/lib/backend-url.server";
+import { backendForwardConfig } from "./config.server";
 
 const FORWARD_TIMEOUT_MS = 10_000;
 
@@ -108,16 +109,16 @@ export type ForwardResult = { ok: true } | { ok: false; error: string };
 
 /** Never throws. Returns the outcome so the caller can persist it. */
 export async function forwardToBackend(payload: BackendSubscriptionPayload): Promise<ForwardResult> {
-  const baseUrl = process.env["BACKEND_URL"];
-  const internalSecret = process.env["BACKEND_INTERNAL_SECRET"];
+  const config = backendForwardConfig();
 
   const logCtx = { event_id: payload.stripe_event_id, event_type: payload.event_type };
 
-  if (!baseUrl || !internalSecret) {
+  if (!config) {
     const error = "BACKEND_URL or BACKEND_INTERNAL_SECRET not configured";
     console.error("[stripe-webhook] backend forward skipped:", error, logCtx);
     return { ok: false, error };
   }
+  const { baseUrl, internalSecret } = config;
 
   const resolved = resolveBackendBaseUrl(baseUrl);
   if (!resolved.ok) {

@@ -12,23 +12,14 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { getStripe } from "./client.server";
 import { getOrCreateCustomer } from "./customers.server";
-import type { CheckoutSessionMetadata } from "./contracts";
-
-function siteUrl(): string {
-  const url = process.env.SITE_URL;
-  if (!url) {
-    throw new Error(
-      "SITE_URL is not configured. Set it to the public base URL (e.g. https://larkeyai.lovable.app).",
-    );
-  }
-  return url.replace(/\/+$/, "");
-}
+import { siteUrl } from "./config.server";
+import type { CheckoutResponse, CheckoutSessionMetadata } from "./contracts";
 
 export async function createSubscriptionCheckout(
   supabaseAdmin: SupabaseClient<Database>,
   userId: string,
   planId: string,
-): Promise<{ url: string }> {
+): Promise<CheckoutResponse> {
   const { data: user } = await supabaseAdmin
     .from("users")
     .select("subscription_status")
@@ -75,7 +66,7 @@ export async function createPackCheckout(
   supabaseAdmin: SupabaseClient<Database>,
   userId: string,
   packId: string,
-): Promise<{ url: string }> {
+): Promise<CheckoutResponse> {
   const { data: canBuy, error: rpcErr } = await supabaseAdmin.rpc("can_buy_pack", { p_user_id: userId });
   if (rpcErr) throw rpcErr;
   if (!canBuy) throw new Error("You need an active subscription to buy message packs.");
