@@ -26,7 +26,7 @@ export async function listInvoices(
     amount: (inv.amount_paid ?? 0) / 100,
     status: inv.status,
     created: inv.created,
-    hosted_invoice_url: inv.hosted_invoice_url,
+    hosted_invoice_url: inv.hosted_invoice_url ?? null,
   }));
   return { invoices };
 }
