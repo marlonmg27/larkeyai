@@ -14,7 +14,7 @@ export const Route = createFileRoute("/api/public/stripe/webhook")({
         const rawBody = await request.text();
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-        const { verifyAndDispatch } = await import("@/lib/stripe/webhook.server");
+        const { verifyAndDispatch } = await import("@/lib/stripe/index.server");
 
         const outcome = await verifyAndDispatch(supabaseAdmin, rawBody, signature);
         return new Response(outcome.body, { status: outcome.status });
