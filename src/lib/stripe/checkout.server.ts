@@ -12,17 +12,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { getStripe } from "./client.server";
 import { getOrCreateCustomer } from "./customers.server";
-import type { CheckoutSessionMetadata } from "./contracts";
-
-function siteUrl(): string {
-  const url = process.env.SITE_URL;
-  if (!url) {
-    throw new Error(
-      "SITE_URL is not configured. Set it to the public base URL (e.g. https://larkeyai.lovable.app).",
-    );
-  }
-  return url.replace(/\/+$/, "");
-}
+import { siteUrl } from "./config.server";
+import type { CheckoutResponse, CheckoutSessionMetadata } from "./contracts";
 
 export async function createSubscriptionCheckout(
   supabaseAdmin: SupabaseClient<Database>,
