@@ -19,6 +19,22 @@ export type CreateSubscriptionCheckoutInput = { planId: string };
 export type CreatePackCheckoutInput = { packId: string };
 export type CheckoutResponse = { url: string };
 
+/** Result shape of the mutating subscription operations. */
+export type OkResponse = { ok: true };
+
+/** One row of the billing history shown in the dashboard. */
+export type InvoiceSummary = {
+  id: string;
+  /** Amount paid, in major units (MXN). */
+  amount: number;
+  status: string | null;
+  /** Unix seconds. */
+  created: number;
+  hosted_invoice_url: string | null;
+};
+
+export type ListInvoicesResponse = { invoices: InvoiceSummary[] };
+
 export type SubscriptionAction =
   | "trial_started"
   | "activated"
