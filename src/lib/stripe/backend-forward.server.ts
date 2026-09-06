@@ -13,6 +13,7 @@ import type { BackendSubscriptionPayload } from "./contracts";
 import { getStripe } from "./client.server";
 import { iso, subscriptionPeriodEndIso } from "./time";
 import { resolveBackendBaseUrl } from "@/lib/backend-url.server";
+import { backendForwardConfig } from "./config.server";
 
 const FORWARD_TIMEOUT_MS = 10_000;
 
