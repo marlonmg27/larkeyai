@@ -199,12 +199,14 @@ Then the normal webhook flow keeps them in sync.
 ## Migrating to FastAPI later
 
 1. Copy `contracts.ts` → `schemas.py` (Pydantic).
-2. Reimplement `client.server.ts`, `customers.server.ts`, `checkout.server.ts`,
-   `subscriptions.server.ts`, `webhook.server.ts` on FastAPI. Each function
-   maps to an endpoint listed in the table above.
+2. Reimplement `client.server.ts`, `config.server.ts`, `customers.server.ts`,
+   `checkout.server.ts`, `subscriptions.server.ts`, `invoices.server.ts` and
+   `webhook.server.ts` on FastAPI. Each function maps to an endpoint listed in
+   the table above; `apply-state.server.ts` is dropped, not ported.
 3. Point the Stripe webhook at the FastAPI URL.
 4. Replace the body of every server fn in `src/lib/billing.functions.ts`
    with `fetch("<microservice>/…")` (keep the same input/output shapes).
+   Only `index.server.ts` is referenced there, so this is a one-file change.
 5. Delete `src/lib/stripe/*` and the `/api/public/stripe/webhook` route.
 
 The React app never changes because it only touches
