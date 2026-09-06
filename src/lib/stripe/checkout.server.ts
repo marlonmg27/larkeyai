@@ -66,7 +66,7 @@ export async function createPackCheckout(
   supabaseAdmin: SupabaseClient<Database>,
   userId: string,
   packId: string,
-): Promise<{ url: string }> {
+): Promise<CheckoutResponse> {
   const { data: canBuy, error: rpcErr } = await supabaseAdmin.rpc("can_buy_pack", { p_user_id: userId });
   if (rpcErr) throw rpcErr;
   if (!canBuy) throw new Error("You need an active subscription to buy message packs.");
