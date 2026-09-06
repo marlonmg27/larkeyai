@@ -19,7 +19,7 @@ export async function createSubscriptionCheckout(
   supabaseAdmin: SupabaseClient<Database>,
   userId: string,
   planId: string,
-): Promise<{ url: string }> {
+): Promise<CheckoutResponse> {
   const { data: user } = await supabaseAdmin
     .from("users")
     .select("subscription_status")
