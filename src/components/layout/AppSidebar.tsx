@@ -1,5 +1,16 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Home, LayoutDashboard, Tag, Mail, HelpCircle, LogOut, LogIn, BookOpen, Sparkles } from "lucide-react";
+import {
+  Home,
+  LayoutDashboard,
+  Tag,
+  Mail,
+  HelpCircle,
+  LogOut,
+  LogIn,
+  BookOpen,
+  Sparkles,
+  CalendarDays,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -80,8 +91,30 @@ export function AppSidebar() {
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
+      </SidebarGroup>
+
+      {user ? (
+        <SidebarGroup>
+          <SidebarGroupLabel>Connectors</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === "/connectors/google-calendar"}
+                  tooltip="Google Calendar"
+                >
+                  <Link to="/connectors/google-calendar" className="flex items-center gap-2">
+                    <CalendarDays className="h-4 w-4" />
+                    <span>Google Calendar</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
         </SidebarGroup>
-      </SidebarContent>
+      ) : null}
+    </SidebarContent>
 
       <SidebarFooter>
         <div className="px-2 pb-2 group-data-[collapsible=icon]:hidden">

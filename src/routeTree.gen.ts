@@ -31,10 +31,12 @@ import { Route as EnFaqRouteImport } from './routes/en/faq'
 import { Route as EnContactRouteImport } from './routes/en/contact'
 import { Route as AuthenticatedInstruccionesRouteImport } from './routes/_authenticated/instrucciones'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as OauthGoogleCalendarReturnRouteImport } from './routes/oauth/google-calendar/return'
 import { Route as EsLegalTerminosRouteImport } from './routes/es/legal/terminos'
 import { Route as EsLegalPrivacidadRouteImport } from './routes/es/legal/privacidad'
 import { Route as EnLegalTermsRouteImport } from './routes/en/legal/terms'
 import { Route as EnLegalPrivacyRouteImport } from './routes/en/legal/privacy'
+import { Route as AuthenticatedConnectorsGoogleCalendarRouteImport } from './routes/_authenticated/connectors/google-calendar'
 import { Route as ApiPublicUsersChatwootRouteImport } from './routes/api/public/users/chatwoot'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe/webhook'
 import { Route as ApiPublicMessagesDecrementRouteImport } from './routes/api/public/messages/decrement'
@@ -151,6 +153,12 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const OauthGoogleCalendarReturnRoute =
+  OauthGoogleCalendarReturnRouteImport.update({
+    id: '/oauth/google-calendar/return',
+    path: '/oauth/google-calendar/return',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const EsLegalTerminosRoute = EsLegalTerminosRouteImport.update({
   id: '/es/legal/terminos',
   path: '/es/legal/terminos',
@@ -171,6 +179,12 @@ const EnLegalPrivacyRoute = EnLegalPrivacyRouteImport.update({
   path: '/en/legal/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedConnectorsGoogleCalendarRoute =
+  AuthenticatedConnectorsGoogleCalendarRouteImport.update({
+    id: '/connectors/google-calendar',
+    path: '/connectors/google-calendar',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiPublicUsersChatwootRoute = ApiPublicUsersChatwootRouteImport.update({
   id: '/api/public/users/chatwoot',
   path: '/api/public/users/chatwoot',
@@ -222,10 +236,12 @@ export interface FileRoutesByFullPath {
   '/es/precios': typeof EsPreciosRoute
   '/en/': typeof EnIndexRoute
   '/es/': typeof EsIndexRoute
+  '/connectors/google-calendar': typeof AuthenticatedConnectorsGoogleCalendarRoute
   '/en/legal/privacy': typeof EnLegalPrivacyRoute
   '/en/legal/terms': typeof EnLegalTermsRoute
   '/es/legal/privacidad': typeof EsLegalPrivacidadRoute
   '/es/legal/terminos': typeof EsLegalTerminosRoute
+  '/oauth/google-calendar/return': typeof OauthGoogleCalendarReturnRoute
   '/api/public/messages/can-send': typeof ApiPublicMessagesCanSendRoute
   '/api/public/messages/decrement': typeof ApiPublicMessagesDecrementRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
@@ -254,10 +270,12 @@ export interface FileRoutesByTo {
   '/es/precios': typeof EsPreciosRoute
   '/en': typeof EnIndexRoute
   '/es': typeof EsIndexRoute
+  '/connectors/google-calendar': typeof AuthenticatedConnectorsGoogleCalendarRoute
   '/en/legal/privacy': typeof EnLegalPrivacyRoute
   '/en/legal/terms': typeof EnLegalTermsRoute
   '/es/legal/privacidad': typeof EsLegalPrivacidadRoute
   '/es/legal/terminos': typeof EsLegalTerminosRoute
+  '/oauth/google-calendar/return': typeof OauthGoogleCalendarReturnRoute
   '/api/public/messages/can-send': typeof ApiPublicMessagesCanSendRoute
   '/api/public/messages/decrement': typeof ApiPublicMessagesDecrementRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
@@ -288,10 +306,12 @@ export interface FileRoutesById {
   '/es/precios': typeof EsPreciosRoute
   '/en/': typeof EnIndexRoute
   '/es/': typeof EsIndexRoute
+  '/_authenticated/connectors/google-calendar': typeof AuthenticatedConnectorsGoogleCalendarRoute
   '/en/legal/privacy': typeof EnLegalPrivacyRoute
   '/en/legal/terms': typeof EnLegalTermsRoute
   '/es/legal/privacidad': typeof EsLegalPrivacidadRoute
   '/es/legal/terminos': typeof EsLegalTerminosRoute
+  '/oauth/google-calendar/return': typeof OauthGoogleCalendarReturnRoute
   '/api/public/messages/can-send': typeof ApiPublicMessagesCanSendRoute
   '/api/public/messages/decrement': typeof ApiPublicMessagesDecrementRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
@@ -322,10 +342,12 @@ export interface FileRouteTypes {
     | '/es/precios'
     | '/en/'
     | '/es/'
+    | '/connectors/google-calendar'
     | '/en/legal/privacy'
     | '/en/legal/terms'
     | '/es/legal/privacidad'
     | '/es/legal/terminos'
+    | '/oauth/google-calendar/return'
     | '/api/public/messages/can-send'
     | '/api/public/messages/decrement'
     | '/api/public/stripe/webhook'
@@ -354,10 +376,12 @@ export interface FileRouteTypes {
     | '/es/precios'
     | '/en'
     | '/es'
+    | '/connectors/google-calendar'
     | '/en/legal/privacy'
     | '/en/legal/terms'
     | '/es/legal/privacidad'
     | '/es/legal/terminos'
+    | '/oauth/google-calendar/return'
     | '/api/public/messages/can-send'
     | '/api/public/messages/decrement'
     | '/api/public/stripe/webhook'
@@ -387,10 +411,12 @@ export interface FileRouteTypes {
     | '/es/precios'
     | '/en/'
     | '/es/'
+    | '/_authenticated/connectors/google-calendar'
     | '/en/legal/privacy'
     | '/en/legal/terms'
     | '/es/legal/privacidad'
     | '/es/legal/terminos'
+    | '/oauth/google-calendar/return'
     | '/api/public/messages/can-send'
     | '/api/public/messages/decrement'
     | '/api/public/stripe/webhook'
@@ -423,6 +449,7 @@ export interface RootRouteChildren {
   EnLegalTermsRoute: typeof EnLegalTermsRoute
   EsLegalPrivacidadRoute: typeof EsLegalPrivacidadRoute
   EsLegalTerminosRoute: typeof EsLegalTerminosRoute
+  OauthGoogleCalendarReturnRoute: typeof OauthGoogleCalendarReturnRoute
   ApiPublicMessagesCanSendRoute: typeof ApiPublicMessagesCanSendRoute
   ApiPublicMessagesDecrementRoute: typeof ApiPublicMessagesDecrementRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
@@ -586,6 +613,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/oauth/google-calendar/return': {
+      id: '/oauth/google-calendar/return'
+      path: '/oauth/google-calendar/return'
+      fullPath: '/oauth/google-calendar/return'
+      preLoaderRoute: typeof OauthGoogleCalendarReturnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/es/legal/terminos': {
       id: '/es/legal/terminos'
       path: '/es/legal/terminos'
@@ -613,6 +647,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/en/legal/privacy'
       preLoaderRoute: typeof EnLegalPrivacyRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/connectors/google-calendar': {
+      id: '/_authenticated/connectors/google-calendar'
+      path: '/connectors/google-calendar'
+      fullPath: '/connectors/google-calendar'
+      preLoaderRoute: typeof AuthenticatedConnectorsGoogleCalendarRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/api/public/users/chatwoot': {
       id: '/api/public/users/chatwoot'
@@ -655,11 +696,14 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedInstruccionesRoute: typeof AuthenticatedInstruccionesRoute
+  AuthenticatedConnectorsGoogleCalendarRoute: typeof AuthenticatedConnectorsGoogleCalendarRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedInstruccionesRoute: AuthenticatedInstruccionesRoute,
+  AuthenticatedConnectorsGoogleCalendarRoute:
+    AuthenticatedConnectorsGoogleCalendarRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -690,6 +734,7 @@ const rootRouteChildren: RootRouteChildren = {
   EnLegalTermsRoute: EnLegalTermsRoute,
   EsLegalPrivacidadRoute: EsLegalPrivacidadRoute,
   EsLegalTerminosRoute: EsLegalTerminosRoute,
+  OauthGoogleCalendarReturnRoute: OauthGoogleCalendarReturnRoute,
   ApiPublicMessagesCanSendRoute: ApiPublicMessagesCanSendRoute,
   ApiPublicMessagesDecrementRoute: ApiPublicMessagesDecrementRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
