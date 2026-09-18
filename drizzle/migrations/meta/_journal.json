@@ -15,6 +15,13 @@
       "when": 1788200871767,
       "tag": "0001_add_users_chatwoot_user_id",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789771084277,
+      "tag": "0002_create_app_user_connections",
+      "breakpoints": true
     }
   ]
 }
