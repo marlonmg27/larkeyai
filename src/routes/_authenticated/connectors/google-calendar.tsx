@@ -1,17 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
+import Nango from "@nangohq/frontend";
 import { CalendarDays, Loader2, Plus, RefreshCw, Unplug } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  completeGoogleCalendarConnection,
   createGoogleCalendarTestEvent,
+  createNangoConnectSession,
   disconnectGoogleCalendar,
   listGoogleCalendarEvents,
-  startGoogleCalendarConnect,
 } from "@/lib/connectors/google-calendar.functions";
 
 export const Route = createFileRoute("/_authenticated/connectors/google-calendar")({
@@ -24,40 +24,6 @@ export const Route = createFileRoute("/_authenticated/connectors/google-calendar
   }),
   component: GoogleCalendarConnectorPage,
 });
-
-function waitForOAuthCompletion(popup: Window) {
-  return new Promise<string | null>((resolve, reject) => {
-    let poll: number | undefined;
-    const cleanup = () => {
-      window.removeEventListener("message", onMessage);
-      if (poll !== undefined) window.clearInterval(poll);
-    };
-    const onMessage = (event: MessageEvent) => {
-      const type = (event.data as { type?: string } | null)?.type;
-      if (
-        event.origin !== window.location.origin ||
-        event.source !== popup ||
-        (event.data as { connectorId?: string } | null)?.connectorId !== "google_calendar" ||
-        (type !== "appUserConnectorOAuthComplete" && type !== "appUserConnectorOAuthFailed")
-      )
-        return;
-      cleanup();
-      if (type === "appUserConnectorOAuthComplete") {
-        const code = (event.data as { code?: unknown }).code;
-        resolve(typeof code === "string" ? code : null);
-        return;
-      }
-      popup.close();
-      reject(new Error("No se pudo completar la conexión con Google."));
-    };
-    window.addEventListener("message", onMessage);
-    poll = window.setInterval(() => {
-      if (!popup.closed) return;
-      cleanup();
-      reject(new Error("Cerraste la ventana antes de terminar."));
-    }, 500);
-  });
-}
 
 function formatEventDate(value: string | null, allDay: boolean): string {
   if (!value) return "Sin fecha";
@@ -78,8 +44,7 @@ function formatEventDate(value: string | null, allDay: boolean): string {
 function GoogleCalendarConnectorPage() {
   const queryClient = useQueryClient();
   const listEvents = useServerFn(listGoogleCalendarEvents);
-  const startConnect = useServerFn(startGoogleCalendarConnect);
-  const completeConnect = useServerFn(completeGoogleCalendarConnection);
+  const createSession = useServerFn(createNangoConnectSession);
   const createEvent = useServerFn(createGoogleCalendarTestEvent);
   const disconnect = useServerFn(disconnectGoogleCalendar);
 
@@ -90,23 +55,17 @@ function GoogleCalendarConnectorPage() {
 
   const connectMutation = useMutation({
     mutationFn: async () => {
-      const popup = window.open("", "larkey-google-calendar", "width=600,height=720");
-      if (!popup) throw new Error("El navegador bloqueó la ventana. Permite ventanas emergentes.");
-      let code: string | null;
-      try {
-        const completion = waitForOAuthCompletion(popup);
-        const { authorizationUrl } = await startConnect();
-        popup.location.href = authorizationUrl;
-        code = await completion;
-      } catch (error) {
-        popup.close();
-        throw error;
-      }
-      if (code) await completeConnect({ data: { code } });
-    },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["google-calendar"] });
-      toast.success("Google Calendar conectado");
+      const nango = new Nango();
+      const connect = nango.openConnectUI({
+        onEvent: (event) => {
+          if (event.type === "connect") {
+            void queryClient.invalidateQueries({ queryKey: ["google-calendar"] });
+            toast.success("Google Calendar conectado");
+          }
+        },
+      });
+      const { sessionToken } = await createSession();
+      connect.setSessionToken(sessionToken);
     },
     onError: (error: Error) => toast.error(error.message),
   });

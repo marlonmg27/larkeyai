@@ -1,14 +1,12 @@
 import {
   appUserReconnectRequired,
-  authorizeAppUserOAuth,
   callAsAppUser,
   disconnectAppUser,
-  exchangeAppUserOAuthCode,
 } from "@/integrations/lovable/appUserConnector";
+import { createNangoSession } from "@/server/backendConnections.server";
 import {
   deleteConnectionKeyForUser,
   getConnectionKeyForUser,
-  saveConnectionKeyForUser,
 } from "@/server/appUserConnections.server";
 
 export const GATEWAY_BASE_URL = "https://connector-gateway.lovable.dev";
@@ -33,36 +31,8 @@ export type EventsResult =
   | { connected: false; reconnectRequired?: boolean }
   | { connected: true; events: CalendarEvent[] };
 
-function clientApiKey(): string {
-  const key = process.env['GOOGLE_CALENDAR_APP_USER_CONNECTOR_CLIENT_API_KEY'];
-  if (!key) {
-    throw new Error("GOOGLE_CALENDAR_APP_USER_CONNECTOR_CLIENT_API_KEY is not set");
-  }
-  return key;
-}
-
-export async function startConnect(userId: string, origin: string): Promise<{ authorizationUrl: string }> {
-  const returnUrl = new URL("/oauth/google-calendar/return", origin).toString();
-  const existing = await getConnectionKeyForUser(userId, CONNECTOR_ID);
-  const { authorizationUrl } = await authorizeAppUserOAuth({
-    gatewayBaseUrl: GATEWAY_BASE_URL,
-    connectorId: CONNECTOR_ID,
-    appUserId: userId,
-    clientAPIKey: clientApiKey(),
-    returnUrl,
-    connectionAPIKey: existing ?? undefined,
-    credentialsConfiguration: { scopes: GOOGLE_CALENDAR_SCOPES },
-  });
-  return { authorizationUrl };
-}
-
-export async function completeConnection(userId: string, code: string): Promise<{ ok: true }> {
-  const { connectionAPIKey, connectorId } = await exchangeAppUserOAuthCode(GATEWAY_BASE_URL, code);
-  if (connectorId !== CONNECTOR_ID) {
-    throw new Error("OAuth completion returned the wrong connector");
-  }
-  await saveConnectionKeyForUser(userId, connectorId, connectionAPIKey);
-  return { ok: true };
+export async function createConnectSession(userId: string): Promise<{ sessionToken: string }> {
+  return createNangoSession({ userId, connectorId: CONNECTOR_ID });
 }
 
 interface GoogleEvent {

@@ -5,6 +5,7 @@
  *   PUT    ${BACKEND_URL}/connectors/connections
  *   GET    ${BACKEND_URL}/connectors/connections/{user_id}/{connector_id}
  *   DELETE ${BACKEND_URL}/connectors/connections/{user_id}/{connector_id}
+ *   POST   ${BACKEND_URL}/connectors/nango/sessions
  *
  * Autenticado con `X-Internal-Secret`. Nunca se registran llaves ni secretos.
  */
@@ -151,4 +152,29 @@ export async function removeConnection(userId: string, connectorId: string): Pro
     `/connectors/connections/${encodeURIComponent(userId)}/${encodeURIComponent(connectorId)}`,
     { method: "DELETE" },
   );
+}
+
+function extractSessionToken(parsed: unknown): string | null {
+  if (!parsed || typeof parsed !== "object") return null;
+  const obj = parsed as Record<string, unknown>;
+  const token = obj["session_token"] ?? obj["sessionToken"];
+  return typeof token === "string" && token.length > 0 ? token : null;
+}
+
+export async function createNangoSession(input: {
+  userId: string;
+  connectorId: string;
+}): Promise<{ sessionToken: string }> {
+  const { parsed } = await request("/connectors/nango/sessions", {
+    method: "POST",
+    body: {
+      user_id: input.userId,
+      connector_id: input.connectorId,
+    },
+  });
+  const sessionToken = extractSessionToken(parsed);
+  if (!sessionToken) {
+    throw new Error("El servicio de conectores no devolvió un token de sesión.");
+  }
+  return { sessionToken };
 }
