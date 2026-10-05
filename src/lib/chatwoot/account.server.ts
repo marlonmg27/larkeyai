@@ -15,7 +15,8 @@ const TIMEOUT_MS = 15_000;
 export type CreateChatwootAccountInput = {
   userId: string;
   email: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   companyName: string;
 };
 
@@ -45,6 +46,11 @@ export async function createChatwootAccount(
     throw new Error("La creación de tu cuenta no está configurada todavía.");
   }
 
+  const { backendOnboardingEnabled } = await import("@/lib/onboarding/backend.server");
+  if (backendOnboardingEnabled()) {
+    return createTenantAndChatwoot(input, resolved.base);
+  }
+
   const target = new URL(`${resolved.base}/onboarding`);
 
   let res: Response;
@@ -58,7 +64,7 @@ export async function createChatwootAccount(
       body: JSON.stringify({
         user_id: input.userId,
         email: input.email,
-        name: input.name,
+        name: `${input.firstName} ${input.lastName}`.trim(),
         company_name: input.companyName,
       }),
       signal: AbortSignal.timeout(TIMEOUT_MS),
@@ -111,4 +117,57 @@ export async function createChatwootAccount(
     status: typeof obj["status"] === "string" ? obj["status"] : null,
     message: typeof obj["message"] === "string" ? obj["message"] : null,
   };
+}
+
+async function createTenantAndChatwoot(
+  input: CreateChatwootAccountInput,
+  base: string,
+): Promise<CreateChatwootAccountResult> {
+  const { backendJsonHeaders } = await import("@/lib/onboarding/backend.server");
+  const headers = backendJsonHeaders(input.userId);
+
+  const provision = await fetch(`${base}/tenants/provision/supabase`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      email: input.email,
+      first_name: input.firstName,
+      last_name: input.lastName,
+      tenant_name: input.companyName,
+    }),
+    signal: AbortSignal.timeout(TIMEOUT_MS),
+  });
+  if (!provision.ok) {
+    throw new Error(await errorMessage(provision, "No pudimos crear tu organización."));
+  }
+
+  const chatwoot = await fetch(`${base}/onboarding/chatwoot`, {
+    method: "POST",
+    headers,
+    signal: AbortSignal.timeout(TIMEOUT_MS),
+  });
+  if (!chatwoot.ok) {
+    throw new Error(await errorMessage(chatwoot, "No pudimos preparar la plataforma de conversaciones."));
+  }
+
+  const body = (await chatwoot.json().catch(() => null)) as { provisioned?: boolean } | null;
+  return {
+    ok: true,
+    status: body?.provisioned ? "connected" : "pending",
+    message: body?.provisioned
+      ? "Tu cuenta está lista."
+      : "Tu organización está lista. La plataforma de conversaciones se activará cuando esté disponible.",
+  };
+}
+
+async function errorMessage(res: Response, fallback: string): Promise<string> {
+  const raw = await res.text().catch(() => "");
+  try {
+    const parsed = raw ? (JSON.parse(raw) as Record<string, unknown>) : null;
+    const detail = parsed?.["detail"] ?? parsed?.["message"];
+    if (typeof detail === "string" && detail.length > 0) return detail.slice(0, 300);
+  } catch {
+    // The body was not JSON; use the fallback.
+  }
+  return `${fallback} (${res.status}).`;
 }

@@ -46,14 +46,18 @@ export function ChatwootAccountCard({
   userId,
   hasAccount,
   defaultEmail,
+  showCredentials = true,
 }: {
   userId: string;
   hasAccount: boolean;
   defaultEmail?: string;
+  /** False when the organization exists but Chatwoot was not provisioned. */
+  showCredentials?: boolean;
 }) {
   const [values, setValues] = useState<ChatwootAccountValues>({
     email: defaultEmail ?? "",
-    name: "",
+    firstName: "",
+    lastName: "",
     companyName: "",
   });
   const [errors, setErrors] = useState<FormErrors>({});
@@ -66,6 +70,7 @@ export function ChatwootAccountCard({
     mutationFn: (input: ChatwootAccountValues) => createAccount({ data: input }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["dashboard", userId] });
+      void queryClient.invalidateQueries({ queryKey: ["onboarding-status", userId] });
     },
   });
 
@@ -73,6 +78,7 @@ export function ChatwootAccountCard({
     setRefreshing(true);
     try {
       await queryClient.invalidateQueries({ queryKey: ["dashboard", userId] });
+      await queryClient.invalidateQueries({ queryKey: ["onboarding-status", userId] });
     } finally {
       setRefreshing(false);
     }
@@ -97,6 +103,22 @@ export function ChatwootAccountCard({
       return;
     }
     mutation.mutate(parsed.data);
+  }
+
+  if (hasAccount && !showCredentials) {
+    return (
+      <Card className="border-brand/30">
+        <CardHeader>
+          <Badge className="mb-2 w-fit bg-brand/15 text-brand hover:bg-brand/15">
+            <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" /> Paso 1 completado
+          </Badge>
+          <CardTitle>Tu organización está lista</CardTitle>
+          <CardDescription>
+            Ya puedes continuar con el paso 2 y conectar tu canal de WhatsApp.
+          </CardDescription>
+        </CardHeader>
+      </Card>
+    );
   }
 
   if (hasAccount) {
@@ -186,30 +208,43 @@ export function ChatwootAccountCard({
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="cw-name">Nombre del usuario</Label>
+                <Label htmlFor="cw-first-name">Nombre</Label>
                 <Input
-                  id="cw-name"
-                  value={values.name}
-                  onChange={(e) => setField("name", e.target.value)}
-                  placeholder="Marlon Molina"
+                  id="cw-first-name"
+                  value={values.firstName}
+                  onChange={(e) => setField("firstName", e.target.value)}
+                  placeholder="Marlon"
                   maxLength={80}
-                  autoComplete="name"
+                  autoComplete="given-name"
                 />
-                {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
+                {errors.firstName && <p className="text-xs text-destructive">{errors.firstName}</p>}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="cw-company-name">Nombre del negocio</Label>
+                <Label htmlFor="cw-last-name">Apellido</Label>
                 <Input
-                  id="cw-company-name"
-                  value={values.companyName}
-                  onChange={(e) => setField("companyName", e.target.value)}
-                  placeholder="Inmobiliaria Sonora"
+                  id="cw-last-name"
+                  value={values.lastName}
+                  onChange={(e) => setField("lastName", e.target.value)}
+                  placeholder="Molina"
                   maxLength={80}
-                  autoComplete="organization"
+                  autoComplete="family-name"
                 />
-                {errors.companyName && <p className="text-xs text-destructive">{errors.companyName}</p>}
+                {errors.lastName && <p className="text-xs text-destructive">{errors.lastName}</p>}
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="cw-company-name">Nombre del negocio</Label>
+              <Input
+                id="cw-company-name"
+                value={values.companyName}
+                onChange={(e) => setField("companyName", e.target.value)}
+                placeholder="Inmobiliaria Sonora"
+                maxLength={150}
+                autoComplete="organization"
+              />
+              {errors.companyName && <p className="text-xs text-destructive">{errors.companyName}</p>}
             </div>
 
             <p className="text-xs text-muted-foreground">

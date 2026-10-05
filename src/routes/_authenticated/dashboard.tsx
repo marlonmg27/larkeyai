@@ -28,6 +28,8 @@ import { WhatsAppOnboardingCard } from "@/components/dashboard/WhatsAppOnboardin
 import { ChatwootAccessCard } from "@/components/dashboard/ChatwootAccessCard";
 import { ChatwootAccountCard } from "@/components/dashboard/ChatwootAccountCard";
 import { useWhatsappConnectionRealtime } from "@/hooks/use-whatsapp-connection-realtime";
+import { getOnboardingStatus } from "@/lib/onboarding/status.functions";
+import { useServerFn } from "@tanstack/react-start";
 
 
 import { LarkeyMark } from "@/components/brand/LarkeyMark";
@@ -178,6 +180,14 @@ function Dashboard() {
     queryFn: () => fetchDashboard(user.id),
   });
 
+  const loadOnboardingStatus = useServerFn(getOnboardingStatus);
+  const onboarding = useQuery({
+    queryKey: ["onboarding-status", user.id],
+    queryFn: () => loadOnboardingStatus(),
+    refetchInterval: (query) =>
+      query.state.data?.enabled && query.state.data.whatsappStatus === "pending" ? 4000 : false,
+  });
+
   async function handleLogout() {
     await supabase.auth.signOut();
     toast.success("Sesión cerrada");
@@ -195,13 +205,19 @@ function Dashboard() {
     (data?.subscription.status === "none" || data?.subscription.status === "canceled");
   const hasActiveSubscription =
     data?.subscription.status === "active" || data?.subscription.status === "trialing";
-  const whatsappStatus = data?.whatsapp?.status ?? null;
-  const hasChatwootAccount =
-    data?.chatwoot.userId != null && data?.chatwoot.accountId != null;
+  const usingBackend = onboarding.data?.enabled === true;
+  const whatsappStatus = usingBackend
+    ? (onboarding.data?.whatsappStatus ?? null)
+    : (data?.whatsapp?.status ?? null);
+  const hasChatwootAccount = usingBackend
+    ? (onboarding.data?.chatwootProvisioned ?? false)
+    : data?.chatwoot.userId != null && data?.chatwoot.accountId != null;
+  const stepOneDone = usingBackend ? (onboarding.data?.hasTenant ?? false) : hasChatwootAccount;
   const showWhatsappOnboarding = hasActiveSubscription && whatsappStatus !== "connected";
-  const showChatwootAccess = hasActiveSubscription && data?.whatsapp != null;
+  const showChatwootAccess =
+    hasActiveSubscription && (usingBackend ? hasChatwootAccount : data?.whatsapp != null);
 
-  useWhatsappConnectionRealtime(user.id);
+  useWhatsappConnectionRealtime(usingBackend ? undefined : user.id);
 
   const prevWhatsappStatus = useRef<string | null>(null);
   useEffect(() => {
@@ -405,7 +421,8 @@ function Dashboard() {
                 <div className="mt-6">
                   <ChatwootAccountCard
                     userId={user.id}
-                    hasAccount={hasChatwootAccount}
+                    hasAccount={stepOneDone}
+                    showCredentials={!usingBackend || hasChatwootAccount}
                     defaultEmail={user?.email ?? ""}
                   />
                 </div>
@@ -413,7 +430,7 @@ function Dashboard() {
                   <WhatsAppOnboardingCard
                     userId={user.id}
                     status={whatsappStatus}
-                    hasChatwootAccount={hasChatwootAccount}
+                    hasChatwootAccount={stepOneDone}
                   />
                 </div>
               </>

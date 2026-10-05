@@ -8,6 +8,11 @@ suscripciones del producto.
 backend se conecta a esta misma base con la service role key; no renombrar nada
 sin coordinar el cambio en ambos lados.
 
+Con `BACKEND_ONBOARDING_ENABLED=true` el backend de Larkey es la fuente de verdad
+de la organización y del canal de WhatsApp (Postgres propio). Este proyecto deja
+de escribir esas filas y lee el estado con `GET /onboarding/status`. El camino
+documentado abajo sigue vigente mientras el flag está apagado.
+
 ## Credenciales (secretos ya provisionados)
 
 | Secreto | Uso |

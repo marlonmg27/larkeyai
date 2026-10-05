@@ -10,6 +10,37 @@ export const connectWhatsAppAccount = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: unknown) => whatsappOnboardingSchema.parse(data))
   .handler(async ({ data, context }) => {
+    const { backendOnboardingEnabled } = await import("@/lib/onboarding/backend.server");
+    if (backendOnboardingEnabled()) {
+      const { verifyPhoneBelongsToWaba } = await import("@/lib/whatsapp/graph.server");
+      const verification = await verifyPhoneBelongsToWaba({
+        wabaId: data.wabaId,
+        phoneNumberId: data.phoneNumberId,
+        phoneNumber: data.phoneNumber,
+        accessToken: data.accessToken,
+      });
+      if (!verification.ok) {
+        return {
+          ok: false as const,
+          verification: { field: verification.field, message: verification.message },
+          status: null,
+          message: null,
+          accountMissing: false as const,
+        };
+      }
+      const { connectWhatsApp } = await import("@/lib/whatsapp/onboarding.server");
+      const result = await connectWhatsApp({
+        userId: context.userId,
+        channel: data.channel,
+        wabaName: data.wabaName,
+        phoneNumber: data.phoneNumber,
+        phoneNumberId: data.phoneNumberId,
+        wabaId: data.wabaId,
+        accessToken: data.accessToken,
+      });
+      return { ...result, verification: null, accountMissing: false as const };
+    }
+
     // Los IDs de la plataforma de conversaciones se resuelven en el servidor:
     // nunca se confían al navegador ni se capturan en el formulario.
     const { data: userRow, error } = await context.supabase

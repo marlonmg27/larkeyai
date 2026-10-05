@@ -19,9 +19,9 @@ export type ConnectWhatsAppInput = {
   phoneNumber: string;
   phoneNumberId: string;
   wabaId: string;
-  /** Resueltos en el servidor desde public.users, nunca capturados por el usuario. */
-  chatwootUserId: number;
-  chatwootAccountId: number;
+  /** Resueltos en el servidor desde public.users. No se envían cuando el backend es la fuente de verdad. */
+  chatwootUserId?: number;
+  chatwootAccountId?: number;
   /** Se muestra como "Api Key" en el formulario. Nunca se registra en logs. */
   accessToken?: string;
 };
@@ -63,7 +63,10 @@ export async function connectWhatsApp(
     });
     throw new Error("La conexión con el servicio de WhatsApp no está configurada todavía.");
   }
-  const target = new URL(`${resolved.base}/onboarding/connection`);
+  const { backendOnboardingEnabled } = await import("@/lib/onboarding/backend.server");
+  const target = new URL(
+    `${resolved.base}${backendOnboardingEnabled() ? "/onboarding/whatsapp" : "/onboarding/connection"}`,
+  );
 
   // El canal se fija a un valor permitido del servidor, no se confía en texto libre.
   const channel: MessagingChannel = messagingChannels.includes(input.channel)
@@ -79,6 +82,7 @@ export async function connectWhatsApp(
       headers: {
         "Content-Type": "application/json",
         "X-Internal-Secret": internalSecret,
+        "X-User-Id": input.userId,
       },
       body: JSON.stringify({
         channel,
@@ -87,8 +91,9 @@ export async function connectWhatsApp(
         phone_number: input.phoneNumber,
         phone_number_id: input.phoneNumberId,
         waba_id: input.wabaId,
-        chatwoot_user_id: input.chatwootUserId,
-        chatwoot_account_id: input.chatwootAccountId,
+        ...(input.chatwootUserId != null && input.chatwootAccountId != null
+          ? { chatwoot_user_id: input.chatwootUserId, chatwoot_account_id: input.chatwootAccountId }
+          : {}),
         access_token: accessToken,
       }),
       signal: AbortSignal.timeout(TIMEOUT_MS),

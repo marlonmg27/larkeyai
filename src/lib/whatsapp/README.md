@@ -1,5 +1,26 @@
 # Onboarding del canal de mensajería
 
+## Fuente de verdad en el backend (`BACKEND_ONBOARDING_ENABLED`)
+
+El flag de servidor `BACKEND_ONBOARDING_ENABLED` arranca apagado. Railway despliega `main`
+del backend, y el flujo nuevo vive en la rama `cursor` hasta que se mergee. Mientras el
+flag está apagado, el dashboard sigue el camino anterior (Supabase + Realtime).
+
+Con el flag en `true` Lovable no escribe `whatsapp_connections` ni los ids de Chatwoot.
+El dashboard lee `GET /onboarding/status` y hace polling mientras el canal está `pending`.
+
+| Llamada | Cuándo |
+| --- | --- |
+| `POST /tenants/provision/supabase` | Paso 1. Header `X-User-Id` (el id de Supabase Auth). Body: `email`, `first_name`, `last_name`, `tenant_name`. Idempotente. |
+| `POST /onboarding/chatwoot` | Paso 1, justo después. No lleva body. |
+| `POST /onboarding/whatsapp` | Paso 2. Ya no envía `chatwoot_user_id` ni `chatwoot_account_id`. |
+| `GET /onboarding/status` | Estado del canal y si Chatwoot quedó aprovisionado. |
+
+Todas llevan `X-Internal-Secret`. Enciende el flag cuando el backend en `main` ya responde
+estas rutas y la migración `ai_agents` está aplicada.
+
+## Camino anterior (flag apagado)
+
 Flujo por el que un cliente con suscripción activa conecta su canal. La card primero muestra
 un listado de canales disponibles (hoy solo **WhatsApp**) y, al elegir uno, despliega dos
 caminos: la **conexión rápida** (Embedded Signup de Meta, hoy deshabilitada) y el formulario

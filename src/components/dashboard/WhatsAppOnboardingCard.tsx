@@ -114,6 +114,7 @@ export function WhatsAppOnboardingCard({
             "Primero crea tu cuenta de la plataforma de conversaciones para poder conectar WhatsApp.",
         );
         void queryClient.invalidateQueries({ queryKey: ["dashboard", userId] });
+        void queryClient.invalidateQueries({ queryKey: ["onboarding-status", userId] });
         return;
       }
       setAccountError(null);
@@ -125,6 +126,7 @@ export function WhatsAppOnboardingCard({
       }
       setVerificationError(null);
       void queryClient.invalidateQueries({ queryKey: ["dashboard", userId] });
+      void queryClient.invalidateQueries({ queryKey: ["onboarding-status", userId] });
     },
   });
 
@@ -136,6 +138,7 @@ export function WhatsAppOnboardingCard({
     setRefreshing(true);
     try {
       await queryClient.invalidateQueries({ queryKey: ["dashboard", userId] });
+      await queryClient.invalidateQueries({ queryKey: ["onboarding-status", userId] });
     } finally {
       setRefreshing(false);
     }
