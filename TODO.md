@@ -1,6 +1,6 @@
 # TODO
 
-Pendientes detectados durante la prueba E2E del onboarding (2026-10-07). Por ahora solo están anotados; todavía no se arreglan.
+Pendientes del frontend detectados durante la prueba E2E del onboarding (2026-10-07). Por ahora solo están anotados; todavía no se arreglan. Los del backend están en el TODO del repo Larkey.
 
 ## Seguridad
 - [ ] El `.env` está versionado en este repo público. Sacarlo del índice (`git rm --cached .env`), dejarlo en `.gitignore` y rotar los secretos que ya se expusieron (secreto interno del backend, token de WABA, llaves de Supabase).
@@ -20,22 +20,5 @@ Pendientes detectados durante la prueba E2E del onboarding (2026-10-07). Por aho
 - [ ] El correo del Paso 1 viene fijo con el del login; si ese correo ya existe en Chatwoot, el alta falla.
 - [ ] Las server functions no tienen middleware CSRF (aviso de TanStack Start).
 
-## Backend (repo Larkey)
-- [ ] No se guardan el id ni el secreto del webhook de Chatwoot (`chatwoot_adapter.py:137-142`).
-- [ ] Orden de las validaciones en `onboarding_service.py:103/112`.
-- [ ] Quedan cuentas huérfanas en Chatwoot si falla la creación del usuario (`onboarding_service.py:86-110`).
-- [ ] El `X-Internal-Secret` se valida después de buscar al usuario (`onboarding_router.py`).
-- [ ] El upsert de `ai_agents` puede quedarse con el número de otro agente (`ai_agents_client.py:25-36`).
-- [ ] No se guarda ni se devuelve el motivo del fallo del Paso 2.
-- [ ] No se registra el cuerpo de los errores 422 de Chatwoot (`chatwoot_client.py:179`).
-- [ ] El estado `pending` nunca se guarda.
-- [ ] `EmailStr` rechaza dominios reservados.
-
-## Arquitectura y datos
-- [ ] Hay dos fuentes de verdad para `subscription_status`: `users` de Supabase y `tenants` del backend.
+## Datos
 - [ ] El dashboard aún tiene datos viejos en el Supabase de Lovable (`whatsapp_connections` en `pending`, `chatwoot_user_id`/`chatwoot_account_id` en `users`).
-- [ ] Limpiar los datos de prueba: tenant "Larkey E2E Test", cuenta 36 de Chatwoot y `ai_agents` id 77.
-
-## Después
-- [ ] Probar el flujo de Stripe (faltan las llaves).
-- [ ] Probar el agente (LLM, MCP, Calendar).
