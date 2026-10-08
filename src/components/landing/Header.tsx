@@ -2,7 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
-import { supabase } from "@/integrations/supabase/client";
+import { signOutApp } from "@/lib/auth/sign-out";
 import { toast } from "sonner";
 import { LarkeyMark } from "@/components/brand/LarkeyMark";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
@@ -15,7 +15,7 @@ export function Header() {
   const href = useHref();
 
   async function handleLogout() {
-    await supabase.auth.signOut();
+    await signOutApp();
     toast.success(t.nav.loggedOut);
     navigate({ to: href("home") as never, replace: true });
   }

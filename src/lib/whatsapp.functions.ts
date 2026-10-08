@@ -3,15 +3,15 @@
  * El user_id SIEMPRE viene del JWT verificado, nunca del body.
  */
 import { createServerFn } from "@tanstack/react-start";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireAppAuth } from "@/lib/auth/require-app-auth";
 import { whatsappOnboardingSchema } from "@/lib/whatsapp/schema";
 
 export const connectWhatsAppAccount = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAppAuth])
   .inputValidator((data: unknown) => whatsappOnboardingSchema.parse(data))
   .handler(async ({ data, context }) => {
-    const { backendOnboardingEnabled } = await import("@/lib/onboarding/backend.server");
-    if (backendOnboardingEnabled()) {
+    const { backendTenantPathEnabled } = await import("@/lib/auth/backend.server");
+    if (backendTenantPathEnabled()) {
       const { verifyPhoneBelongsToWaba } = await import("@/lib/whatsapp/graph.server");
       const verification = await verifyPhoneBelongsToWaba({
         wabaId: data.wabaId,
@@ -37,8 +37,14 @@ export const connectWhatsAppAccount = createServerFn({ method: "POST" })
         phoneNumberId: data.phoneNumberId,
         wabaId: data.wabaId,
         accessToken: data.accessToken,
+        bearerToken: context.accessToken,
+        tenantId: context.tenantId ?? undefined,
       });
       return { ...result, verification: null, accountMissing: false as const };
+    }
+
+    if (!context.supabase) {
+      throw new Error("No pudimos leer tu cuenta. Inténtalo de nuevo.");
     }
 
     // Los IDs de la plataforma de conversaciones se resuelven en el servidor:

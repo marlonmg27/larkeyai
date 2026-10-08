@@ -19,6 +19,11 @@ El dashboard lee `GET /onboarding/status` y hace polling mientras el canal está
 Todas llevan `X-Internal-Secret`. Enciende el flag cuando el backend en `main` ya responde
 estas rutas y la migración `ai_agents` está aplicada.
 
+Con `BACKEND_AUTH_ENABLED=true`, register ya abrió el tenant: paso 1 solo llama
+`POST /onboarding/chatwoot` (Bearer + secreto; **no** `provision/supabase`), y las
+relays de status/whatsapp envían Bearer + `X-User-Id` (= `users.id`). Ver
+`src/lib/auth/README.md`.
+
 ## Camino anterior (flag apagado)
 
 Flujo por el que un cliente con suscripción activa conecta su canal. La card primero muestra

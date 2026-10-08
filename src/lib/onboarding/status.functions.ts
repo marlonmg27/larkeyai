@@ -2,11 +2,14 @@
  * Server function the dashboard polls. The user id comes from the verified JWT.
  */
 import { createServerFn } from "@tanstack/react-start";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireAppAuth } from "@/lib/auth/require-app-auth";
 
 export const getOnboardingStatus = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAppAuth])
   .handler(async ({ context }) => {
     const { fetchOnboardingStatus } = await import("@/lib/onboarding/status.server");
-    return fetchOnboardingStatus(context.userId);
+    return fetchOnboardingStatus(context.userId, {
+      accessToken: context.accessToken,
+      tenantId: context.tenantId ?? undefined,
+    });
   });

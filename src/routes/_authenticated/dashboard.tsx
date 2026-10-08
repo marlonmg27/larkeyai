@@ -3,6 +3,8 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
+import { signOutApp } from "@/lib/auth/sign-out";
+import { getDashboardBilling } from "@/lib/billing/dashboard.functions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -97,7 +99,7 @@ async function fetchWhatsappConnection(userId: string): Promise<{ status: string
   }
 }
 
-async function fetchDashboard(userId: string): Promise<DashboardData> {
+async function fetchDashboardBrowser(userId: string): Promise<DashboardData> {
   const [profileRes, balanceRes, purchasesRes, whatsapp] = await Promise.all([
     supabase
       .from("users")
@@ -174,10 +176,17 @@ function formatMxn(v: number, interval: string) {
 function Dashboard() {
   const navigate = useNavigate();
   const { user } = Route.useRouteContext();
+  const loadDashboardBilling = useServerFn(getDashboardBilling);
+  const tenantId = "tenantId" in user ? (user.tenantId as string | undefined) : undefined;
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["dashboard", user.id],
-    queryFn: () => fetchDashboard(user.id),
+    queryKey: ["dashboard", user.id, tenantId ?? null],
+    queryFn: async () => {
+      if (tenantId) {
+        return loadDashboardBilling();
+      }
+      return fetchDashboardBrowser(user.id);
+    },
   });
 
   const loadOnboardingStatus = useServerFn(getOnboardingStatus);
@@ -189,7 +198,7 @@ function Dashboard() {
   });
 
   async function handleLogout() {
-    await supabase.auth.signOut();
+    await signOutApp();
     toast.success("Sesión cerrada");
     navigate({ to: "/", replace: true });
   }

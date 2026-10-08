@@ -234,12 +234,18 @@ export const en: Dict = {
     email: "Email",
     password: "Password",
     phoneOptional: "Phone (optional)",
+    firstName: "First name",
+    lastName: "Last name",
+    tenantName: "Company or organization name",
     loginSubmit: "Log in",
     loginLoading: "Signing in...",
     signupSubmit: "Create account",
     signupLoading: "Creating...",
     welcomeBack: "Welcome back!",
     accountCreated: "Account created! Check your email to confirm it.",
+    accountReady: "Account created! You can use your dashboard now.",
+    loginFailed: "We could not sign you in. Please try again.",
+    signupFailed: "We could not create your account. Please try again.",
   },
 
   footer: {

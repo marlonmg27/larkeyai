@@ -4,11 +4,11 @@
  * La contraseña no se envía: la define el backend.
  */
 import { createServerFn } from "@tanstack/react-start";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireAppAuth } from "@/lib/auth/require-app-auth";
 import { chatwootAccountSchema } from "@/lib/chatwoot/schema";
 
 export const createChatwootAccountForUser = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAppAuth])
   .inputValidator((data: unknown) => chatwootAccountSchema.parse(data))
   .handler(async ({ data, context }) => {
     const { createChatwootAccount } = await import("@/lib/chatwoot/account.server");
@@ -18,5 +18,7 @@ export const createChatwootAccountForUser = createServerFn({ method: "POST" })
       firstName: data.firstName,
       lastName: data.lastName,
       companyName: data.companyName,
+      accessToken: context.accessToken,
+      tenantId: context.tenantId ?? undefined,
     });
   });

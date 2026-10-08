@@ -2,7 +2,13 @@
  * Reads onboarding state from the backend, which owns tenants and channels.
  * Lovable does not write those rows.
  */
-import { backendBaseUrl, backendJsonHeaders, backendOnboardingEnabled } from "@/lib/onboarding/backend.server";
+import {
+  backendAuthEnabled,
+  backendAuthRelayHeaders,
+  backendBaseUrl,
+  backendTenantPathEnabled,
+} from "@/lib/auth/backend.server";
+import { backendJsonHeaders } from "@/lib/onboarding/backend.server";
 
 const TIMEOUT_MS = 15_000;
 
@@ -22,13 +28,25 @@ const disabled: OnboardingStatus = {
 
 type ConnectionRow = { status?: string };
 
-export async function fetchOnboardingStatus(userId: string): Promise<OnboardingStatus> {
-  if (!backendOnboardingEnabled()) return disabled;
+export async function fetchOnboardingStatus(
+  userId: string,
+  opts?: { accessToken?: string; tenantId?: string },
+): Promise<OnboardingStatus> {
+  if (!backendTenantPathEnabled()) return disabled;
+
+  const headers =
+    backendAuthEnabled() && opts?.accessToken
+      ? backendAuthRelayHeaders({
+          userId,
+          accessToken: opts.accessToken,
+          tenantId: opts.tenantId,
+        })
+      : backendJsonHeaders(userId);
 
   const target = new URL(`${backendBaseUrl()}/onboarding/status`);
   const res = await fetch(target.toString(), {
     method: "GET",
-    headers: backendJsonHeaders(userId),
+    headers,
     signal: AbortSignal.timeout(TIMEOUT_MS),
   });
 

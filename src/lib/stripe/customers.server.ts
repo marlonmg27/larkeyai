@@ -11,29 +11,39 @@ import { getStripe } from "./client.server";
 export async function getOrCreateCustomer(
   supabaseAdmin: SupabaseClient<Database>,
   userId: string,
+  opts?: { tenantId?: string; email?: string | null },
 ): Promise<string> {
+  const tenantId = opts?.tenantId;
   const { data: user, error } = await supabaseAdmin
     .from("users")
     .select("id, email, phone, stripe_customer_id")
     .eq("id", userId)
     .maybeSingle();
   if (error) throw error;
-  if (!user) throw new Error("User not found");
 
-  if (user.stripe_customer_id) return user.stripe_customer_id;
+  if (user?.stripe_customer_id) return user.stripe_customer_id;
+
+  if (!user && !tenantId) {
+    throw new Error("User not found");
+  }
 
   const stripe = getStripe();
+  const metadata: Record<string, string> = { user_id: userId };
+  if (tenantId) metadata["tenant_id"] = tenantId;
+
   const customer = await stripe.customers.create({
-    email: user.email ?? undefined,
-    phone: user.phone ?? undefined,
-    metadata: { user_id: userId },
+    email: user?.email ?? opts?.email ?? undefined,
+    phone: user?.phone ?? undefined,
+    metadata,
   });
 
-  const { error: upErr } = await supabaseAdmin
-    .from("users")
-    .update({ stripe_customer_id: customer.id })
-    .eq("id", userId);
-  if (upErr) throw upErr;
+  if (user) {
+    const { error: upErr } = await supabaseAdmin
+      .from("users")
+      .update({ stripe_customer_id: customer.id })
+      .eq("id", userId);
+    if (upErr) throw upErr;
+  }
 
   return customer.id;
 }

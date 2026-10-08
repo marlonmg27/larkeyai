@@ -9,7 +9,7 @@
  * The input/output shapes are locked so the React layer never changes.
  */
 import { createServerFn } from "@tanstack/react-start";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireAppAuth } from "@/lib/auth/require-app-auth";
 import { z } from "zod";
 
 const planIdInput = z.object({ planId: z.string().uuid() });
@@ -25,23 +25,29 @@ async function serverDeps() {
 }
 
 export const createSubscriptionCheckout = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAppAuth])
   .inputValidator((data: unknown) => planIdInput.parse(data))
   .handler(async ({ data, context }) => {
     const { supabaseAdmin, payments } = await serverDeps();
-    return payments.createSubscriptionCheckout(supabaseAdmin, context.userId, data.planId);
+    return payments.createSubscriptionCheckout(supabaseAdmin, context.userId, data.planId, {
+      tenantId: context.tenantId ?? undefined,
+      email: context.email,
+    });
   });
 
 export const createPackCheckout = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAppAuth])
   .inputValidator((data: unknown) => packIdInput.parse(data))
   .handler(async ({ data, context }) => {
     const { supabaseAdmin, payments } = await serverDeps();
-    return payments.createPackCheckout(supabaseAdmin, context.userId, data.packId);
+    return payments.createPackCheckout(supabaseAdmin, context.userId, data.packId, {
+      tenantId: context.tenantId ?? undefined,
+      email: context.email,
+    });
   });
 
 export const cancelSubscription = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAppAuth])
   .handler(async ({ context }) => {
     const { supabaseAdmin, payments } = await serverDeps();
     await payments.cancelAtPeriodEnd(supabaseAdmin, context.userId);
@@ -49,7 +55,7 @@ export const cancelSubscription = createServerFn({ method: "POST" })
   });
 
 export const resumeSubscription = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAppAuth])
   .handler(async ({ context }) => {
     const { supabaseAdmin, payments } = await serverDeps();
     await payments.resumeSubscription(supabaseAdmin, context.userId);
@@ -57,7 +63,7 @@ export const resumeSubscription = createServerFn({ method: "POST" })
   });
 
 export const changePlan = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAppAuth])
   .inputValidator((data: unknown) => planIdInput.parse(data))
   .handler(async ({ data, context }) => {
     const { supabaseAdmin, payments } = await serverDeps();
@@ -66,7 +72,7 @@ export const changePlan = createServerFn({ method: "POST" })
   });
 
 export const listInvoices = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAppAuth])
   .handler(async ({ context }) => {
     const { supabaseAdmin, payments } = await serverDeps();
     return payments.listInvoices(supabaseAdmin, context.userId);

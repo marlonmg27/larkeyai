@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/sidebar";
 import { LarkeyMark } from "@/components/brand/LarkeyMark";
 import { useAuth } from "@/hooks/use-auth";
-import { supabase } from "@/integrations/supabase/client";
+import { signOutApp } from "@/lib/auth/sign-out";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { useHref, useT, type PageKey } from "@/i18n";
 
@@ -56,7 +56,7 @@ export function AppSidebar() {
   const visible = items.filter((item) => !item.authOnly || Boolean(user));
 
   async function handleLogout() {
-    await supabase.auth.signOut();
+    await signOutApp();
     toast.success(t.nav.loggedOut);
     navigate({ to: href("home") as never, replace: true });
   }
