@@ -4,7 +4,7 @@
  */
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireBackendAuth } from "@/lib/auth/backend-middleware";
 
 const inputSchema = z.object({
   code: z.string().trim().nonempty().max(512),
@@ -13,7 +13,7 @@ const inputSchema = z.object({
 });
 
 export const completeEmbeddedSignup = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireBackendAuth])
   .inputValidator((data: unknown) => inputSchema.parse(data))
   .handler(async ({ data, context }) => {
     // Mientras la app de Meta no esté aprobada como Tech Provider el flujo queda

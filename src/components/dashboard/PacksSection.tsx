@@ -2,10 +2,9 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Loader2, Package, ShoppingCart } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { createPackCheckout } from "@/lib/billing.functions";
+import { createPackCheckout, getBillingCatalog } from "@/lib/billing.functions";
 import { toast } from "sonner";
 
 type Pack = {
@@ -23,17 +22,13 @@ function formatMxn(v: number) {
 export function PacksSection() {
   const [pendingId, setPendingId] = useState<string | null>(null);
   const checkout = useServerFn(createPackCheckout);
+  const loadCatalog = useServerFn(getBillingCatalog);
 
   const { data: packs, isLoading } = useQuery<Pack[]>({
     queryKey: ["message-packs"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("message_packs")
-        .select("id, code, name, messages, price_mxn")
-        .eq("active", true)
-        .order("messages", { ascending: true });
-      if (error) throw error;
-      return (data ?? []) as Pack[];
+      const catalog = await loadCatalog();
+      return catalog.packs;
     },
   });
 

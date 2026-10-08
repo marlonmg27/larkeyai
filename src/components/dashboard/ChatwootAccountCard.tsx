@@ -23,6 +23,14 @@ import { CHATWOOT_DEFAULT_PASSWORD } from "@/lib/chatwoot";
 
 type FormErrors = Partial<Record<keyof ChatwootAccountValues, string>>;
 
+function chatwootErrorText(error: unknown): string {
+  const raw = error instanceof Error ? error.message.trim() : "";
+  if (!raw || raw.startsWith("{") || raw.startsWith("[") || raw.includes("{")) {
+    return "No pudimos crear tu cuenta. Inténtalo de nuevo.";
+  }
+  return raw;
+}
+
 const PERKS = [
   {
     icon: MessagesSquare,
@@ -255,9 +263,7 @@ export function ChatwootAccountCard({
             {mutation.isError && (
               <p className="flex items-start gap-2 text-sm text-destructive">
                 <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-                {mutation.error instanceof Error
-                  ? mutation.error.message
-                  : "No pudimos crear tu cuenta. Inténtalo de nuevo."}
+                {chatwootErrorText(mutation.error)}
               </p>
             )}
 

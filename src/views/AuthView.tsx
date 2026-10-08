@@ -3,7 +3,8 @@ import { useNavigate, Link } from "@tanstack/react-router";
 import { MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 
-import { supabase } from "@/integrations/supabase/client";
+import { login, register, getSession } from "@/lib/auth/session.functions";
+import { setAccessToken } from "@/lib/auth/token";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,38 +19,58 @@ export function AuthView() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [tenantName, setTenantName] = useState("");
   const [phone, setPhone] = useState("");
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/dashboard", replace: true });
-    });
+    getSession()
+      .then((session) => {
+        if (session) navigate({ to: "/dashboard", replace: true });
+      })
+      .catch(() => {
+        // A missing session stays on the login form.
+      });
   }, [navigate]);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
-    if (error) return toast.error(error.message);
-    toast.success(t.auth.welcomeBack);
-    navigate({ to: "/dashboard", replace: true });
+    try {
+      const session = await login({ data: { email, password } });
+      setAccessToken(session.accessToken);
+      toast.success(t.auth.welcomeBack);
+      navigate({ to: "/dashboard", replace: true });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "No pudimos iniciar sesión.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: window.location.origin + "/dashboard",
-        data: phone ? { phone } : undefined,
-      },
-    });
-    setLoading(false);
-    if (error) return toast.error(error.message);
-    toast.success(t.auth.accountCreated);
+    try {
+      const session = await register({
+        data: {
+          email,
+          password,
+          firstName,
+          lastName,
+          tenantName,
+          phoneNumber: phone.trim() ? phone : undefined,
+        },
+      });
+      setAccessToken(session.accessToken);
+      toast.success(t.auth.accountCreated);
+      navigate({ to: "/dashboard", replace: true });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "No pudimos crear la cuenta.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -121,6 +142,38 @@ export function AuthView() {
                       autoComplete="email"
                     />
                   </div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-first-name">{t.auth.firstName}</Label>
+                      <Input
+                        id="signup-first-name"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        required
+                        autoComplete="given-name"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-last-name">{t.auth.lastName}</Label>
+                      <Input
+                        id="signup-last-name"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        required
+                        autoComplete="family-name"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-tenant">{t.auth.tenantName}</Label>
+                    <Input
+                      id="signup-tenant"
+                      value={tenantName}
+                      onChange={(e) => setTenantName(e.target.value)}
+                      required
+                      autoComplete="organization"
+                    />
+                  </div>
                   <div className="space-y-2">
                     <Label htmlFor="signup-phone">{t.auth.phoneOptional}</Label>
                     <Input
@@ -140,7 +193,7 @@ export function AuthView() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
-                      minLength={6}
+                      minLength={8}
                       autoComplete="new-password"
                     />
                   </div>

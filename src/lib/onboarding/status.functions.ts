@@ -1,12 +1,13 @@
 /**
- * Server function the dashboard polls. The user id comes from the verified JWT.
+ * Server function the dashboard polls. The caller comes from the verified JWT.
  */
 import { createServerFn } from "@tanstack/react-start";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+
+import { requireBackendAuth } from "@/lib/auth/backend-middleware";
 
 export const getOnboardingStatus = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireBackendAuth])
   .handler(async ({ context }) => {
     const { fetchOnboardingStatus } = await import("@/lib/onboarding/status.server");
-    return fetchOnboardingStatus(context.userId);
+    return fetchOnboardingStatus(context.accessToken);
   });
