@@ -143,7 +143,8 @@ export function PlanCards({ onSelectPlan, ctaLabel, pendingPlanId = null }: Plan
                 const plan = byTier[tier]?.[interval];
                 const Icon = style.icon;
                 const planPrice = plan ? Number(plan.price) : 0;
-                const monthlyEq = interval === "year" && plan ? planPrice / 12 : null;
+                const planInterval = plan?.billing_interval === "year" ? "year" : plan?.billing_interval === "month" ? "month" : interval;
+                const monthlyEq = planInterval === "year" && plan ? planPrice / 12 : null;
                 return (
                   <motion.div
                     key={tier}
@@ -168,7 +169,7 @@ export function PlanCards({ onSelectPlan, ctaLabel, pendingPlanId = null }: Plan
                         <div className="mb-2 grid h-10 w-10 place-items-center rounded-lg bg-brand/10 text-brand">
                           <Icon className="h-5 w-5" />
                         </div>
-                        <CardTitle className="text-xl">{style.label}</CardTitle>
+                        <CardTitle className="text-xl">{plan?.name ?? style.label}</CardTitle>
                         <CardDescription>{copy.tagline}</CardDescription>
                       </CardHeader>
                       <CardContent className="flex flex-1 flex-col">
@@ -180,7 +181,7 @@ export function PlanCards({ onSelectPlan, ctaLabel, pendingPlanId = null }: Plan
                               <div className="flex items-baseline gap-1">
                                 <span className="text-4xl font-bold tracking-tight">{formatMxn(planPrice)}</span>
                                 <span className="text-sm text-muted-foreground">
-                                  /{interval === "month" ? t.pricing.perMonth : t.pricing.perYear}
+                                  /{planInterval === "month" ? t.pricing.perMonth : t.pricing.perYear}
                                 </span>
                               </div>
                               {monthlyEq && (
