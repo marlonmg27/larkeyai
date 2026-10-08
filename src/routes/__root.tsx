@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { BACKEND_AUTH_EVENT } from "@/lib/auth/session";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { localeFromPathname } from "@/i18n/config";
 
@@ -154,7 +155,15 @@ function RootComponent() {
       router.invalidate();
       if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
     });
-    return () => sub.subscription.unsubscribe();
+    const onBackendAuth = () => {
+      router.invalidate();
+      queryClient.invalidateQueries();
+    };
+    window.addEventListener(BACKEND_AUTH_EVENT, onBackendAuth);
+    return () => {
+      sub.subscription.unsubscribe();
+      window.removeEventListener(BACKEND_AUTH_EVENT, onBackendAuth);
+    };
   }, [router, queryClient]);
 
   return (

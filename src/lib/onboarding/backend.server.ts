@@ -4,6 +4,10 @@
  * BACKEND_ONBOARDING_ENABLED stays off until the backend on `main` (the branch
  * Railway deploys) exposes these routes. While it is off, the dashboard keeps
  * the previous Supabase path.
+ *
+ * When BACKEND_AUTH_ENABLED is on (see `src/lib/auth/`), register already opens
+ * the tenant — onboarding relays use Bearer + X-Internal-Secret and skip
+ * POST /tenants/provision/supabase.
  */
 import { resolveBackendBaseUrl } from "@/lib/backend-url.server";
 

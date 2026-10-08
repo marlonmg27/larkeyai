@@ -220,12 +220,18 @@ export const es = {
     email: "Email",
     password: "Contraseña",
     phoneOptional: "Teléfono (opcional)",
+    firstName: "Nombre",
+    lastName: "Apellido",
+    tenantName: "Nombre de tu empresa u organización",
     loginSubmit: "Iniciar sesión",
     loginLoading: "Entrando...",
     signupSubmit: "Crear cuenta",
     signupLoading: "Creando...",
     welcomeBack: "¡Bienvenido de vuelta!",
     accountCreated: "¡Cuenta creada! Revisa tu email para confirmar.",
+    accountReady: "¡Cuenta creada! Ya puedes usar tu panel.",
+    loginFailed: "No pudimos iniciar sesión. Inténtalo de nuevo.",
+    signupFailed: "No pudimos crear la cuenta. Inténtalo de nuevo.",
   },
 
   footer: {

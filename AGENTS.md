@@ -14,3 +14,4 @@
 - Install dependencies with Bun, not npm. `bun install --frozen-lockfile` fails because `package.json` pins `@lovable.dev/vite-tanstack-config` at `2.23.1` while `bun.lock` still records `2.20.0`. Use `bun install --no-save` so the lockfile is left unchanged.
 - Dev server: `bun run dev -- --host 0.0.0.0 --port 3000`. `/` redirects to `/es`.
 - `bun run build` is the production check. `bun run lint` currently fails on existing Prettier formatting in the repo.
+- Backend auth cutover (off by default): `BACKEND_AUTH_ENABLED=true` plus `AUTH_JWT_SECRET` (same as jira). See `src/lib/auth/README.md`.

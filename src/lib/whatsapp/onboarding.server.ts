@@ -24,6 +24,9 @@ export type ConnectWhatsAppInput = {
   chatwootAccountId?: number;
   /** Se muestra como "Api Key" en el formulario. Nunca se registra en logs. */
   accessToken?: string;
+  /** Backend JWT when BACKEND_AUTH_ENABLED; forwarded as Authorization Bearer. */
+  bearerToken?: string;
+  tenantId?: string;
 };
 
 
@@ -63,9 +66,11 @@ export async function connectWhatsApp(
     });
     throw new Error("La conexión con el servicio de WhatsApp no está configurada todavía.");
   }
+  const { backendTenantPathEnabled } = await import("@/lib/auth/backend.server");
   const { backendOnboardingEnabled } = await import("@/lib/onboarding/backend.server");
+  const useTenantPath = backendTenantPathEnabled();
   const target = new URL(
-    `${resolved.base}${backendOnboardingEnabled() ? "/onboarding/whatsapp" : "/onboarding/connection"}`,
+    `${resolved.base}${useTenantPath || backendOnboardingEnabled() ? "/onboarding/whatsapp" : "/onboarding/connection"}`,
   );
 
   // El canal se fija a un valor permitido del servidor, no se confía en texto libre.
@@ -75,15 +80,23 @@ export async function connectWhatsApp(
 
   const url = target.toString();
 
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    "X-Internal-Secret": internalSecret,
+    "X-User-Id": input.userId,
+  };
+  if (input.bearerToken) {
+    headers["Authorization"] = `Bearer ${input.bearerToken}`;
+  }
+  if (input.tenantId) {
+    headers["X-Tenant-Id"] = input.tenantId;
+  }
+
   let res: Response;
   try {
     res = await fetch(url, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Internal-Secret": internalSecret,
-        "X-User-Id": input.userId,
-      },
+      headers,
       body: JSON.stringify({
         channel,
         user_id: input.userId,

@@ -4,17 +4,20 @@
  */
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireAppAuth } from "@/lib/auth/require-app-auth";
 
 const updateSchema = z.object({
   instructions: z.string().max(8000),
 });
 
 export const fetchAgentInstructions = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAppAuth])
   .handler(async ({ context }) => {
     const { resolveUserPhoneNumber } = await import("@/lib/agents/phone.server");
-    const phoneNumber = await resolveUserPhoneNumber(context.supabase, context.userId);
+    const supabase =
+      context.supabase ??
+      (await import("@/integrations/supabase/client.server")).supabaseAdmin;
+    const phoneNumber = await resolveUserPhoneNumber(supabase, context.userId);
     if (!phoneNumber) {
       return { phoneNumber: null, instructions: "" };
     }
@@ -23,11 +26,14 @@ export const fetchAgentInstructions = createServerFn({ method: "GET" })
   });
 
 export const updateAgentInstructions = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAppAuth])
   .inputValidator((data: unknown) => updateSchema.parse(data))
   .handler(async ({ data, context }) => {
     const { resolveUserPhoneNumber } = await import("@/lib/agents/phone.server");
-    const phoneNumber = await resolveUserPhoneNumber(context.supabase, context.userId);
+    const supabase =
+      context.supabase ??
+      (await import("@/integrations/supabase/client.server")).supabaseAdmin;
+    const phoneNumber = await resolveUserPhoneNumber(supabase, context.userId);
     if (!phoneNumber) {
       throw new Error("Todavía no tienes un canal de WhatsApp conectado.");
     }

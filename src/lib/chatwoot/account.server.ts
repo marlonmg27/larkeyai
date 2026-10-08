@@ -5,6 +5,9 @@
  *   POST ${BACKEND_URL}/onboarding
  *   header: X-Internal-Secret: ${BACKEND_INTERNAL_SECRET}
  *
+ * Con BACKEND_AUTH_ENABLED, el tenant ya se abrió en /auth/register — solo
+ * se llama POST /onboarding/chatwoot (nunca /tenants/provision/supabase).
+ *
  * El backend es quien escribe users.chatwoot_user_id y users.chatwoot_account_id,
  * y quien define la contraseña inicial. El frontend nunca envía contraseñas.
  */
@@ -18,6 +21,8 @@ export type CreateChatwootAccountInput = {
   firstName: string;
   lastName: string;
   companyName: string;
+  accessToken?: string;
+  tenantId?: string;
 };
 
 export type CreateChatwootAccountResult = {
@@ -44,6 +49,11 @@ export async function createChatwootAccount(
       ...resolved.detail,
     });
     throw new Error("La creación de tu cuenta no está configurada todavía.");
+  }
+
+  const { backendAuthEnabled } = await import("@/lib/auth/backend.server");
+  if (backendAuthEnabled()) {
+    return createChatwootOnly(input, resolved.base);
   }
 
   const { backendOnboardingEnabled } = await import("@/lib/onboarding/backend.server");
@@ -116,6 +126,40 @@ export async function createChatwootAccount(
     ok: true,
     status: typeof obj["status"] === "string" ? obj["status"] : null,
     message: typeof obj["message"] === "string" ? obj["message"] : null,
+  };
+}
+
+/** Backend auth already opened the tenant at register; only provision Chatwoot. */
+async function createChatwootOnly(
+  input: CreateChatwootAccountInput,
+  base: string,
+): Promise<CreateChatwootAccountResult> {
+  if (!input.accessToken) {
+    throw new Error("Falta el token de acceso para preparar la plataforma de conversaciones.");
+  }
+  const { backendAuthRelayHeaders } = await import("@/lib/auth/backend.server");
+  const headers = backendAuthRelayHeaders({
+    userId: input.userId,
+    accessToken: input.accessToken,
+    tenantId: input.tenantId,
+  });
+
+  const chatwoot = await fetch(`${base}/onboarding/chatwoot`, {
+    method: "POST",
+    headers,
+    signal: AbortSignal.timeout(TIMEOUT_MS),
+  });
+  if (!chatwoot.ok) {
+    throw new Error(await errorMessage(chatwoot, "No pudimos preparar la plataforma de conversaciones."));
+  }
+
+  const body = (await chatwoot.json().catch(() => null)) as { provisioned?: boolean } | null;
+  return {
+    ok: true,
+    status: body?.provisioned ? "connected" : "pending",
+    message: body?.provisioned
+      ? "Tu cuenta está lista."
+      : "Tu organización está lista. La plataforma de conversaciones se activará cuando esté disponible.",
   };
 }
 
