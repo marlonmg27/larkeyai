@@ -2,16 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "@tanstack/react-router";
 import { MessageCircle } from "lucide-react";
 import { toast } from "sonner";
-import { useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
 
-import { supabase } from "@/integrations/supabase/client";
-import {
-  getBackendAuthEnabled,
-  loginWithBackend,
-  registerWithBackend,
-} from "@/lib/auth/auth.functions";
-import { getBackendSession, storeBackendSession } from "@/lib/auth/session";
+import { login, register, getSession } from "@/lib/auth/session.functions";
+import { setAccessToken } from "@/lib/auth/token";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,54 +19,31 @@ export function AuthView() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [phone, setPhone] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [tenantName, setTenantName] = useState("");
-
-  const loadBackendAuthEnabled = useServerFn(getBackendAuthEnabled);
-  const loginBackend = useServerFn(loginWithBackend);
-  const registerBackend = useServerFn(registerWithBackend);
-
-  const backendAuth = useQuery({
-    queryKey: ["backend-auth-enabled"],
-    queryFn: () => loadBackendAuthEnabled(),
-  });
-  const backendAuthOn = backendAuth.data?.enabled === true;
+  const [phone, setPhone] = useState("");
 
   useEffect(() => {
-    if (getBackendSession()) {
-      navigate({ to: "/dashboard", replace: true });
-      return;
-    }
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/dashboard", replace: true });
-    });
+    getSession()
+      .then((session) => {
+        if (session) navigate({ to: "/dashboard", replace: true });
+      })
+      .catch(() => {
+        // A missing session stays on the login form.
+      });
   }, [navigate]);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     try {
-      if (backendAuthOn) {
-        const result = await loginBackend({
-          data: { email, password },
-        });
-        storeBackendSession(result);
-        toast.success(t.auth.welcomeBack);
-        navigate({ to: "/dashboard", replace: true });
-        return;
-      }
-
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) {
-        toast.error(error.message);
-        return;
-      }
+      const session = await login({ data: { email, password } });
+      setAccessToken(session.accessToken);
       toast.success(t.auth.welcomeBack);
       navigate({ to: "/dashboard", replace: true });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : t.auth.loginFailed);
+      toast.error(err instanceof Error ? err.message : "No pudimos iniciar sesión.");
     } finally {
       setLoading(false);
     }
@@ -83,41 +53,21 @@ export function AuthView() {
     e.preventDefault();
     setLoading(true);
     try {
-      if (backendAuthOn) {
-        const phoneTrimmed = phone.replace(/[\s()-]/g, "").trim();
-        const result = await registerBackend({
-          data: {
-            email,
-            password,
-            first_name: firstName,
-            last_name: lastName,
-            tenant_name: tenantName,
-            ...(phoneTrimmed ? { phone_number: phoneTrimmed } : {}),
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
-            locale: document.documentElement.lang?.slice(0, 10) || "en",
-          },
-        });
-        storeBackendSession(result);
-        toast.success(t.auth.accountReady);
-        navigate({ to: "/dashboard", replace: true });
-        return;
-      }
-
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: window.location.origin + "/dashboard",
-          data: phone ? { phone } : undefined,
+      const session = await register({
+        data: {
+          email,
+          password,
+          firstName,
+          lastName,
+          tenantName,
+          phoneNumber: phone.trim() ? phone : undefined,
         },
       });
-      if (error) {
-        toast.error(error.message);
-        return;
-      }
+      setAccessToken(session.accessToken);
       toast.success(t.auth.accountCreated);
+      navigate({ to: "/dashboard", replace: true });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : t.auth.signupFailed);
+      toast.error(err instanceof Error ? err.message : "No pudimos crear la cuenta.");
     } finally {
       setLoading(false);
     }
@@ -171,7 +121,7 @@ export function AuthView() {
                   </div>
                   <Button
                     type="submit"
-                    disabled={loading || backendAuth.isLoading}
+                    disabled={loading}
                     className="w-full bg-brand text-brand-foreground hover:bg-brand/90"
                   >
                     {loading ? t.auth.loginLoading : t.auth.loginSubmit}
@@ -181,43 +131,6 @@ export function AuthView() {
 
               <TabsContent value="signup" className="mt-6">
                 <form onSubmit={handleSignup} className="space-y-4">
-                  {backendAuthOn ? (
-                    <>
-                      <div className="space-y-2">
-                        <Label htmlFor="signup-first-name">{t.auth.firstName}</Label>
-                        <Input
-                          id="signup-first-name"
-                          type="text"
-                          value={firstName}
-                          onChange={(e) => setFirstName(e.target.value)}
-                          required
-                          autoComplete="given-name"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="signup-last-name">{t.auth.lastName}</Label>
-                        <Input
-                          id="signup-last-name"
-                          type="text"
-                          value={lastName}
-                          onChange={(e) => setLastName(e.target.value)}
-                          required
-                          autoComplete="family-name"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="signup-tenant-name">{t.auth.tenantName}</Label>
-                        <Input
-                          id="signup-tenant-name"
-                          type="text"
-                          value={tenantName}
-                          onChange={(e) => setTenantName(e.target.value)}
-                          required
-                          autoComplete="organization"
-                        />
-                      </div>
-                    </>
-                  ) : null}
                   <div className="space-y-2">
                     <Label htmlFor="signup-email">{t.auth.email}</Label>
                     <Input
@@ -227,6 +140,38 @@ export function AuthView() {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                       autoComplete="email"
+                    />
+                  </div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-first-name">{t.auth.firstName}</Label>
+                      <Input
+                        id="signup-first-name"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        required
+                        autoComplete="given-name"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-last-name">{t.auth.lastName}</Label>
+                      <Input
+                        id="signup-last-name"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        required
+                        autoComplete="family-name"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-tenant">{t.auth.tenantName}</Label>
+                    <Input
+                      id="signup-tenant"
+                      value={tenantName}
+                      onChange={(e) => setTenantName(e.target.value)}
+                      required
+                      autoComplete="organization"
                     />
                   </div>
                   <div className="space-y-2">
@@ -248,13 +193,13 @@ export function AuthView() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
-                      minLength={backendAuthOn ? 8 : 6}
+                      minLength={8}
                       autoComplete="new-password"
                     />
                   </div>
                   <Button
                     type="submit"
-                    disabled={loading || backendAuth.isLoading}
+                    disabled={loading}
                     className="w-full bg-brand text-brand-foreground hover:bg-brand/90"
                   >
                     {loading ? t.auth.signupLoading : t.auth.signupSubmit}

@@ -1,79 +1,207 @@
 /**
- * Billing server functions — the ONLY surface React components import.
- *
- * This file is a thin bridge: it authenticates the caller, validates input and
- * delegates to the payments module facade (@/lib/stripe/index.server).
- *
- * Migration to FastAPI: replace each handler body with a fetch() to the
- * corresponding microservice endpoint (see src/lib/stripe/README.md).
- * The input/output shapes are locked so the React layer never changes.
+ * Billing server functions. Checkout metadata is set by the backend.
  */
 import { createServerFn } from "@tanstack/react-start";
-import { requireAppAuth } from "@/lib/auth/require-app-auth";
 import { z } from "zod";
+
+import { requireBackendAuth } from "@/lib/auth/backend-middleware";
 
 const planIdInput = z.object({ planId: z.string().uuid() });
 const packIdInput = z.object({ packId: z.string().uuid() });
 
-/** Loads the privileged Supabase client and the payments facade together. */
-async function serverDeps() {
-  const [{ supabaseAdmin }, payments] = await Promise.all([
-    import("@/integrations/supabase/client.server"),
-    import("@/lib/stripe/index.server"),
-  ]);
-  return { supabaseAdmin, payments };
-}
+const BILLING_TIMEOUT_MS = 20_000;
+
+export type CatalogPlan = {
+  id: string;
+  name: string;
+  tier: string | null;
+  price: number;
+  messages_included: number;
+  billing_interval: string;
+};
+
+export type CatalogPack = {
+  id: string;
+  code: string;
+  name: string;
+  messages: number;
+  price_mxn: number;
+};
+
+export type BillingCatalog = {
+  plans: CatalogPlan[];
+  packs: CatalogPack[];
+};
+
+export const getBillingCatalog = createServerFn({ method: "GET" }).handler(async (): Promise<BillingCatalog> => {
+  const { callBackend } = await import("@/lib/backend/http.server");
+  const body = (await callBackend("/billing/plans", {
+    method: "GET",
+    timeoutMs: BILLING_TIMEOUT_MS,
+    internalSecret: false,
+  })) as { plans?: unknown; packs?: unknown };
+  return {
+    plans: asArray(body.plans).map(mapPlan).filter((plan): plan is CatalogPlan => plan != null),
+    packs: asArray(body.packs).map(mapPack).filter((pack): pack is CatalogPack => pack != null),
+  };
+});
 
 export const createSubscriptionCheckout = createServerFn({ method: "POST" })
-  .middleware([requireAppAuth])
+  .middleware([requireBackendAuth])
   .inputValidator((data: unknown) => planIdInput.parse(data))
   .handler(async ({ data, context }) => {
-    const { supabaseAdmin, payments } = await serverDeps();
-    return payments.createSubscriptionCheckout(supabaseAdmin, context.userId, data.planId, {
-      tenantId: context.tenantId ?? undefined,
-      email: context.email,
+    const result = await postBilling(context.accessToken, "/billing/checkout", {
+      kind: "subscription",
+      plan_id: data.planId,
     });
+    return { url: checkoutUrl(result) };
   });
 
 export const createPackCheckout = createServerFn({ method: "POST" })
-  .middleware([requireAppAuth])
+  .middleware([requireBackendAuth])
   .inputValidator((data: unknown) => packIdInput.parse(data))
   .handler(async ({ data, context }) => {
-    const { supabaseAdmin, payments } = await serverDeps();
-    return payments.createPackCheckout(supabaseAdmin, context.userId, data.packId, {
-      tenantId: context.tenantId ?? undefined,
-      email: context.email,
+    const result = await postBilling(context.accessToken, "/billing/checkout", {
+      kind: "pack",
+      pack_id: data.packId,
     });
+    return { url: checkoutUrl(result) };
   });
 
 export const cancelSubscription = createServerFn({ method: "POST" })
-  .middleware([requireAppAuth])
+  .middleware([requireBackendAuth])
   .handler(async ({ context }) => {
-    const { supabaseAdmin, payments } = await serverDeps();
-    await payments.cancelAtPeriodEnd(supabaseAdmin, context.userId);
+    await postBilling(context.accessToken, "/billing/cancel");
     return { ok: true as const };
   });
 
 export const resumeSubscription = createServerFn({ method: "POST" })
-  .middleware([requireAppAuth])
+  .middleware([requireBackendAuth])
   .handler(async ({ context }) => {
-    const { supabaseAdmin, payments } = await serverDeps();
-    await payments.resumeSubscription(supabaseAdmin, context.userId);
+    await postBilling(context.accessToken, "/billing/resume");
     return { ok: true as const };
   });
 
 export const changePlan = createServerFn({ method: "POST" })
-  .middleware([requireAppAuth])
+  .middleware([requireBackendAuth])
   .inputValidator((data: unknown) => planIdInput.parse(data))
   .handler(async ({ data, context }) => {
-    const { supabaseAdmin, payments } = await serverDeps();
-    await payments.changePlan(supabaseAdmin, context.userId, data.planId);
+    await postBilling(context.accessToken, "/billing/change-plan", { plan_id: data.planId });
     return { ok: true as const };
   });
 
 export const listInvoices = createServerFn({ method: "GET" })
-  .middleware([requireAppAuth])
+  .middleware([requireBackendAuth])
   .handler(async ({ context }) => {
-    const { supabaseAdmin, payments } = await serverDeps();
-    return payments.listInvoices(supabaseAdmin, context.userId);
+    const { callBackend } = await import("@/lib/backend/http.server");
+    const body = (await callBackend("/billing/invoices", {
+      method: "GET",
+      token: context.accessToken,
+      timeoutMs: BILLING_TIMEOUT_MS,
+    })) as { invoices?: unknown };
+    const invoices = asArray(body.invoices).map((row) => {
+      const item = asRecord(row);
+      const amountDue = Number(item["amount_due"] ?? 0);
+      return {
+        id: String(item["id"] ?? ""),
+        amount: Number.isFinite(amountDue) ? amountDue / 100 : 0,
+        status: typeof item["status"] === "string" ? item["status"] : null,
+        created: Number(item["created"] ?? 0),
+        hosted_invoice_url: typeof item["hosted_invoice_url"] === "string" ? item["hosted_invoice_url"] : null,
+      };
+    });
+    return { invoices };
   });
+
+async function postBilling(token: string, path: string, body?: unknown): Promise<unknown> {
+  const { callBackend, BackendHttpError } = await import("@/lib/backend/http.server");
+  try {
+    return await callBackend(path, { method: "POST", token, body, timeoutMs: BILLING_TIMEOUT_MS });
+  } catch (err) {
+    if (err instanceof BackendHttpError && err.status === 409) {
+      throw new Error(spanishBillingConflict(err.message));
+    }
+    if (err instanceof BackendHttpError) {
+      throw new Error("No pudimos completar la operación de facturación.");
+    }
+    throw err;
+  }
+}
+
+function spanishBillingConflict(message: string): string {
+  const lower = message.toLowerCase();
+  if (lower.includes("active subscription") || lower.includes("change plan")) {
+    return "Ya tienes una suscripción activa. Cambia de plan en lugar de crear otra.";
+  }
+  if (lower.includes("message pack") || lower.includes("active subscription to buy")) {
+    return "Necesitas una suscripción activa para comprar paquetes de mensajes.";
+  }
+  if (!message.includes("{") && message.length < 280) return message;
+  return "No pudimos completar la operación de facturación.";
+}
+
+function checkoutUrl(result: unknown): string {
+  const url = asRecord(result)["url"];
+  if (typeof url !== "string" || url.length === 0) {
+    throw new Error("No pudimos iniciar el checkout.");
+  }
+  return url;
+}
+
+function mapPlan(row: unknown): CatalogPlan | null {
+  const item = asRecord(row);
+  const id = stringField(item, "id");
+  const name = stringField(item, "name");
+  const interval = stringField(item, "billing_interval");
+  if (!id || !name || !interval) return null;
+  return {
+    id,
+    name,
+    tier: mapTier(item, name),
+    price: numberField(item, "price"),
+    messages_included: numberField(item, "messages_included"),
+    billing_interval: interval,
+  };
+}
+
+function mapTier(item: Record<string, unknown>, name: string): CatalogPlan["tier"] {
+  const explicit = stringField(item, "tier")?.toLowerCase();
+  if (explicit === "basic" || explicit === "standard" || explicit === "pro") return explicit;
+  const source = name.toLowerCase();
+  if (source.includes("standard")) return "standard";
+  if (source.includes("basic")) return "basic";
+  if (source.includes("pro")) return "pro";
+  return null;
+}
+
+function mapPack(row: unknown): CatalogPack | null {
+  const item = asRecord(row);
+  const id = stringField(item, "id");
+  const name = stringField(item, "name");
+  if (!id || !name) return null;
+  return {
+    id,
+    code: stringField(item, "code") ?? "",
+    name,
+    messages: numberField(item, "messages"),
+    price_mxn: numberField(item, "price_mxn"),
+  };
+}
+
+function asArray(value: unknown): unknown[] {
+  return Array.isArray(value) ? value : [];
+}
+
+function asRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" ? (value as Record<string, unknown>) : {};
+}
+
+function stringField(row: Record<string, unknown>, key: string): string | null {
+  const value = row[key];
+  return typeof value === "string" && value.length > 0 ? value : null;
+}
+
+function numberField(row: Record<string, unknown>, key: string): number {
+  const value = Number(row[key] ?? 0);
+  return Number.isFinite(value) ? value : 0;
+}

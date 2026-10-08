@@ -3,7 +3,7 @@ export type Locale = "es" | "en";
 export const LOCALES: Locale[] = ["es", "en"];
 export const DEFAULT_LOCALE: Locale = "es";
 
-export const SITE_URL = "https://larkeyai.lovable.app";
+export const SITE_URL = "https://larkey.ai";
 
 export type PageKey =
   | "home"

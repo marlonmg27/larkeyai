@@ -37,7 +37,6 @@ import { Route as EsLegalPrivacidadRouteImport } from './routes/es/legal/privaci
 import { Route as EnLegalTermsRouteImport } from './routes/en/legal/terms'
 import { Route as EnLegalPrivacyRouteImport } from './routes/en/legal/privacy'
 import { Route as AuthenticatedConnectorsGoogleCalendarRouteImport } from './routes/_authenticated/connectors/google-calendar'
-import { Route as ApiPublicUsersChatwootRouteImport } from './routes/api/public/users/chatwoot'
 import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe/webhook'
 import { Route as ApiPublicMessagesDecrementRouteImport } from './routes/api/public/messages/decrement'
 import { Route as ApiPublicMessagesCanSendRouteImport } from './routes/api/public/messages/can-send'
@@ -185,11 +184,6 @@ const AuthenticatedConnectorsGoogleCalendarRoute =
     path: '/connectors/google-calendar',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const ApiPublicUsersChatwootRoute = ApiPublicUsersChatwootRouteImport.update({
-  id: '/api/public/users/chatwoot',
-  path: '/api/public/users/chatwoot',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiPublicStripeWebhookRoute = ApiPublicStripeWebhookRouteImport.update({
   id: '/api/public/stripe/webhook',
   path: '/api/public/stripe/webhook',
@@ -245,7 +239,6 @@ export interface FileRoutesByFullPath {
   '/api/public/messages/can-send': typeof ApiPublicMessagesCanSendRoute
   '/api/public/messages/decrement': typeof ApiPublicMessagesDecrementRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
-  '/api/public/users/chatwoot': typeof ApiPublicUsersChatwootRoute
   '/api/public/whatsapp/connections/$': typeof ApiPublicWhatsappConnectionsSplatRoute
 }
 export interface FileRoutesByTo {
@@ -279,7 +272,6 @@ export interface FileRoutesByTo {
   '/api/public/messages/can-send': typeof ApiPublicMessagesCanSendRoute
   '/api/public/messages/decrement': typeof ApiPublicMessagesDecrementRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
-  '/api/public/users/chatwoot': typeof ApiPublicUsersChatwootRoute
   '/api/public/whatsapp/connections/$': typeof ApiPublicWhatsappConnectionsSplatRoute
 }
 export interface FileRoutesById {
@@ -315,7 +307,6 @@ export interface FileRoutesById {
   '/api/public/messages/can-send': typeof ApiPublicMessagesCanSendRoute
   '/api/public/messages/decrement': typeof ApiPublicMessagesDecrementRoute
   '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
-  '/api/public/users/chatwoot': typeof ApiPublicUsersChatwootRoute
   '/api/public/whatsapp/connections/$': typeof ApiPublicWhatsappConnectionsSplatRoute
 }
 export interface FileRouteTypes {
@@ -351,7 +342,6 @@ export interface FileRouteTypes {
     | '/api/public/messages/can-send'
     | '/api/public/messages/decrement'
     | '/api/public/stripe/webhook'
-    | '/api/public/users/chatwoot'
     | '/api/public/whatsapp/connections/$'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -385,7 +375,6 @@ export interface FileRouteTypes {
     | '/api/public/messages/can-send'
     | '/api/public/messages/decrement'
     | '/api/public/stripe/webhook'
-    | '/api/public/users/chatwoot'
     | '/api/public/whatsapp/connections/$'
   id:
     | '__root__'
@@ -420,7 +409,6 @@ export interface FileRouteTypes {
     | '/api/public/messages/can-send'
     | '/api/public/messages/decrement'
     | '/api/public/stripe/webhook'
-    | '/api/public/users/chatwoot'
     | '/api/public/whatsapp/connections/$'
   fileRoutesById: FileRoutesById
 }
@@ -453,7 +441,6 @@ export interface RootRouteChildren {
   ApiPublicMessagesCanSendRoute: typeof ApiPublicMessagesCanSendRoute
   ApiPublicMessagesDecrementRoute: typeof ApiPublicMessagesDecrementRoute
   ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
-  ApiPublicUsersChatwootRoute: typeof ApiPublicUsersChatwootRoute
   ApiPublicWhatsappConnectionsSplatRoute: typeof ApiPublicWhatsappConnectionsSplatRoute
 }
 
@@ -655,13 +642,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedConnectorsGoogleCalendarRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/api/public/users/chatwoot': {
-      id: '/api/public/users/chatwoot'
-      path: '/api/public/users/chatwoot'
-      fullPath: '/api/public/users/chatwoot'
-      preLoaderRoute: typeof ApiPublicUsersChatwootRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/public/stripe/webhook': {
       id: '/api/public/stripe/webhook'
       path: '/api/public/stripe/webhook'
@@ -738,7 +718,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicMessagesCanSendRoute: ApiPublicMessagesCanSendRoute,
   ApiPublicMessagesDecrementRoute: ApiPublicMessagesDecrementRoute,
   ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
-  ApiPublicUsersChatwootRoute: ApiPublicUsersChatwootRoute,
   ApiPublicWhatsappConnectionsSplatRoute:
     ApiPublicWhatsappConnectionsSplatRoute,
 }

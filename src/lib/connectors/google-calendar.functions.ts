@@ -1,9 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
-import { requireAppAuth } from "@/lib/auth/require-app-auth";
+
+import { requireBackendAuth } from "@/lib/auth/backend-middleware";
 
 export const createNangoConnectSession = createServerFn({ method: "POST" })
-  .middleware([requireAppAuth])
+  .middleware([requireBackendAuth])
   .handler(async ({ context }) => {
     const { createConnectSession } = await import("./google-calendar.server");
-    return createConnectSession(context.userId);
+    return createConnectSession({ userId: context.userId, email: context.email });
   });

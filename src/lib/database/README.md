@@ -258,15 +258,6 @@ dígitos (tolera espacios, guiones y paréntesis).
 Un `PATCH` a `connected` dispara el Realtime que ya escucha el dashboard, así que la card
 del cliente se actualiza sola.
 
-### `users` — IDs de Chatwoot
-
-**`PATCH /api/public/users/chatwoot`**
-
-- Requerido: `user_id` (uuid). Debe venir al menos uno de `chatwoot_user_id` /
-  `chatwoot_account_id` (enteros o `null`); solo se escriben los presentes.
-- `200`: `{"ok":true,"user_id":"…","chatwoot_user_id":123,"chatwoot_account_id":45}`
-- `404 user_not_found` si el `user_id` no existe.
-
 ### `messages` — saldo y consumo
 
 **`POST /api/public/messages/can-send`** — ejecuta la RPC `can_send_message`.
@@ -286,7 +277,7 @@ del cliente se actualiza sola.
 | --- | --- |
 | 400 | `invalid_json` o `validation_error` (uuid mal formado, status fuera del enum, count inválido) |
 | 401 | `unauthorized`: falta o no coincide `X-Internal-Secret` |
-| 404 | `connection_not_found` / `user_not_found` / `usage_balance_not_found` |
+| 404 | `connection_not_found` / `usage_balance_not_found` |
 | 405 | `method_not_allowed` |
 | 500 | `database_error` (detalle solo en logs del servidor) |
 
@@ -307,11 +298,6 @@ httpx.patch(f"{BASE}/api/public/whatsapp/connections/status",
 r = httpx.get(f"{BASE}/api/public/whatsapp/connections/by-phone",
               params={"phone_number": "+526620000000"}, headers=H)
 connection = r.json()["connection"] if r.status_code == 200 else None
-
-# users: IDs de Chatwoot
-httpx.patch(f"{BASE}/api/public/users/chatwoot",
-            json={"user_id": user_id, "chatwoot_user_id": 123,
-                  "chatwoot_account_id": 45}, headers=H).raise_for_status()
 
 # messages: saldo y consumo
 can_send = httpx.post(f"{BASE}/api/public/messages/can-send",

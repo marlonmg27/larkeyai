@@ -11,10 +11,8 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { BACKEND_AUTH_EVENT } from "@/lib/auth/session";
+import { onAuthChange } from "@/lib/auth/token";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { localeFromPathname } from "@/i18n/config";
 
@@ -43,9 +41,6 @@ function NotFoundComponent() {
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
-  useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -103,16 +98,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Larkey es un asistente con todas las herramientas necesarias para brindarle la mejor experiencia de usuario a tus clientes. Tú defines las reglas y él responde.",
       },
-      {
-        property: "og:image",
-        content:
-          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ca5ccabc-d63f-4c78-9e8d-6c8a432f0e5c/id-preview-50495209--c2d08889-ea0a-462f-bee4-3d95a3ea2d73.lovable.app-1784156369589.png",
-      },
-      {
-        name: "twitter:image",
-        content:
-          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ca5ccabc-d63f-4c78-9e8d-6c8a432f0e5c/id-preview-50495209--c2d08889-ea0a-462f-bee4-3d95a3ea2d73.lovable.app-1784156369589.png",
-      },
       { name: "facebook-domain-verification", content: "oxjjuezvnft5kx4ik14pizs7lprv9a" },
       { name: "google-site-verification", content: "ILEmUV07akKmLvw9M_wt51fhQg9MhhXSFb9OPhb67lA" },
     ],
@@ -150,20 +135,10 @@ function RootComponent() {
   const router = useRouter();
 
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
-      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
-      router.invalidate();
-      if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
-    });
-    const onBackendAuth = () => {
+    return onAuthChange(() => {
       router.invalidate();
       queryClient.invalidateQueries();
-    };
-    window.addEventListener(BACKEND_AUTH_EVENT, onBackendAuth);
-    return () => {
-      sub.subscription.unsubscribe();
-      window.removeEventListener(BACKEND_AUTH_EVENT, onBackendAuth);
-    };
+    });
   }, [router, queryClient]);
 
   return (

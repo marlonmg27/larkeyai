@@ -15,8 +15,6 @@ export type EmbeddedSignupInput = {
   code: string;
   wabaId?: string | undefined;
   phoneNumberId?: string | undefined;
-  bearerToken?: string | undefined;
-  tenantId?: string | undefined;
 };
 
 export type EmbeddedSignupResult = {
@@ -52,21 +50,12 @@ export async function forwardEmbeddedSignup(
   const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
   try {
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-      "X-Internal-Secret": internalSecret,
-      "X-User-Id": input.userId,
-    };
-    if (input.bearerToken) {
-      headers["Authorization"] = `Bearer ${input.bearerToken}`;
-    }
-    if (input.tenantId) {
-      headers["X-Tenant-Id"] = input.tenantId;
-    }
-
     const response = await fetch(target, {
       method: "POST",
-      headers,
+      headers: {
+        "Content-Type": "application/json",
+        "X-Internal-Secret": internalSecret,
+      },
       body: JSON.stringify({
         channel: "whatsapp",
         user_id: input.userId,

@@ -79,7 +79,6 @@ export async function buildSubscriptionPayload(
     stripe_event_id: event.id,
     event_type: event.type,
     user_id: str(metadata["user_id"]),
-    tenant_id: str(metadata["tenant_id"]),
     plan_id: str(metadata["plan_id"]),
     pack_id: str(metadata["pack_id"]),
     kind: str(metadata["kind"]),

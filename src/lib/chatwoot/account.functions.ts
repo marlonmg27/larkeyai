@@ -1,24 +1,16 @@
 /**
  * Server functions del paso 1 del onboarding.
- * El user_id SIEMPRE viene del JWT verificado, nunca del body.
- * La contraseña no se envía: la define el backend.
+ * El tenant ya existe desde el registro. El token sale del JWT verificado.
  */
 import { createServerFn } from "@tanstack/react-start";
-import { requireAppAuth } from "@/lib/auth/require-app-auth";
+
+import { requireBackendAuth } from "@/lib/auth/backend-middleware";
 import { chatwootAccountSchema } from "@/lib/chatwoot/schema";
 
 export const createChatwootAccountForUser = createServerFn({ method: "POST" })
-  .middleware([requireAppAuth])
+  .middleware([requireBackendAuth])
   .inputValidator((data: unknown) => chatwootAccountSchema.parse(data))
-  .handler(async ({ data, context }) => {
+  .handler(async ({ context }) => {
     const { createChatwootAccount } = await import("@/lib/chatwoot/account.server");
-    return createChatwootAccount({
-      userId: context.userId,
-      email: data.email,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      companyName: data.companyName,
-      accessToken: context.accessToken,
-      tenantId: context.tenantId ?? undefined,
-    });
+    return createChatwootAccount(context.accessToken);
   });

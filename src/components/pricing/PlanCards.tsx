@@ -1,8 +1,10 @@
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { motion } from "framer-motion";
 import { Check, Sparkles, Rocket, Crown, Building2, Loader2, AlertCircle, Mail } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { getBillingCatalog } from "@/lib/billing.functions";
+import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -36,15 +38,13 @@ const TIER_STYLE: Record<TierKey, { label: string; icon: typeof Sparkles; highli
 const TIER_ORDER: TierKey[] = ["basic", "standard", "pro"];
 
 export function usePlansCatalog() {
+  const { user } = useAuth();
+  const loadCatalog = useServerFn(getBillingCatalog);
   return useQuery<PlanRow[]>({
-    queryKey: ["plans-catalog"],
+    queryKey: ["plans-catalog", user?.id ?? "public"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("plans")
-        .select("id, name, tier, price, messages_included, billing_interval")
-        .eq("active", true);
-      if (error) throw error;
-      return (data ?? []) as PlanRow[];
+      const catalog = await loadCatalog();
+      return catalog.plans;
     },
   });
 }
@@ -143,7 +143,8 @@ export function PlanCards({ onSelectPlan, ctaLabel, pendingPlanId = null }: Plan
                 const plan = byTier[tier]?.[interval];
                 const Icon = style.icon;
                 const planPrice = plan ? Number(plan.price) : 0;
-                const monthlyEq = interval === "year" && plan ? planPrice / 12 : null;
+                const planInterval = plan?.billing_interval === "year" ? "year" : plan?.billing_interval === "month" ? "month" : interval;
+                const monthlyEq = planInterval === "year" && plan ? planPrice / 12 : null;
                 return (
                   <motion.div
                     key={tier}
@@ -168,7 +169,7 @@ export function PlanCards({ onSelectPlan, ctaLabel, pendingPlanId = null }: Plan
                         <div className="mb-2 grid h-10 w-10 place-items-center rounded-lg bg-brand/10 text-brand">
                           <Icon className="h-5 w-5" />
                         </div>
-                        <CardTitle className="text-xl">{style.label}</CardTitle>
+                        <CardTitle className="text-xl">{plan?.name ?? style.label}</CardTitle>
                         <CardDescription>{copy.tagline}</CardDescription>
                       </CardHeader>
                       <CardContent className="flex flex-1 flex-col">
@@ -180,7 +181,7 @@ export function PlanCards({ onSelectPlan, ctaLabel, pendingPlanId = null }: Plan
                               <div className="flex items-baseline gap-1">
                                 <span className="text-4xl font-bold tracking-tight">{formatMxn(planPrice)}</span>
                                 <span className="text-sm text-muted-foreground">
-                                  /{interval === "month" ? t.pricing.perMonth : t.pricing.perYear}
+                                  /{planInterval === "month" ? t.pricing.perMonth : t.pricing.perYear}
                                 </span>
                               </div>
                               {monthlyEq && (

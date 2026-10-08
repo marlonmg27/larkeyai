@@ -35,6 +35,9 @@ function resolveTarget(): { base: string; secret: string } {
     });
     throw new Error("La conexión con el servicio de conectores no está configurada todavía.");
   }
+  if (resolved.host === "connector-gateway.lovable.dev") {
+    throw new Error("La conexión con el servicio de conectores no está configurada todavía.");
+  }
 
   return { base: resolved.base, secret };
 }
@@ -164,12 +167,16 @@ function extractSessionToken(parsed: unknown): string | null {
 export async function createNangoSession(input: {
   userId: string;
   connectorId: string;
+  email?: string;
+  displayName?: string;
 }): Promise<{ sessionToken: string }> {
   const { parsed } = await request("/connectors/nango/sessions", {
     method: "POST",
     body: {
       user_id: input.userId,
       connector_id: input.connectorId,
+      ...(input.email ? { email: input.email } : {}),
+      ...(input.displayName ? { display_name: input.displayName } : {}),
     },
   });
   const sessionToken = extractSessionToken(parsed);

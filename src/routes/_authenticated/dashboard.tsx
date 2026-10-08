@@ -2,9 +2,7 @@ import { useEffect, useRef } from "react";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
-import { signOutApp } from "@/lib/auth/sign-out";
-import { getDashboardBilling } from "@/lib/billing/dashboard.functions";
+import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -29,9 +27,10 @@ import { SubscriptionOverview } from "@/components/dashboard/SubscriptionOvervie
 import { WhatsAppOnboardingCard } from "@/components/dashboard/WhatsAppOnboardingCard";
 import { ChatwootAccessCard } from "@/components/dashboard/ChatwootAccessCard";
 import { ChatwootAccountCard } from "@/components/dashboard/ChatwootAccountCard";
-import { useWhatsappConnectionRealtime } from "@/hooks/use-whatsapp-connection-realtime";
 import { getOnboardingStatus } from "@/lib/onboarding/status.functions";
-import { useServerFn } from "@tanstack/react-start";
+import { getDashboardAccount } from "@/lib/account/dashboard.functions";
+import { logoutClient } from "@/lib/auth/logout-client";
+import { SITE_URL } from "@/i18n/config";
 
 
 import { LarkeyMark } from "@/components/brand/LarkeyMark";
@@ -54,114 +53,17 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
           "Consulta tu plan, el consumo de mensajes de tu asistente y el estado de tu conexión de WhatsApp desde el panel de Larkey.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://larkeyai.lovable.app/dashboard" },
+      { property: "og:url", content: `${SITE_URL}/dashboard` },
       { name: "twitter:card", content: "summary" },
     ],
-    links: [{ rel: "canonical", href: "https://larkeyai.lovable.app/dashboard" }],
+    links: [{ rel: "canonical", href: `${SITE_URL}/dashboard` }],
   }),
 });
 
-type DashboardData = {
-  plan: { name: string; price: number; messagesIncluded: number; interval: string } | null;
-  subscription: {
-    status: string;
-    cancelAtPeriodEnd: boolean;
-    trialEndsAt: string | null;
-    currentPeriodEnd: string | null;
-  };
-  balance: { messagesRemaining: number; messagesUsed: number; periodEnd: string } | null;
-  purchases: Array<{
-    id: string;
-    created_at: string;
-    package: string;
-    messages_purchased: number;
-    amount: number;
-  }>;
-  whatsapp: { status: string } | null;
-  chatwoot: { userId: number | null; accountId: number | null };
-};
-
-async function fetchWhatsappConnection(userId: string): Promise<{ status: string } | null> {
-  try {
-    const { data, error } = await supabase
-      .from("whatsapp_connections")
-      .select("status")
-      .eq("user_id", userId)
-      .maybeSingle();
-    if (error) throw error;
-    return data ? { status: data.status } : null;
-  } catch (err) {
-    console.error(
-      "[dashboard] No se pudo leer whatsapp_connections:",
-      err instanceof Error ? err.message : err,
-    );
-    return null;
-  }
-}
-
-async function fetchDashboardBrowser(userId: string): Promise<DashboardData> {
-  const [profileRes, balanceRes, purchasesRes, whatsapp] = await Promise.all([
-    supabase
-      .from("users")
-      .select(
-        "plan_id, subscription_status, cancel_at_period_end, trial_ends_at, current_period_end, chatwoot_user_id, chatwoot_account_id, plans:plan_id(name, price, messages_included, billing_interval)",
-      )
-      .eq("id", userId)
-      .maybeSingle(),
-    supabase
-      .from("usage_balance")
-      .select("messages_remaining, messages_used_period, period_end")
-      .eq("user_id", userId)
-      .maybeSingle(),
-    supabase
-      .from("purchases")
-      .select("id, created_at, package, messages_purchased, amount")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false }),
-    fetchWhatsappConnection(userId),
-  ]);
-
-  if (profileRes.error) throw profileRes.error;
-  if (balanceRes.error) throw balanceRes.error;
-  if (purchasesRes.error) throw purchasesRes.error;
-
-  const planRow = (profileRes.data?.plans ?? null) as
-    | { name: string; price: number; messages_included: number; billing_interval: string }
-    | null;
-
-  return {
-    plan: planRow
-      ? {
-          name: planRow.name,
-          price: Number(planRow.price),
-          messagesIncluded: planRow.messages_included,
-          interval: planRow.billing_interval,
-        }
-      : null,
-    subscription: {
-      status: profileRes.data?.subscription_status ?? "none",
-      cancelAtPeriodEnd: profileRes.data?.cancel_at_period_end ?? false,
-      trialEndsAt: profileRes.data?.trial_ends_at ?? null,
-      currentPeriodEnd: profileRes.data?.current_period_end ?? null,
-    },
-    balance: balanceRes.data
-      ? {
-          messagesRemaining: balanceRes.data.messages_remaining,
-          messagesUsed: balanceRes.data.messages_used_period,
-          periodEnd: balanceRes.data.period_end,
-        }
-      : null,
-    purchases: purchasesRes.data ?? [],
-    whatsapp,
-    chatwoot: {
-      userId: profileRes.data?.chatwoot_user_id ?? null,
-      accountId: profileRes.data?.chatwoot_account_id ?? null,
-    },
-  };
-}
-
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("es-MX", { day: "2-digit", month: "short", year: "numeric" });
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "—";
+  return date.toLocaleDateString("es-MX", { day: "2-digit", month: "short", year: "numeric" });
 }
 
 function planLabel(name: string) {
@@ -176,29 +78,22 @@ function formatMxn(v: number, interval: string) {
 function Dashboard() {
   const navigate = useNavigate();
   const { user } = Route.useRouteContext();
-  const loadDashboardBilling = useServerFn(getDashboardBilling);
-  const tenantId = "tenantId" in user ? (user.tenantId as string | undefined) : undefined;
+  const loadDashboard = useServerFn(getDashboardAccount);
+  const loadOnboardingStatus = useServerFn(getOnboardingStatus);
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["dashboard", user.id, tenantId ?? null],
-    queryFn: async () => {
-      if (tenantId) {
-        return loadDashboardBilling();
-      }
-      return fetchDashboardBrowser(user.id);
-    },
+    queryKey: ["dashboard", user.id],
+    queryFn: () => loadDashboard(),
   });
 
-  const loadOnboardingStatus = useServerFn(getOnboardingStatus);
   const onboarding = useQuery({
     queryKey: ["onboarding-status", user.id],
     queryFn: () => loadOnboardingStatus(),
-    refetchInterval: (query) =>
-      query.state.data?.enabled && query.state.data.whatsappStatus === "pending" ? 4000 : false,
+    refetchInterval: (query) => (query.state.data?.whatsappStatus === "pending" ? 4000 : false),
   });
 
   async function handleLogout() {
-    await signOutApp();
+    await logoutClient();
     toast.success("Sesión cerrada");
     navigate({ to: "/", replace: true });
   }
@@ -214,19 +109,10 @@ function Dashboard() {
     (data?.subscription.status === "none" || data?.subscription.status === "canceled");
   const hasActiveSubscription =
     data?.subscription.status === "active" || data?.subscription.status === "trialing";
-  const usingBackend = onboarding.data?.enabled === true;
-  const whatsappStatus = usingBackend
-    ? (onboarding.data?.whatsappStatus ?? null)
-    : (data?.whatsapp?.status ?? null);
-  const hasChatwootAccount = usingBackend
-    ? (onboarding.data?.chatwootProvisioned ?? false)
-    : data?.chatwoot.userId != null && data?.chatwoot.accountId != null;
-  const stepOneDone = usingBackend ? (onboarding.data?.hasTenant ?? false) : hasChatwootAccount;
+  const whatsappStatus = onboarding.data?.whatsappStatus ?? data?.whatsapp?.status ?? null;
+  const hasChatwootAccount = onboarding.data?.chatwootProvisioned ?? data?.chatwootProvisioned ?? false;
   const showWhatsappOnboarding = hasActiveSubscription && whatsappStatus !== "connected";
-  const showChatwootAccess =
-    hasActiveSubscription && (usingBackend ? hasChatwootAccount : data?.whatsapp != null);
-
-  useWhatsappConnectionRealtime(usingBackend ? undefined : user.id);
+  const showChatwootAccess = hasActiveSubscription && hasChatwootAccount;
 
   const prevWhatsappStatus = useRef<string | null>(null);
   useEffect(() => {
@@ -430,8 +316,8 @@ function Dashboard() {
                 <div className="mt-6">
                   <ChatwootAccountCard
                     userId={user.id}
-                    hasAccount={stepOneDone}
-                    showCredentials={!usingBackend || hasChatwootAccount}
+                    hasAccount={hasChatwootAccount}
+                    showCredentials={hasChatwootAccount}
                     defaultEmail={user?.email ?? ""}
                   />
                 </div>
@@ -439,7 +325,7 @@ function Dashboard() {
                   <WhatsAppOnboardingCard
                     userId={user.id}
                     status={whatsappStatus}
-                    hasChatwootAccount={stepOneDone}
+                    hasChatwootAccount={hasChatwootAccount}
                   />
                 </div>
               </>
