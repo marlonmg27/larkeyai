@@ -12,7 +12,7 @@ export function siteUrl(): string {
   const url = process.env["SITE_URL"];
   if (!url) {
     throw new Error(
-      "SITE_URL is not configured. Set it to the public base URL (e.g. https://larkeyai.lovable.app).",
+      "SITE_URL is not configured. Set it to the public base URL (e.g. https://larkey.ai).",
     );
   }
   return url.replace(/\/+$/, "");

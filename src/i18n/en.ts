@@ -233,13 +233,17 @@ export const en: Dict = {
     signupTab: "Sign up",
     email: "Email",
     password: "Password",
+    firstName: "First name",
+    lastName: "Last name",
+    tenantName: "Business name",
     phoneOptional: "Phone (optional)",
+    phoneInvalid: "Use the country code, for example +526620000000.",
     loginSubmit: "Log in",
     loginLoading: "Signing in...",
     signupSubmit: "Create account",
     signupLoading: "Creating...",
     welcomeBack: "Welcome back!",
-    accountCreated: "Account created! Check your email to confirm it.",
+    accountCreated: "Account created. Opening your dashboard.",
   },
 
   footer: {

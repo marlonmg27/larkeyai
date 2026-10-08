@@ -1,8 +1,10 @@
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { motion } from "framer-motion";
 import { Check, Sparkles, Rocket, Crown, Building2, Loader2, AlertCircle, Mail } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { getBillingCatalog } from "@/lib/billing.functions";
+import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -36,15 +38,13 @@ const TIER_STYLE: Record<TierKey, { label: string; icon: typeof Sparkles; highli
 const TIER_ORDER: TierKey[] = ["basic", "standard", "pro"];
 
 export function usePlansCatalog() {
+  const { user } = useAuth();
+  const loadCatalog = useServerFn(getBillingCatalog);
   return useQuery<PlanRow[]>({
-    queryKey: ["plans-catalog"],
+    queryKey: ["plans-catalog", user?.id ?? "public"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("plans")
-        .select("id, name, tier, price, messages_included, billing_interval")
-        .eq("active", true);
-      if (error) throw error;
-      return (data ?? []) as PlanRow[];
+      const catalog = await loadCatalog();
+      return catalog.plans;
     },
   });
 }

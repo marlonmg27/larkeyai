@@ -1,27 +1,15 @@
 /**
- * Resuelve el número de WhatsApp del usuario autenticado.
- * Usa el cliente con RLS del middleware, nunca el service role.
+ * Resuelve el número de WhatsApp del usuario autenticado desde GET /account.
  */
-import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/integrations/supabase/types";
+import { callBackend } from "@/lib/backend/http.server";
 
-export async function resolveUserPhoneNumber(
-  supabase: SupabaseClient<Database>,
-  userId: string,
-): Promise<string | null> {
-  const { data, error } = await supabase
-    .from("whatsapp_connections")
-    .select("phone_number")
-    .eq("user_id", userId)
-    .maybeSingle();
+export async function resolveUserPhoneNumber(accessToken: string): Promise<string | null> {
+  const account = (await callBackend("/account", {
+    method: "GET",
+    token: accessToken,
+    timeoutMs: 15_000,
+  })) as { connections?: Array<{ phone_number?: string | null }> };
 
-  if (error) {
-    console.error("[agent-instructions] no se pudo leer whatsapp_connections", {
-      code: error.code,
-    });
-    throw new Error("No pudimos leer tu conexión de WhatsApp.");
-  }
-
-  const phone = data?.phone_number?.trim();
+  const phone = account.connections?.find((row) => row.phone_number?.trim())?.phone_number?.trim();
   return phone && phone.length > 0 ? phone : null;
 }

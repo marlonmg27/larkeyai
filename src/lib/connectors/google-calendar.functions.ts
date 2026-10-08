@@ -1,9 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+
+import { requireBackendAuth } from "@/lib/auth/backend-middleware";
 
 export const createNangoConnectSession = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireBackendAuth])
   .handler(async ({ context }) => {
     const { createConnectSession } = await import("./google-calendar.server");
-    return createConnectSession(context.userId);
+    return createConnectSession({ userId: context.userId, email: context.email });
   });

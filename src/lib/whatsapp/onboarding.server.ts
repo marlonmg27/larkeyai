@@ -1,31 +1,25 @@
 /**
- * Envía el onboarding del canal de mensajería al backend de Python (FastAPI).
+ * Envía el alta de WhatsApp al backend.
  *
- * FastAPI mapping:
- *   POST ${BACKEND_URL}/onboarding/connection
- *   header: X-Internal-Secret: ${BACKEND_INTERNAL_SECRET}
+ *   POST ${BACKEND_URL}/onboarding/whatsapp
+ *   Authorization: Bearer <JWT>
+ *   X-Internal-Secret
  *
- * Nunca registra el access token en logs.
+ * El inbox de Chatwoot puede tardar; el timeout es 60s. Nunca se registra el access token.
  */
-import { messagingChannels, type MessagingChannel } from "@/lib/whatsapp/schema";
 import { resolveBackendBaseUrl } from "@/lib/backend-url.server";
+import { BackendHttpError, callBackend, safePublicDetail } from "@/lib/backend/http.server";
 
-const TIMEOUT_MS = 15_000;
+const TIMEOUT_MS = 60_000;
 
 export type ConnectWhatsAppInput = {
-  userId: string;
-  channel: MessagingChannel;
+  token: string;
   wabaName: string;
   phoneNumber: string;
   phoneNumberId: string;
   wabaId: string;
-  /** Resueltos en el servidor desde public.users. No se envían cuando el backend es la fuente de verdad. */
-  chatwootUserId?: number;
-  chatwootAccountId?: number;
-  /** Se muestra como "Api Key" en el formulario. Nunca se registra en logs. */
-  accessToken?: string;
+  accessToken: string;
 };
-
 
 export type ConnectWhatsAppResult = {
   ok: boolean;
@@ -33,29 +27,14 @@ export type ConnectWhatsAppResult = {
   message: string | null;
 };
 
-export async function connectWhatsApp(
-  input: ConnectWhatsAppInput,
-): Promise<ConnectWhatsAppResult> {
-  const baseUrl = process.env["BACKEND_URL"];
-  const internalSecret = process.env["BACKEND_INTERNAL_SECRET"];
-  // Se reenvía la Api Key que capturó el usuario; si viniera vacía usamos el secreto del servidor.
-  const clientToken = input.accessToken?.trim() ?? "";
-  const accessToken = clientToken.length > 0 ? clientToken : process.env["WABA_ACCESS_TOKEN"];
-
-  if (!baseUrl || !internalSecret) {
-    console.error("[whatsapp-onboarding] BACKEND_URL o BACKEND_INTERNAL_SECRET sin configurar");
-    throw new Error("La conexión con el servicio de WhatsApp no está configurada todavía.");
-  }
-
+export async function connectWhatsApp(input: ConnectWhatsAppInput): Promise<ConnectWhatsAppResult> {
+  const accessToken = input.accessToken.trim();
   if (!accessToken) {
-    console.error("[whatsapp-onboarding] sin Api Key del usuario ni WABA_ACCESS_TOKEN");
+    console.error("[whatsapp-onboarding] sin Api Key");
     throw new Error("La conexión con el servicio de WhatsApp no está configurada todavía.");
   }
 
-
-  // Normalizamos y validamos la URL antes de intentar la conexión: un valor
-  // inválido o no HTTPS nunca es alcanzable desde el runtime publicado.
-  const resolved = resolveBackendBaseUrl(baseUrl);
+  const resolved = resolveBackendBaseUrl(process.env["BACKEND_URL"]);
   if (!resolved.ok) {
     console.error("[whatsapp-onboarding] BACKEND_URL inválida", {
       reason: resolved.reason,
@@ -63,94 +42,44 @@ export async function connectWhatsApp(
     });
     throw new Error("La conexión con el servicio de WhatsApp no está configurada todavía.");
   }
-  const { backendOnboardingEnabled } = await import("@/lib/onboarding/backend.server");
-  const target = new URL(
-    `${resolved.base}${backendOnboardingEnabled() ? "/onboarding/whatsapp" : "/onboarding/connection"}`,
-  );
 
-  // El canal se fija a un valor permitido del servidor, no se confía en texto libre.
-  const channel: MessagingChannel = messagingChannels.includes(input.channel)
-    ? input.channel
-    : "whatsapp";
-
-  const url = target.toString();
-
-  let res: Response;
+  let parsed: unknown;
   try {
-    res = await fetch(url, {
+    parsed = await callBackend("/onboarding/whatsapp", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Internal-Secret": internalSecret,
-        "X-User-Id": input.userId,
-      },
-      body: JSON.stringify({
-        channel,
-        user_id: input.userId,
+      token: input.token,
+      timeoutMs: TIMEOUT_MS,
+      body: {
         waba_name: input.wabaName,
         phone_number: input.phoneNumber,
         phone_number_id: input.phoneNumberId,
         waba_id: input.wabaId,
-        ...(input.chatwootUserId != null && input.chatwootAccountId != null
-          ? { chatwoot_user_id: input.chatwootUserId, chatwoot_account_id: input.chatwootAccountId }
-          : {}),
         access_token: accessToken,
-      }),
-      signal: AbortSignal.timeout(TIMEOUT_MS),
+      },
     });
   } catch (err) {
-    const name = err instanceof Error ? err.name : "Error";
-    const detail = err instanceof Error ? err.message : String(err);
-    const cause =
-      err instanceof Error && err.cause instanceof Error ? err.cause.message : null;
-    console.error("[whatsapp-onboarding] fetch falló", {
-      user_id: input.userId,
-      host: target.host,
-      path: target.pathname,
-      reason: name,
-      detail,
-      cause,
-    });
-    if (name === "TimeoutError" || name === "AbortError") {
-      throw new Error("El servicio de WhatsApp tardó demasiado en responder. Inténtalo de nuevo.");
+    if (err instanceof BackendHttpError) {
+      throw new Error(
+        err.status === 409
+          ? whatsappConflict(err.detail)
+          : "No pudimos conectar WhatsApp. Inténtalo de nuevo.",
+      );
     }
-    throw new Error(
-      `No pudimos contactar al servicio de WhatsApp (${target.host}). Verifica que el backend esté publicado y accesible.`,
-    );
+    throw err;
   }
 
-
-  const raw = await res.text().catch(() => "");
-  let parsed: unknown = null;
-  try {
-    parsed = raw ? JSON.parse(raw) : null;
-  } catch {
-    parsed = null;
-  }
-
-  if (!res.ok) {
-    console.error("[whatsapp-onboarding] backend respondió no-2xx", {
-      user_id: input.userId,
-      host: target.host,
-      status: res.status,
-    });
-
-    const detail =
-      parsed && typeof parsed === "object"
-        ? ((parsed as Record<string, unknown>)["detail"] ??
-           (parsed as Record<string, unknown>)["message"])
-        : null;
-    const message =
-      typeof detail === "string" && detail.length > 0
-        ? detail.slice(0, 300)
-        : `El servicio de WhatsApp respondió con un error (${res.status}).`;
-    throw new Error(message);
-  }
-
-  const obj = (parsed && typeof parsed === "object" ? parsed : {}) as Record<string, unknown>;
+  const obj = (parsed && typeof parsed === "object" ? parsed : {}) as { status?: unknown };
   return {
     ok: true,
-    status: typeof obj["status"] === "string" ? obj["status"] : null,
-    message: typeof obj["message"] === "string" ? obj["message"] : null,
+    status: typeof obj.status === "string" ? obj.status : null,
+    message: null,
   };
+}
+
+function whatsappConflict(detail: unknown): string {
+  const safe = safePublicDetail(detail);
+  if (!safe || /another tenant/i.test(safe)) {
+    return "Ese número de WhatsApp ya está conectado a otra organización.";
+  }
+  return safe;
 }

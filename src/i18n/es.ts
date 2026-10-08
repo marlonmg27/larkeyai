@@ -219,13 +219,17 @@ export const es = {
     signupTab: "Registrarse",
     email: "Email",
     password: "Contraseña",
+    firstName: "Nombre",
+    lastName: "Apellido",
+    tenantName: "Nombre del negocio",
     phoneOptional: "Teléfono (opcional)",
+    phoneInvalid: "Usa el teléfono con código de país, por ejemplo +526620000000.",
     loginSubmit: "Iniciar sesión",
     loginLoading: "Entrando...",
     signupSubmit: "Crear cuenta",
     signupLoading: "Creando...",
     welcomeBack: "¡Bienvenido de vuelta!",
-    accountCreated: "¡Cuenta creada! Revisa tu email para confirmar.",
+    accountCreated: "Cuenta creada. Entrando a tu panel.",
   },
 
   footer: {

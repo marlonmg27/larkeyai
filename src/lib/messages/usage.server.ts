@@ -1,11 +1,11 @@
 /**
- * Endpoints puente de saldo de mensajes (`can_send_message` y `decrement_messages`).
- *
- * Ambas funciones viven en este único módulo; las rutas solo validan el secreto
- * interno y el body. La lógica de saldo queda centralizada en las RPC de la base.
+ * Saldo de mensajes. La lectura sale de GET /account. El descuento lo aplica
+ * el backend cuando envía un mensaje; esta app no escribe el saldo en Supabase.
  */
 import { z } from "zod";
+
 import { json } from "@/lib/api/internal.server";
+import { BackendHttpError, callBackend } from "@/lib/backend/http.server";
 
 export const canSendSchema = z.object({ user_id: z.string().uuid() }).passthrough();
 
@@ -20,62 +20,33 @@ export type CanSendInput = z.infer<typeof canSendSchema>;
 export type DecrementInput = z.infer<typeof decrementSchema>;
 
 export async function canSendMessage(data: CanSendInput): Promise<Response> {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
-  const { data: result, error } = await supabaseAdmin.rpc("can_send_message", {
-    p_user_id: data.user_id,
-  });
-
-  if (error) {
-    console.error("[messages] can_send_message falló", { code: error.code });
-    return json({ ok: false, error: "database_error" }, 500);
+  try {
+    const account = (await callBackend("/account", {
+      method: "GET",
+      userId: data.user_id,
+      timeoutMs: 15_000,
+    })) as { balance?: { messages_remaining?: number } | null };
+    const remaining = account.balance?.messages_remaining ?? 0;
+    return json({ ok: true, user_id: data.user_id, can_send: remaining > 0 }, 200);
+  } catch (err) {
+    if (err instanceof BackendHttpError && (err.status === 404 || err.status === 401)) {
+      return json({ ok: true, user_id: data.user_id, can_send: false }, 200);
+    }
+    console.error("[messages] no se pudo leer el saldo", {
+      status: err instanceof BackendHttpError ? err.status : null,
+    });
+    return json({ ok: false, error: "backend_error" }, 502);
   }
-
-  return json({ ok: true, user_id: data.user_id, can_send: result === true }, 200);
 }
 
 export async function decrementMessages(data: DecrementInput): Promise<Response> {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const count = data.count ?? 1;
-
-  const balance = await supabaseAdmin
-    .from("usage_balance")
-    .select("user_id")
-    .eq("user_id", data.user_id)
-    .maybeSingle();
-
-  if (balance.error) {
-    console.error("[messages] select usage_balance falló", { code: balance.error.code });
-    return json({ ok: false, error: "database_error" }, 500);
-  }
-  if (!balance.data) {
-    return json({ ok: false, error: "usage_balance_not_found" }, 404);
-  }
-
-  const { error } = await supabaseAdmin.rpc("decrement_messages", {
-    p_user_id: data.user_id,
-    p_count: count,
-  });
-
-  if (error) {
-    console.error("[messages] decrement_messages falló", { code: error.code });
-    return json({ ok: false, error: "database_error" }, 500);
-  }
-
-  const after = await supabaseAdmin
-    .from("usage_balance")
-    .select("messages_remaining, messages_used_period")
-    .eq("user_id", data.user_id)
-    .maybeSingle();
-
   return json(
     {
-      ok: true,
+      ok: false,
+      error: "usage_owned_by_backend",
       user_id: data.user_id,
-      count,
-      messages_remaining: after.data?.messages_remaining ?? null,
-      messages_used_period: after.data?.messages_used_period ?? null,
+      count: data.count ?? 1,
     },
-    200,
+    409,
   );
 }
