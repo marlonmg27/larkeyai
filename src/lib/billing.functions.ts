@@ -33,27 +33,12 @@ export type BillingCatalog = {
   packs: CatalogPack[];
 };
 
-const PUBLISHED_PLANS: CatalogPlan[] = [
-  { id: "published-basic-month", name: "Basic", tier: "basic", price: 2000, messages_included: 7000, billing_interval: "month" },
-  { id: "published-basic-year", name: "Basic", tier: "basic", price: 19200, messages_included: 7000, billing_interval: "year" },
-  { id: "published-standard-month", name: "Standard", tier: "standard", price: 3200, messages_included: 12000, billing_interval: "month" },
-  { id: "published-standard-year", name: "Standard", tier: "standard", price: 30720, messages_included: 12000, billing_interval: "year" },
-  { id: "published-pro-month", name: "Pro", tier: "pro", price: 5000, messages_included: 20000, billing_interval: "month" },
-  { id: "published-pro-year", name: "Pro", tier: "pro", price: 48000, messages_included: 20000, billing_interval: "year" },
-];
-
 export const getBillingCatalog = createServerFn({ method: "GET" }).handler(async (): Promise<BillingCatalog> => {
-  const { readRequestAccessToken } = await import("@/lib/auth/session-cookie.server");
-  const token = readRequestAccessToken();
-  if (!token) return { plans: PUBLISHED_PLANS, packs: [] };
-
-  const { verifyAccessToken } = await import("@/lib/auth/jwt.server");
-  await verifyAccessToken(token);
   const { callBackend } = await import("@/lib/backend/http.server");
   const body = (await callBackend("/billing/plans", {
     method: "GET",
-    token,
     timeoutMs: BILLING_TIMEOUT_MS,
+    internalSecret: false,
   })) as { plans?: unknown; packs?: unknown };
   return {
     plans: asArray(body.plans).map(mapPlan).filter((plan): plan is CatalogPlan => plan != null),
@@ -169,22 +154,24 @@ function mapPlan(row: unknown): CatalogPlan | null {
   const name = stringField(item, "name");
   const interval = stringField(item, "billing_interval");
   if (!id || !name || !interval) return null;
-  const tierSource = `${stringField(item, "tier") ?? ""} ${name}`.toLowerCase();
-  const tier = tierSource.includes("standard")
-    ? "standard"
-    : tierSource.includes("basic")
-      ? "basic"
-      : tierSource.includes("pro")
-        ? "pro"
-        : null;
   return {
     id,
     name,
-    tier,
+    tier: mapTier(item, name),
     price: numberField(item, "price"),
     messages_included: numberField(item, "messages_included"),
     billing_interval: interval,
   };
+}
+
+function mapTier(item: Record<string, unknown>, name: string): CatalogPlan["tier"] {
+  const explicit = stringField(item, "tier")?.toLowerCase();
+  if (explicit === "basic" || explicit === "standard" || explicit === "pro") return explicit;
+  const source = name.toLowerCase();
+  if (source.includes("standard")) return "standard";
+  if (source.includes("basic")) return "basic";
+  if (source.includes("pro")) return "pro";
+  return null;
 }
 
 function mapPack(row: unknown): CatalogPack | null {
