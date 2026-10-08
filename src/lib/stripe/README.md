@@ -53,6 +53,9 @@ through `config.server.ts`:
 - `STRIPE_WEBHOOK_SECRET` — used by `verifyAndDispatch` to check `stripe-signature`.
 - `SITE_URL` — success/cancel redirect base; required for Checkout.
 - `BACKEND_URL` + `BACKEND_INTERNAL_SECRET` — forwarding of verified events.
+- When `BACKEND_AUTH_ENABLED=true`, Checkout / Customer metadata also includes
+  `tenant_id` + `user_id` (Postgres UUIDs from the backend JWT). See
+  `src/lib/auth/README.md`.
 
 ## Product setup in Stripe
 

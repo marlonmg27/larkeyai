@@ -5,8 +5,10 @@
  */
 
 export type CheckoutSessionMetadata = {
-  /** Supabase auth user id. Always present. */
+  /** Caller user id (Supabase auth id, or Postgres users.id when backend auth is on). */
   user_id: string;
+  /** Postgres tenants.id when BACKEND_AUTH_ENABLED is on. */
+  tenant_id?: string;
   /** 'subscription' | 'pack' — disambiguates the completed webhook path. */
   kind: "subscription" | "pack";
   /** plans.id (for kind='subscription'). */
@@ -66,6 +68,7 @@ export type BackendSubscriptionPayload = {
   stripe_event_id: string;
   event_type: string;
   user_id: string | null;
+  tenant_id: string | null;
   plan_id: string | null;
   pack_id: string | null;
   kind: string | null;
