@@ -14,11 +14,10 @@ export const Route = createFileRoute("/api/public/users/chatwoot")({
         const unauthorized = auth.verifyInternalSecret(request);
         if (unauthorized) return unauthorized;
 
-        const mod = await import("@/lib/users/chatwoot-ids.server");
-        const parsed = await auth.parseBody(request, mod.updateChatwootIdsSchema);
-        if ("response" in parsed) return parsed.response;
-
-        return mod.updateChatwootIds(parsed.data);
+        return Response.json(
+          { status: "gone", reason: "Chatwoot ids are stored by the backend." },
+          { status: 410 },
+        );
       },
     },
   },
