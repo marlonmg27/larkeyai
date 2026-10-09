@@ -61,7 +61,12 @@ export function SubscriptionOverview(props: SubscriptionOverviewProps) {
   const meta = statusMeta(status, cancelAtPeriodEnd);
   const isTrial = status === "trialing" && Boolean(trialEndsAt);
   // A trial shows the same date as the trial banner and the "Plan actual" card.
-  const renewal = isTrial ? trialEndsAt : (currentPeriodEnd ?? trialEndsAt ?? balancePeriodEnd ?? null);
+  // A canceled subscription has no renewal: show when it ended (a cardless trial ends with the trial).
+  const renewal = isTrial
+    ? trialEndsAt
+    : status === "canceled"
+      ? (balancePeriodEnd ?? currentPeriodEnd ?? trialEndsAt ?? null)
+      : (currentPeriodEnd ?? trialEndsAt ?? balancePeriodEnd ?? null);
 
   if (isLoading) {
     return (
@@ -130,7 +135,13 @@ export function SubscriptionOverview(props: SubscriptionOverviewProps) {
     },
     {
       icon: CalendarClock,
-      label: isTrial ? "Prueba termina el" : cancelAtPeriodEnd ? "Termina el" : "Próxima renovación",
+      label: isTrial
+        ? "Prueba termina el"
+        : status === "canceled"
+          ? "Terminó el"
+          : cancelAtPeriodEnd
+            ? "Termina el"
+            : "Próxima renovación",
       value: renewal ? formatDate(renewal) : "Sin fecha registrada",
       hint: isTrial ? "Fin de la prueba gratis" : null,
     },
