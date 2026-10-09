@@ -242,7 +242,11 @@ function Dashboard() {
                   ) : (
                     <p className="text-sm text-muted-foreground">
                       {data?.plan ? formatMxn(data.plan.price, data.plan.interval) : "Sin plan asignado"}
-                      {data?.balance ? ` · Renueva el ${formatDate(data.balance.periodEnd)}` : ""}
+                      {data?.subscription.status === "trialing" && data.subscription.trialEndsAt
+                        ? ` · Prueba termina el ${formatDate(data.subscription.trialEndsAt)}`
+                        : data?.balance
+                          ? ` · Renueva el ${formatDate(data.balance.periodEnd)}`
+                          : ""}
                     </p>
                   )}
                   {data && (
