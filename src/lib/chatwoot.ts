@@ -4,7 +4,7 @@
 const env = import.meta.env as Record<string, string | undefined>;
 
 /** URL de producción (Railway); respaldo si `VITE_CHATWOOT_FRONTEND_URL` no está definida o viene vacía. */
-const DEFAULT_CHATWOOT_FRONTEND_URL = "https://chatwoot-production-3b40.up.railway.app";
+const DEFAULT_CHATWOOT_FRONTEND_URL = "https://chatwoot-production-7bbc.up.railway.app";
 
 function resolveChatwootFrontendUrl(): string {
   const raw = env["VITE_CHATWOOT_FRONTEND_URL"]?.trim();
