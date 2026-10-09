@@ -19,11 +19,12 @@ Todas las pantallas deben sentirse del mismo producto. Los tokens viven en `src/
 - Sombras sutiles (`shadow-sm`, `shadow-md`); bordes con `border` (usa el token `--border`).
 
 ## Tipografía
-- Fuente del sistema (sans por defecto de Tailwind). Jerarquía con peso y color: títulos `text-2xl font-semibold tracking-tight`, subtítulos `font-medium`, texto de apoyo `text-sm text-muted-foreground`.
+- Fuente de marca: **Inter Variable**, self-hosted en `public/fonts/*.woff2` con `@font-face` en `src/styles.css` y definida como `--font-sans` en `@theme inline` (con fallbacks del sistema). Usa `font-sans`; no agregues fuentes por CDN ni otras familias. Jerarquía con peso y color: títulos `text-2xl font-semibold tracking-tight`, subtítulos `font-medium`, texto de apoyo `text-sm text-muted-foreground`.
 
 ## Tono de Marca
 - Larkey ayuda a negocios a atender por WhatsApp con un asistente de IA. Tono cercano, claro y profesional, en español de México; tutea al usuario.
 - Mensajes cortos y orientados a la acción ("Conecta tu WhatsApp", "Elige tu plan").
 
 ## Modo Oscuro
+- El usuario cambia el tema con `ThemeToggle` (`src/components/ThemeToggle.tsx`, en el header de `SiteShell`): claro/oscuro/sistema, guardado en `localStorage` (`theme`) y aplicado como clase `dark` en `<html>`; un script inline en `__root.tsx` evita el parpadeo. No dupliques esta lógica.
 - Cada token tiene su valor en `.dark`. Si agregas un token, defínelo en `:root` y en `.dark`.
