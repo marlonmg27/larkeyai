@@ -329,6 +329,7 @@ function Dashboard() {
                   <WhatsAppOnboardingCard
                     userId={user.id}
                     status={whatsappStatus}
+                    errorReason={onboarding.data?.whatsappError ?? null}
                     hasChatwootAccount={hasChatwootAccount}
                   />
                 </div>

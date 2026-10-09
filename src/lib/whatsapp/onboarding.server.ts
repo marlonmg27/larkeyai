@@ -5,7 +5,9 @@
  *   Authorization: Bearer <JWT>
  *   X-Internal-Secret
  *
- * El inbox de Chatwoot puede tardar; el timeout es 60s. Nunca se registra el access token.
+ * El backend responde "pending" enseguida y crea el inbox en segundo plano; el
+ * dashboard consulta /onboarding/status hasta "connected" o "error". El timeout
+ * de 60s queda como margen. Nunca se registra el access token.
  */
 import { resolveBackendBaseUrl } from "@/lib/backend-url.server";
 import { BackendHttpError, callBackend, safePublicDetail } from "@/lib/backend/http.server";

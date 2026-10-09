@@ -10,9 +10,11 @@ export type OnboardingStatus = {
   hasTenant: boolean;
   chatwootProvisioned: boolean;
   whatsappStatus: string | null;
+  /** Motivo del último fallo del Paso 2 (solo cuando whatsappStatus es "error"). */
+  whatsappError: string | null;
 };
 
-type ConnectionRow = { status?: string };
+type ConnectionRow = { status?: string; error_reason?: string | null };
 
 export async function fetchOnboardingStatus(token: string): Promise<OnboardingStatus> {
   try {
@@ -24,18 +26,28 @@ export async function fetchOnboardingStatus(token: string): Promise<OnboardingSt
       chatwoot_provisioned?: boolean;
       connections?: ConnectionRow[];
     };
-    const statuses = (body.connections ?? [])
+    const rows = body.connections ?? [];
+    const statuses = rows
       .map((row) => row.status)
       .filter((status): status is string => !!status);
+    const whatsappStatus = pickStatus(statuses);
+    const errorRow = rows.find((row) => row.status === "error" && row.error_reason);
     return {
       enabled: true,
       hasTenant: true,
       chatwootProvisioned: body.chatwoot_provisioned === true,
-      whatsappStatus: pickStatus(statuses),
+      whatsappStatus,
+      whatsappError: whatsappStatus === "error" ? (errorRow?.error_reason ?? null) : null,
     };
   } catch (err) {
     if (err instanceof BackendHttpError && err.status === 404) {
-      return { enabled: true, hasTenant: false, chatwootProvisioned: false, whatsappStatus: null };
+      return {
+        enabled: true,
+        hasTenant: false,
+        chatwootProvisioned: false,
+        whatsappStatus: null,
+        whatsappError: null,
+      };
     }
     throw new Error("No pudimos leer el estado de tu conexión.");
   }

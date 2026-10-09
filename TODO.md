@@ -19,8 +19,8 @@ Pendientes del frontend detectados durante la prueba E2E del onboarding (2026-10
 - [ ] El login no muestra ningún error cuando falla (400 de Supabase sin mensaje).
 - [ ] El correo del Paso 1 viene fijo con el del login; si ese correo ya existe en Chatwoot, el alta falla.
 - [ ] Las server functions no tienen middleware CSRF (aviso de TanStack Start).
-- [ ] El Paso 2 corta la espera a los 15 s (`TIMEOUT_MS` en `src/lib/whatsapp/onboarding.server.ts:13`) y muestra "El servicio de WhatsApp tardó demasiado en responder", aunque el backend termine bien; crear el inbox con webhook tarda ~17 s por la verificación de Meta.
-- [ ] Después de ese timeout, la tarjeta se queda en "En proceso" y no vuelve a consultar el estado, aunque la conexión ya esté `connected`.
+- [x] (Resuelto: el backend responde `pending` y crea el inbox en segundo plano; el dashboard sondea `/onboarding/status` y muestra el motivo si falla.) El Paso 2 corta la espera a los 15 s (`TIMEOUT_MS` en `src/lib/whatsapp/onboarding.server.ts:13`) y muestra "El servicio de WhatsApp tardó demasiado en responder", aunque el backend termine bien; crear el inbox con webhook tarda ~17 s por la verificación de Meta.
+- [x] (Resuelto con lo anterior.) Después de ese timeout, la tarjeta se queda en "En proceso" y no vuelve a consultar el estado, aunque la conexión ya esté `connected`.
 
 ## Datos
 - [ ] El dashboard aún tiene datos viejos en el Supabase de Lovable (`whatsapp_connections` en `pending`, `chatwoot_user_id`/`chatwoot_account_id` en `users`).
