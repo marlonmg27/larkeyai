@@ -90,8 +90,9 @@ export const en: Dict = {
     monthlyEquivalent: "billed yearly",
     messagesPerMonth: "messages / month",
     redirecting: "Redirecting…",
-    loadError: "We couldn't load the plans",
+    loadError: "We couldn't load the plans. Please try again in a moment.",
     loadErrorHint: "Try reloading the page.",
+    retry: "Try again",
     noPlans: "No plans are available right now. Get in touch if you need help.",
     packsTitle: "Extra message packs",
     packsSubtitle:

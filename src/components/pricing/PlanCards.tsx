@@ -2,12 +2,13 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { motion } from "framer-motion";
-import { Check, Sparkles, Rocket, Crown, Building2, Loader2, AlertCircle, Mail } from "lucide-react";
+import { Check, Sparkles, Rocket, Crown, Building2, Loader2, AlertCircle, Mail, RotateCw } from "lucide-react";
 import { getBillingCatalog } from "@/lib/billing.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useLocale, useT } from "@/i18n";
 
 export const ENTERPRISE_EMAIL = "larkeyai@gmail.com";
@@ -60,7 +61,7 @@ type PlanCardsProps = {
 
 export function PlanCards({ onSelectPlan, ctaLabel, pendingPlanId = null }: PlanCardsProps) {
   const [interval, setInterval] = useState<"month" | "year">("month");
-  const { data: plans, isLoading, isError, error } = usePlansCatalog();
+  const { data: plans, isLoading, isError, isFetching, refetch } = usePlansCatalog();
   const t = useT();
   const locale = useLocale();
   const numberLocale = locale === "es" ? "es-MX" : "en-US";
@@ -117,17 +118,22 @@ export function PlanCards({ onSelectPlan, ctaLabel, pendingPlanId = null }: Plan
       </div>
 
       {isError ? (
-        <Card className="border-destructive/50">
-          <CardContent className="flex items-start gap-3 py-6">
-            <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
-            <div>
-              <p className="font-medium text-destructive">{t.pricing.loadError}</p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {error instanceof Error ? error.message : t.pricing.loadErrorHint}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <Alert variant="destructive" className="rounded-xl">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <span>{t.pricing.loadError}</span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => refetch()}
+              disabled={isFetching}
+              className="transition-all duration-200 active:scale-95"
+            >
+              {isFetching ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RotateCw className="mr-2 h-4 w-4" />}
+              {t.pricing.retry}
+            </Button>
+          </AlertDescription>
+        </Alert>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           {!isLoading && !hasPlansForInterval && (

@@ -39,32 +39,48 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+export function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
+  const pathname = useRouterState({ select: (st) => st.location.pathname });
+  const isEn = localeFromPathname(pathname) === "en";
+  const copy = isEn
+    ? {
+        title: "This page didn't load",
+        body: "Something went wrong on our end. Please try again in a moment.",
+        retry: "Try again",
+        home: "Go home",
+        homeHref: "/en",
+      }
+    : {
+        title: "No pudimos cargar esta página",
+        body: "Algo salió mal de nuestro lado. Intenta de nuevo en un momento.",
+        retry: "Reintentar",
+        home: "Ir al inicio",
+        homeHref: "/es",
+      };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">This page didn't load</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
-        </p>
+      <div className="w-full max-w-md rounded-2xl border bg-card p-6 text-center shadow-sm">
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">{copy.title}</h1>
+        <p className="mt-2 text-sm text-muted-foreground">{copy.body}</p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
+            type="button"
             onClick={() => {
               router.invalidate();
               reset();
             }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-all duration-200 hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-95"
           >
-            Try again
+            {copy.retry}
           </button>
           <a
-            href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+            href={copy.homeHref}
+            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-all duration-200 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-95"
           >
-            Go home
+            {copy.home}
           </a>
         </div>
       </div>

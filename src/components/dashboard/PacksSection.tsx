@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Loader2, Package, ShoppingCart } from "lucide-react";
+import { AlertCircle, Loader2, Package, RotateCw, ShoppingCart } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { createPackCheckout, getBillingCatalog } from "@/lib/billing.functions";
@@ -24,7 +25,7 @@ export function PacksSection() {
   const checkout = useServerFn(createPackCheckout);
   const loadCatalog = useServerFn(getBillingCatalog);
 
-  const { data: packs, isLoading } = useQuery<Pack[]>({
+  const { data: packs, isLoading, isError, isFetching, refetch } = useQuery<Pack[]>({
     queryKey: ["message-packs"],
     queryFn: async () => {
       const catalog = await loadCatalog();
@@ -54,6 +55,24 @@ export function PacksSection() {
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {isError ? (
+          <Alert variant="destructive" className="rounded-xl">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <span>No pudimos cargar los paquetes. Intenta de nuevo en un momento.</span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => refetch()}
+                disabled={isFetching}
+                className="transition-all duration-200 active:scale-95"
+              >
+                {isFetching ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RotateCw className="mr-2 h-4 w-4" />}
+                Reintentar
+              </Button>
+            </AlertDescription>
+          </Alert>
+        ) : (
         <div className="grid gap-4 md:grid-cols-3">
           {isLoading
             ? [0, 1, 2].map((i) => (
@@ -88,6 +107,7 @@ export function PacksSection() {
                 </div>
               ))}
         </div>
+        )}
       </CardContent>
     </Card>
   );
