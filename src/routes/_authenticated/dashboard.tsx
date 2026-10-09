@@ -176,6 +176,7 @@ function Dashboard() {
               trialEndsAt={data?.subscription.trialEndsAt ?? null}
               currentPeriodEnd={data?.subscription.currentPeriodEnd ?? null}
               messagesRemaining={data?.balance?.messagesRemaining ?? null}
+              additionalMessagesRemaining={data?.balance?.additionalMessagesRemaining ?? null}
               messagesIncluded={data?.plan?.messagesIncluded ?? null}
               balancePeriodEnd={data?.balance?.periodEnd ?? null}
             />
@@ -200,6 +201,7 @@ function Dashboard() {
                 trialEndsAt={data?.subscription.trialEndsAt ?? null}
                 currentPeriodEnd={data?.subscription.currentPeriodEnd ?? null}
                 messagesRemaining={data?.balance?.messagesRemaining ?? null}
+                additionalMessagesRemaining={data?.balance?.additionalMessagesRemaining ?? null}
                 messagesIncluded={data?.plan?.messagesIncluded ?? null}
                 balancePeriodEnd={data?.balance?.periodEnd ?? null}
               />

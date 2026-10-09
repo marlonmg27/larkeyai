@@ -15,7 +15,12 @@ export type DashboardAccount = {
     trialEndsAt: string | null;
     currentPeriodEnd: string | null;
   };
-  balance: { messagesRemaining: number; messagesUsed: number; periodEnd: string } | null;
+  balance: {
+    messagesRemaining: number;
+    additionalMessagesRemaining: number;
+    messagesUsed: number;
+    periodEnd: string;
+  } | null;
   purchases: Array<{
     id: string;
     created_at: string;
@@ -67,6 +72,7 @@ function mapAccount(body: unknown): DashboardAccount {
       row["balance"] && typeof row["balance"] === "object"
         ? {
             messagesRemaining: numberOrZero(balance["messages_remaining"]),
+            additionalMessagesRemaining: numberOrZero(balance["additional_messages_remaining"]),
             messagesUsed: numberOrZero(balance["messages_used_period"]),
             periodEnd: stringOrNull(balance["period_end"]) ?? "",
           }

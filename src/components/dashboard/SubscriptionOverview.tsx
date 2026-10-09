@@ -1,7 +1,9 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CalendarClock, CreditCard, MessageSquare, ShieldCheck } from "lucide-react";
+import { useRouterState } from "@tanstack/react-router";
+import { CalendarClock, CreditCard, MessageSquare, PackagePlus, ShieldCheck } from "lucide-react";
+import { localeFromPathname, type Locale } from "@/i18n/config";
 
 export type SubscriptionOverviewProps = {
   isLoading: boolean;
@@ -13,8 +15,27 @@ export type SubscriptionOverviewProps = {
   trialEndsAt: string | null;
   currentPeriodEnd: string | null;
   messagesRemaining: number | null;
+  additionalMessagesRemaining: number | null;
   messagesIncluded: number | null;
   balancePeriodEnd: string | null;
+};
+
+const BALANCE_LABELS: Record<
+  Locale,
+  { plan: string; additional: string; messages: string; additionalHint: string }
+> = {
+  es: {
+    plan: "Mensajes del plan",
+    additional: "Mensajes adicionales",
+    messages: "mensajes",
+    additionalHint: "De paquetes; se conservan al renovar",
+  },
+  en: {
+    plan: "Plan messages",
+    additional: "Additional messages",
+    messages: "messages",
+    additionalHint: "From packs; kept when your plan renews",
+  },
 };
 
 function formatDate(iso: string) {
@@ -53,10 +74,13 @@ export function SubscriptionOverview(props: SubscriptionOverviewProps) {
     trialEndsAt,
     currentPeriodEnd,
     messagesRemaining,
+    additionalMessagesRemaining,
     messagesIncluded,
     balancePeriodEnd,
   } = props;
 
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const bt = BALANCE_LABELS[localeFromPathname(pathname)];
   const hasSubscription = !isLoading && Boolean(planName) && status !== "none";
   const meta = statusMeta(status, cancelAtPeriodEnd);
   const isTrial = status === "trialing" && Boolean(trialEndsAt);
@@ -125,13 +149,21 @@ export function SubscriptionOverview(props: SubscriptionOverviewProps) {
     },
     {
       icon: MessageSquare,
-      label: "Balance del bot",
+      label: bt.plan,
       value:
-        messagesRemaining != null ? `${messagesRemaining.toLocaleString("es-MX")} mensajes` : "—",
+        messagesRemaining != null
+          ? `${messagesRemaining.toLocaleString("es-MX")} ${bt.messages}`
+          : "—",
       hint:
         messagesIncluded && messagesIncluded > 0
           ? `de ${messagesIncluded.toLocaleString("es-MX")} incluidos`
           : null,
+    },
+    {
+      icon: PackagePlus,
+      label: bt.additional,
+      value: `${(additionalMessagesRemaining ?? 0).toLocaleString("es-MX")} ${bt.messages}`,
+      hint: bt.additionalHint,
     },
     {
       icon: CalendarClock,
@@ -158,7 +190,7 @@ export function SubscriptionOverview(props: SubscriptionOverviewProps) {
           <Badge variant={meta.variant}>{meta.label}</Badge>
         </div>
       </CardHeader>
-      <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {items.map((it) => (
           <div key={it.label} className="rounded-lg border border-border bg-muted/30 p-4">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
