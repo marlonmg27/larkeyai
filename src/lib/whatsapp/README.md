@@ -193,5 +193,5 @@ dígitos) y devuelve la fila completa o `404 connection_not_found`. Contratos co
 - La verificación con Graph API está activa y usa ese token (o `WABA_ACCESS_TOKEN` de respaldo).
 - Tras un envío exitoso, la card muestra `ChatwootSetupGuide`: credenciales por defecto
   (email del usuario + `Default123!`), botón a `${CHATWOOT_FRONTEND_URL}/app/login`
-  (`src/lib/chatwoot.ts`, sobrescribible con `VITE_CHATWOOT_FRONTEND_URL`) y la guía para
+  (`src/lib/chatwoot.ts`, configurable con `VITE_CHATWOOT_FRONTEND_URL`; si falta o viene vacía usa la de Railway) y la guía para
   crear el inbox manualmente (Settings → Inboxes → Add Inbox → WhatsApp).
