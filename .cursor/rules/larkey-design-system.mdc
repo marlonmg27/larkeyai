@@ -1,0 +1,29 @@
+---
+description: Sistema de diseño global de Larkey (paleta, tipografía, tono de marca)
+alwaysApply: true
+---
+
+# Sistema de Diseño de Larkey
+Todas las pantallas deben sentirse del mismo producto. Los tokens viven en `src/styles.css` (Tailwind v4, `@theme inline`, colores en `oklch`).
+
+## Paleta
+- **Marca / primario:** azul (`--primary` y `--brand`, `oklch(0.58 0.18 245)`). Úsalo con `bg-primary`, `text-primary`, `bg-brand`, `bg-brand-muted`.
+- **Fondos:** cálidos y suaves (`bg-background`, `bg-card`, `bg-muted`, `bg-secondary`); tarjetas blancas sobre fondo crema.
+- **Texto:** `text-foreground` para lo principal y `text-muted-foreground` para lo secundario.
+- **Estados:** `destructive` para errores y acciones peligrosas; gráficas con `chart-1` a `chart-5`.
+- Utilidades propias disponibles: `hero-gradient` y las burbujas `whatsapp-bubble-*`.
+- Nunca uses colores hexadecimales ni clases de color fijas de Tailwind (`bg-blue-500`, `text-gray-600`); siempre tokens.
+
+## Geometría
+- Radio base `--radius: 0.75rem`. Tarjetas y contenedores con `rounded-xl` o `rounded-2xl`; botones e inputs con el radio por defecto de Shadcn.
+- Sombras sutiles (`shadow-sm`, `shadow-md`); bordes con `border` (usa el token `--border`).
+
+## Tipografía
+- Fuente del sistema (sans por defecto de Tailwind). Jerarquía con peso y color: títulos `text-2xl font-semibold tracking-tight`, subtítulos `font-medium`, texto de apoyo `text-sm text-muted-foreground`.
+
+## Tono de Marca
+- Larkey ayuda a negocios a atender por WhatsApp con un asistente de IA. Tono cercano, claro y profesional, en español de México; tutea al usuario.
+- Mensajes cortos y orientados a la acción ("Conecta tu WhatsApp", "Elige tu plan").
+
+## Modo Oscuro
+- Cada token tiene su valor en `.dark`. Si agregas un token, defínelo en `:root` y en `.dark`.
