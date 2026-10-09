@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { PlansShowcase } from "@/components/dashboard/PlansShowcase";
 import { PacksSection } from "@/components/dashboard/PacksSection";
 import { SubscriptionActions } from "@/components/dashboard/SubscriptionActions";
+import { PaymentFailedAlert } from "@/components/dashboard/PaymentFailedAlert";
 import { SubscriptionOverview } from "@/components/dashboard/SubscriptionOverview";
 import { WhatsAppOnboardingCard } from "@/components/dashboard/WhatsAppOnboardingCard";
 import { ChatwootAccessCard } from "@/components/dashboard/ChatwootAccessCard";
@@ -108,7 +109,9 @@ function Dashboard() {
     !isLoading &&
     (data?.subscription.status === "none" || data?.subscription.status === "canceled");
   const hasActiveSubscription =
-    data?.subscription.status === "active" || data?.subscription.status === "trialing";
+    data?.subscription.status === "active" ||
+    data?.subscription.status === "trialing" ||
+    data?.subscription.status === "past_due";
   const whatsappStatus = onboarding.data?.whatsappStatus ?? data?.whatsapp?.status ?? null;
   const hasChatwootAccount = onboarding.data?.chatwootProvisioned ?? data?.chatwootProvisioned ?? false;
   const showWhatsappOnboarding = hasActiveSubscription && whatsappStatus !== "connected";
@@ -185,6 +188,12 @@ function Dashboard() {
 
         ) : (
           <>
+            {data?.subscription.status === "past_due" && (
+              <div className="mb-6">
+                <PaymentFailedAlert />
+              </div>
+            )}
+
             <div className="mb-8">
               <h1 className="text-3xl font-semibold tracking-tight">Tu dashboard</h1>
               <p className="mt-1 text-muted-foreground">Resumen de tu plan y uso de mensajes.</p>

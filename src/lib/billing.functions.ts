@@ -90,6 +90,17 @@ export const changePlan = createServerFn({ method: "POST" })
     return { ok: true as const };
   });
 
+export const createBillingPortalSession = createServerFn({ method: "POST" })
+  .middleware([requireBackendAuth])
+  .handler(async ({ context }) => {
+    const result = await postBilling(context.accessToken, "/billing/portal");
+    const url = asRecord(result)["url"];
+    if (typeof url !== "string" || url.length === 0) {
+      throw new Error("No pudimos abrir el portal de pagos.");
+    }
+    return { url };
+  });
+
 export const listInvoices = createServerFn({ method: "GET" })
   .middleware([requireBackendAuth])
   .handler(async ({ context }) => {
